@@ -6,6 +6,7 @@ var fs = require('fs');
 
 
 var mysql      = require('mysql');
+
 var connection = mysql.createConnection({
 	host     : '127.0.0.1',
 	user     : 'root',
@@ -13,25 +14,30 @@ var connection = mysql.createConnection({
 	database : 'neuro_data'
 });
 
-connection.connect();
+//connection.connect();
 var cheerio = require("cheerio");
 var request = require("request");
 
 var $ = cheerio.load(fs.readFileSync('./templates/test.html'));
 var bod = $('body');
 
-
-var webPage = require('webpage');
-var page = webPage.create();
-
-
-page.open(resource, function(status, x) {
+var phantom = require('phantom');
+phantom.create().then(function(ph) {
+	return ph.createPage().then(function(page) {
+		return page.open(resource).then(function(status) {
 
 
-	console.log(status)
-	phantom.exit();
-
+				page.evaluate(function() {
+					window.scrollBy( 0, 10000 );
+					return window.pageYOffset;
+				}).then(function(r){
+					page.content;
+					console.log(r);
+				});
+		});
+	});
 });
+
 
 grouper.updateInfoTree(bod[0]);
 
