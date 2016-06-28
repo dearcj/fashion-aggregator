@@ -1,8 +1,13 @@
 'use strict';
 var grouper = require('./GC_Grouper');
+var utls = require('./Utils.js');
+
+var x = utls.argmax(Math.sin, [Math.PI, 0, Math.PI/2, Math.PI / 4]);
+x;
 
 var resource = "https://www.slimstore.com.ua";
 var fs = require('fs');
+
 
 const sourceFromDisk = 1;
 const sourceFromPhantom = 2;

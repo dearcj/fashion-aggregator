@@ -12,10 +12,16 @@ module.exports = {
 	},
 	heavyAttribs: ['style', 'class'],
 
-	treeTreeSuperposition: function (tree1, tree2) {
+	treeTreeSuperposition: function (tree1, tree2, depth) {
+		if (!depth) depth = 0;
+		var value = 0;
 		//lets get away from np full task
 		//for each children lets assume that one of children is missed, so lets check children comparsion as Max(A[i], B[i], B[i - 1], B[i + 1])
-		for (var i = 0; i < tree1.children.length; ++i) {
+		var headsComparsion = this.el2elComparsion(tree1, tree2);
+    if 	(headsComparsion < 0) return headsComparsion;
+
+
+			for (var i = 0; i < tree1.children.length; ++i) {
 			var a = tree1.children[i];
 			var b = tree2.children[i];
 			var bNext, bPrev;
@@ -24,9 +30,13 @@ module.exports = {
 
 			var maxComparsion = Math.max(this.el2elComparsion(a, b),
 				this.el2elComparsion(a, bPrev),
-				this.el2elComparsion(a, bNext))
+				this.el2elComparsion(a, bNext));
+
+        treeTreeSuperposition();
+			//dive check a b
 		}
 	},
+
 	arrArrSuperposition: function (arr1, arr2) {
 		var sp = 0;
 		_.map(arr1, function (arr1Val) {
@@ -78,6 +88,7 @@ module.exports = {
 
 		return comparsionLevel;
 	},
+
 	updateInfoTree: function (body) {
 		if (!body.depth) body.depth = 0;
 		if (!body.maxDepth) body.maxDepth = 0;
