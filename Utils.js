@@ -9,12 +9,14 @@ module.exports = {
   argmax: function (f, paramsArray) {
     var maxValue = f(paramsArray[0]);
     var maxInx = 0;
-    for (var i = 1; i < paramsArray.length; ++i) {
+    for (var i = 1; i < paramsArray.length; i++) {
       var newValue = f(paramsArray[i]);
       if (maxValue < newValue) {
-        maxInx = f(paramsArray[i + 1]);
+        maxInx = i;
+        maxValue = newValue;
       }
     }
-    return {value: maxInx, arg: paramsArray[maxInx]}
+
+    return {value: maxValue, arg: paramsArray[maxInx]}
   }
 }
