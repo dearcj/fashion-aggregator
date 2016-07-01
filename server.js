@@ -1,5 +1,5 @@
 'use strict';
-var grouper = require('./GC_Grouper');
+var grouper = require('./Backend/GC_Grouper.js');
 
 var resource = "https://www.slimstore.com.ua";
 var fs = require('fs');
@@ -68,14 +68,19 @@ http.get(options, function(res, b) {
 
 function callClassificator(body) {
 
+	var yyy = new grouper.gc_grouper();
+
 	grouper.updateInfoTree(body[0]);
-	var element1 = $('.col-smb-12')[0];
+	var elementFail = $('.col-smb-12')[0];
 	var element1 = $('.item-inner')[0];
 	var element2 = $('.item-inner')[1];
 
 	var res = grouper.t2tSuperposition(element1, element2);
+	console.log('real t2t: ' + res);
 
-	console.log(grouper.el2elComparsion(element1, element2));
+
+	var res = grouper.t2tSuperposition(element1, elementFail);
+	console.log('error t2t: ' + res);
 }
 
 
