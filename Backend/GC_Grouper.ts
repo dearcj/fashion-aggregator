@@ -5,7 +5,8 @@
 
 declare function require(name:string);
 var _ = require("underscore");
-var u = require('./MathUtils.js');
+var MathUnit = require('./MathUnit.js');
+var u = new MathUnit.MathUnit();
 
 class DOMObject {
     name: string;
@@ -18,8 +19,29 @@ class gc_consts {
     MAX_HEAVY_COMPARSION: number = 3;
 }
 
-export class gc_grouper extends gc_consts{
+export class gc_grouper extends gc_consts {
     heavyAttribs: Array<string> = ['style', 'class'];
+
+    findAModel() {
+
+    }
+
+
+    collectAllImages(body: DOMObject, list: Array<DOMObject>, d) {
+        if (!list)
+        var list = new Array<DOMObject>();
+        var _this = this;
+        if (body.children) {
+          _.each(body.children, function (el, i) {
+                if (el.name == 'img') list.push(el);
+                if (el == body)    return;
+                if (el.children)
+                    _this.collectAllImages(el, list, d + 1);
+            })
+        }
+            //Ok. all images collected lets check img resolution
+        return list;
+    }
 
     t2tSuperposition (tree1: DOMObject, tree2: DOMObject, depth: number) {
         if (!depth) depth = 0;

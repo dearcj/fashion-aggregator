@@ -3,6 +3,12 @@ var grouper = require('./Backend/GC_Grouper.js');
 
 var resource = "https://www.slimstore.com.ua";
 var fs = require('fs');
+var _ = require('underscore');
+var url = require('url');
+var https = require('https');
+var http = require('http');
+
+var imagesize = require('imagesize');
 
 const sourceFromDisk = 1;
 const sourceFromPhantom = 2;
@@ -66,20 +72,58 @@ http.get(options, function(res, b) {
 });
 */
 
+function fastImageSize(uu, cb) {
+	console.log('!!!!!!!!!!');
+	var protocol = null;
+	if (uu.indexOf('https:') == 0)
+	protocol = https;
+
+	if (uu.indexOf('http:') == 0)
+	protocol = http;
+
+	uu = encodeURI(uu);
+	console.log(uu);
+	if (protocol) {
+		var request =	protocol.get(uu, function (response) {
+			var chunks = [];
+			imagesize(response, function (err, result) {
+				// do something with result
+				console.log('----', result.width);
+				// we don't need more data
+				request.abort();
+			});
+
+
+		});
+	} else cb(false);
+}
+
+
 function callClassificator(body) {
+	var gc_grouper = new grouper.gc_grouper();
+	gc_grouper.updateInfoTree(body[0]);
 
-	var yyy = new grouper.gc_grouper();
 
-	grouper.updateInfoTree(body[0]);
+	var element1 = $('.images1')[0];
+
+	var imgs = gc_grouper.collectAllImages(body[0]);
+
+	_.each(imgs, function(x) {
+		var t = fastImageSize(x.attribs['src'], function (res) {
+			console.log(JSON.stringify(res));
+
+		});
+	});
+
 	var elementFail = $('.col-smb-12')[0];
 	var element1 = $('.item-inner')[0];
 	var element2 = $('.item-inner')[1];
 
-	var res = grouper.t2tSuperposition(element1, element2);
+	var res = gc_grouper.t2tSuperposition(element1, element2);
 	console.log('real t2t: ' + res);
 
 
-	var res = grouper.t2tSuperposition(element1, elementFail);
+	var res = gc_grouper.t2tSuperposition(element1, elementFail);
 	console.log('error t2t: ' + res);
 }
 
