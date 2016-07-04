@@ -11,6 +11,15 @@ var __extends = this.__extends || function (d, b) {
 var _ = require("underscore");
 var MathUnit = require('./MathUnit.js');
 var u = new MathUnit.MathUnit();
+var https = require('https');
+var http = require('http');
+var imagesize = require('imagesize');
+var async = require('async');
+var ImgObj = (function () {
+    function ImgObj() {
+    }
+    return ImgObj;
+})();
 var DOMObject = (function () {
     function DOMObject() {
     }
@@ -29,12 +38,64 @@ var gc_grouper = (function (_super) {
         _super.apply(this, arguments);
         this.heavyAttribs = ['style', 'class'];
     }
-    gc_grouper.prototype.findAModel = function () {
+    gc_grouper.prototype.getRule = function (object, rule, body) {
+        var p = object.parent;
+        var rootId;
+        var ruleArr = [];
+        while (p != body) {
+            if (p.attribs['id']) {
+                rootId = p.attribs['id'];
+                break;
+            }
+            else {
+                //push here inx
+                //ruleArr.push();
+                object = p;
+                p = p.parent;
+            }
+        }
+    };
+    gc_grouper.prototype.findModel = function (body) {
+        const imageComparsionThresh = 500;
+        this.findImages(body, function (res) {
+            var img = res[0].domObject;
+            var par = img.parent;
+            while (par && par != body) {
+                if (par.next) {
+                    var comp = this.t2tSuperposition(par, par.next);
+                    if (comp > imageComparsionThresh) {
+                        console.log(par);
+                    }
+                    console.log(comp);
+                }
+                par = par.parent;
+            }
+        }.bind(this));
+    };
+    gc_grouper.prototype.fastImageSize = function (url, cb) {
+        var protocol = null;
+        if (url.indexOf('https:') == 0)
+            protocol = https;
+        if (url.indexOf('http:') == 0)
+            protocol = http;
+        url = encodeURI(url);
+        if (protocol) {
+            var request = protocol.get(url, function (response) {
+                imagesize(response, function (err, result) {
+                    cb(result, result);
+                    request.abort();
+                });
+            });
+        }
+        else
+            cb(false);
     };
     gc_grouper.prototype.collectAllImages = function (body, list, d) {
         if (!list)
-            var list = new Array();
+            list = [];
         var _this = this;
+        var funcs = [];
+        async.parallel(funcs);
         if (body.children) {
             _.each(body.children, function (el, i) {
                 if (el.name == 'img')
@@ -47,6 +108,35 @@ var gc_grouper = (function (_super) {
         }
         //Ok. all images collected lets check img resolution
         return list;
+    };
+    gc_grouper.prototype.findImages = function (body, endCB) {
+        var MIN_IMG_WIDTH = 200;
+        var MIN_IMG_HEIGHT = 100;
+        var imgs = this.collectAllImages(body[0], null, null);
+        var results = [];
+        var _this = this;
+        var funcs = [];
+        _.each(imgs, function (x) {
+            funcs.push(function (callback) {
+                _this.fastImageSize(x.attribs['src'], function end(res) {
+                    if (res) {
+                        res.domObject = x;
+                        res.url = x.attribs['src'];
+                        results.push(res);
+                    }
+                    callback();
+                });
+            });
+        });
+        async.parallel(funcs, function done() {
+            for (var i = 0; i < results.length; ++i) {
+                if (!results[i] || results[i].width < MIN_IMG_WIDTH || results[i].height < MIN_IMG_HEIGHT) {
+                    results.splice(i, 1);
+                    i--;
+                }
+            }
+            endCB(results);
+        });
     };
     gc_grouper.prototype.t2tSuperposition = function (tree1, tree2, depth) {
         if (!depth)
@@ -83,11 +173,10 @@ var gc_grouper = (function (_super) {
                 if (res > 0)
                     value += res * depthCoef;
                 else
-                    value -= 1 * depthCoef;
+                    value -= depthCoef;
             }
             else
-                value -= 1 * depthCoef;
-            console.log(value);
+                value -= depthCoef;
         }
         return value;
     };
@@ -139,6 +228,9 @@ var gc_grouper = (function (_super) {
             comparsionLevel = -5;
         return comparsionLevel;
     };
+    /*
+    Add depth and maxdepth info to every element
+     */
     gc_grouper.prototype.updateInfoTree = function (body) {
         if (!body.depth)
             body.depth = 0;

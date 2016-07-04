@@ -2,7 +2,6 @@
 <project version="4">
   <component name="TypeScriptCompiler">
     <option name="isCompilerEnabled" value="true" />
-    <option name="typeScriptCompilerParams" value="--module commonjs" />
-    <option name="scopeName" value="Unnamed" />
+    <option name="typeScriptCompilerParams" value="--module commonjs --target es6" />
   </component>
 </project>

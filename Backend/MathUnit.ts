@@ -1,5 +1,3 @@
-
-
 export class MathUnit {
     argmax (f, paramsArray) {
         var maxValue = f(paramsArray[0]);
@@ -11,7 +9,6 @@ export class MathUnit {
                 maxValue = newValue;
             }
         }
-
         return {value: maxValue, arg: paramsArray[maxInx]}
     }
 }
