@@ -61,8 +61,9 @@ var gc_grouper = (function (_super) {
             var img = res[0].domObject;
             var par = img.parent;
             while (par && par != body) {
-                if (par.next) {
-                    var comp = this.t2tSuperposition(par, par.next);
+                //console.log(this.isList(par.parent));
+                if (par.nextElem) {
+                    var comp = this.t2tSuperposition(par, par.nextElem);
                     if (comp > imageComparsionThresh) {
                         console.log(par);
                     }
@@ -238,13 +239,22 @@ var gc_grouper = (function (_super) {
             body.maxDepth = 0;
         var _this = this;
         var maxDepth = 0;
-        if (body.children)
+        if (body.children) {
+            body.childrenElem = [];
             _.each(body.children, function (elem) {
+                if (elem.name) {
+                    body.childrenElem.push(elem);
+                    if (body.childrenElem.length > 1) {
+                        elem.prevElem = body.childrenElem[body.childrenElem.length - 2];
+                        body.childrenElem[body.childrenElem.length - 2].nextElem = elem;
+                    }
+                }
                 elem.depth = body.depth + 1;
                 _this.updateInfoTree(elem);
                 if (elem.maxDepth > maxDepth)
                     maxDepth = elem.maxDepth;
             });
+        }
         body.maxDepth += maxDepth + 1;
     };
     return gc_grouper;
