@@ -23,7 +23,6 @@ class DOMObject {
     /*
     Don't use this fields in childrenElem. Logic overwritten in childrenElem
      */
-
     next: DOMObject;
     prev: DOMObject;
     depth: number;
@@ -38,30 +37,62 @@ class DOMObject {
     attribs: Array<string>;
 }
 
-class gc_consts {
+class GcConsts {
     NULL_ELEMENT_NEGATIVE: number = -1000;
     MAX_HEAVY_COMPARSION: number = 3;
 }
 
-export class gc_grouper extends gc_consts {
+export class GcGrouper extends GcConsts {
     heavyAttribs: Array<string> = ['style', 'class'];
+    $; //cheerio jquery Object
+    constructor($) {
+        super();
+        this.$ = $;
+    }
 
-    getRule(object: DOMObject, rule: string, body: DOMObject) {
-        var p = object.parent;
+    getObjByRule(rule:string, body: DOMObject): DOMObject {
+        var ruleArr = rule.split('>');
+        if (ruleArr.length == 0) return null;
+        var baseElem: DOMObject;
+        var startInx: number = 0;
+        if (ruleArr[0].charAt(0) == '#') {
+            baseElem = this.$(ruleArr[0])[0];
+            if (!baseElem) return null;
+            startInx = 1;
+        } else {
+            baseElem = body;
+        }
+
+        var cnt = ruleArr.length;
+        for (var i = startInx; i < cnt; ++i) {
+            var inx: number = parseInt(ruleArr[i]);
+            if (baseElem.childrenElem.length <= inx) return null;
+            baseElem = baseElem.childrenElem[ruleArr[i]];
+        }
+        return baseElem;
+    }
+
+    getRule(object: DOMObject, body: DOMObject): string {
+        var p = object;
         var rootId: string;
-        var ruleArr: Array<number> = [];
+        var ruleArr: Array<string> = [];
         while (p != body) {
             if (p.attribs['id']) {
                 rootId = p.attribs['id'];
+                var xid: string = "#" + rootId;
+                ruleArr.unshift(xid);
                 break;
             } else {
                 //push here inx
-
+                var inx = p.parent.childrenElem.indexOf(p);
+                ruleArr.unshift(inx.toString());
                 //ruleArr.push();
                 object = p;
                 p = p.parent;
             }
         }
+
+        return ruleArr.join('>');
     }
 
 

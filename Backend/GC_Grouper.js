@@ -25,37 +25,67 @@ var DOMObject = (function () {
     }
     return DOMObject;
 })();
-var gc_consts = (function () {
-    function gc_consts() {
+var GcConsts = (function () {
+    function GcConsts() {
         this.NULL_ELEMENT_NEGATIVE = -1000;
         this.MAX_HEAVY_COMPARSION = 3;
     }
-    return gc_consts;
+    return GcConsts;
 })();
-var gc_grouper = (function (_super) {
-    __extends(gc_grouper, _super);
-    function gc_grouper() {
-        _super.apply(this, arguments);
+var GcGrouper = (function (_super) {
+    __extends(GcGrouper, _super);
+    function GcGrouper($) {
+        _super.call(this);
         this.heavyAttribs = ['style', 'class'];
+        this.$ = $;
     }
-    gc_grouper.prototype.getRule = function (object, rule, body) {
-        var p = object.parent;
+    GcGrouper.prototype.getObjByRule = function (rule, body) {
+        var ruleArr = rule.split('>');
+        if (ruleArr.length == 0)
+            return null;
+        var baseElem;
+        var startInx = 0;
+        if (ruleArr[0].charAt(0) == '#') {
+            baseElem = this.$(ruleArr[0])[0];
+            if (!baseElem)
+                return null;
+            startInx = 1;
+        }
+        else {
+            baseElem = body;
+        }
+        var cnt = ruleArr.length;
+        for (var i = startInx; i < cnt; ++i) {
+            var inx = parseInt(ruleArr[i]);
+            if (baseElem.childrenElem.length <= inx)
+                return null;
+            baseElem = baseElem.childrenElem[ruleArr[i]];
+        }
+        return baseElem;
+    };
+    GcGrouper.prototype.getRule = function (object, body) {
+        var p = object;
         var rootId;
         var ruleArr = [];
         while (p != body) {
             if (p.attribs['id']) {
                 rootId = p.attribs['id'];
+                var xid = "#" + rootId;
+                ruleArr.unshift(xid);
                 break;
             }
             else {
                 //push here inx
+                var inx = p.parent.childrenElem.indexOf(p);
+                ruleArr.unshift(inx.toString());
                 //ruleArr.push();
                 object = p;
                 p = p.parent;
             }
         }
+        return ruleArr.join('>');
     };
-    gc_grouper.prototype.findModel = function (body) {
+    GcGrouper.prototype.findModel = function (body) {
         const imageComparsionThresh = 500;
         this.findImages(body, function (res) {
             var img = res[0].domObject;
@@ -73,7 +103,7 @@ var gc_grouper = (function (_super) {
             }
         }.bind(this));
     };
-    gc_grouper.prototype.fastImageSize = function (url, cb) {
+    GcGrouper.prototype.fastImageSize = function (url, cb) {
         var protocol = null;
         if (url.indexOf('https:') == 0)
             protocol = https;
@@ -91,7 +121,7 @@ var gc_grouper = (function (_super) {
         else
             cb(false);
     };
-    gc_grouper.prototype.collectAllImages = function (body, list, d) {
+    GcGrouper.prototype.collectAllImages = function (body, list, d) {
         if (!list)
             list = [];
         var _this = this;
@@ -110,7 +140,7 @@ var gc_grouper = (function (_super) {
         //Ok. all images collected lets check img resolution
         return list;
     };
-    gc_grouper.prototype.findImages = function (body, endCB) {
+    GcGrouper.prototype.findImages = function (body, endCB) {
         var MIN_IMG_WIDTH = 200;
         var MIN_IMG_HEIGHT = 100;
         var imgs = this.collectAllImages(body[0], null, null);
@@ -139,7 +169,7 @@ var gc_grouper = (function (_super) {
             endCB(results);
         });
     };
-    gc_grouper.prototype.t2tSuperposition = function (tree1, tree2, depth) {
+    GcGrouper.prototype.t2tSuperposition = function (tree1, tree2, depth) {
         if (!depth)
             depth = 0;
         var value = 0;
@@ -181,7 +211,7 @@ var gc_grouper = (function (_super) {
         }
         return value;
     };
-    gc_grouper.prototype.arrArrSuperposition = function (arr1, arr2) {
+    GcGrouper.prototype.arrArrSuperposition = function (arr1, arr2) {
         var sp = 0;
         _.map(arr1, function (arr1Val) {
             if (arr2.indexOf(arr1Val))
@@ -189,7 +219,7 @@ var gc_grouper = (function (_super) {
         });
         return sp;
     };
-    gc_grouper.prototype.heavyAttribComparsion = function (attrib1, attrib2) {
+    GcGrouper.prototype.heavyAttribComparsion = function (attrib1, attrib2) {
         if (attrib1 == attrib2)
             return this.MAX_HEAVY_COMPARSION;
         var subAttrArray1 = attrib1.split(" ");
@@ -197,7 +227,7 @@ var gc_grouper = (function (_super) {
         var superpositionLev = this.arrArrSuperposition(subAttrArray1, subAttrArray2);
         return (superpositionLev / Math.max(subAttrArray1.length, subAttrArray2.length)) * this.MAX_HEAVY_COMPARSION;
     };
-    gc_grouper.prototype.el2elComparsion = function (el1, el2) {
+    GcGrouper.prototype.el2elComparsion = function (el1, el2) {
         if (!el1 || !el2)
             return this.NULL_ELEMENT_NEGATIVE;
         var comparsionLevel = 0;
@@ -232,7 +262,7 @@ var gc_grouper = (function (_super) {
     /*
     Add depth and maxdepth info to every element
      */
-    gc_grouper.prototype.updateInfoTree = function (body) {
+    GcGrouper.prototype.updateInfoTree = function (body) {
         if (!body.depth)
             body.depth = 0;
         if (!body.maxDepth)
@@ -257,7 +287,7 @@ var gc_grouper = (function (_super) {
         }
         body.maxDepth += maxDepth + 1;
     };
-    return gc_grouper;
-})(gc_consts);
-exports.gc_grouper = gc_grouper;
+    return GcGrouper;
+})(GcConsts);
+exports.GcGrouper = GcGrouper;
 //# sourceMappingURL=GC_Grouper.js.map
