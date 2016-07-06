@@ -45,15 +45,19 @@ var gc_grouper = (function (_super) {
         while (p != body) {
             if (p.attribs['id']) {
                 rootId = p.attribs['id'];
+                var elem = '#' + p.attribs['id'];
+                ruleArr.unshift(elem);
                 break;
             }
             else {
                 //push here inx
-                //ruleArr.push();
+                var pos = p.parent.childrenElem.indexOf(p.parent);
+                ruleArr.unshift(pos);
                 object = p;
                 p = p.parent;
             }
         }
+        return ruleArr.join('>');
     };
     gc_grouper.prototype.findModel = function (body) {
         const imageComparsionThresh = 500;

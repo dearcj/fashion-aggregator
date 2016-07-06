@@ -43,15 +43,19 @@ export class gc_grouper extends gc_consts {
         while (p != body) {
             if (p.attribs['id']) {
                 rootId = p.attribs['id'];
+                var elem: string = '#' + p.attribs['id'];
+                ruleArr.unshift(elem);
                 break;
             } else {
                 //push here inx
-
-                //ruleArr.push();
+                var pos = p.parent.childrenElem.indexOf(p.parent);
+                ruleArr.unshift(pos);
                 object = p;
                 p = p.parent;
             }
         }
+
+        return ruleArr.join('>');
     }
 
 
