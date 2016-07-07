@@ -31,10 +31,15 @@ var connection = mysql.createConnection({
 
 
 function callClassificator(body, $) {
-	var gc_grouper = new grouper.gc_grouper();
+	var gc_grouper = new grouper.GcGrouper($);
 	gc_grouper.updateInfoTree(body[0]);
 
-	var element1 = $('.images1')[0];
+	var element1 = $('.col-md-4')[2];
+
+	var rule = gc_grouper.getRule(element1, body[0]);
+
+	var obj = gc_grouper.getObjByRule(rule, body[0]);
+	console.log;
 
 	gc_grouper.findModel(body)
 

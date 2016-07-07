@@ -20,36 +20,73 @@ class ImgObj {
 }
 
 class DOMObject {
+    /*
+     Don't use this fields in childrenElem. Logic overwritten in childrenElem
+     */
     next: DOMObject;
     prev: DOMObject;
+    depth: number;
+    maxDepth: number;
+    childrenElem: Array<DOMObject>;
+    nextElem: DOMObject;
+    prevElem: DOMObject;
+
     parent: DOMObject;
     name: string;
     children: Array<DOMObject>;
     attribs: Array<string>;
 }
 
-class gc_consts {
+class GcConsts {
     NULL_ELEMENT_NEGATIVE: number = -1000;
     MAX_HEAVY_COMPARSION: number = 3;
 }
 
-export class gc_grouper extends gc_consts {
+export class GcGrouper extends GcConsts {
     heavyAttribs: Array<string> = ['style', 'class'];
+    $; //cheerio jquery Object
+    constructor($) {
+        super();
+        this.$ = $;
+    }
 
-    getRule(object: DOMObject, rule: string, body: DOMObject) {
-        var p = object.parent;
+    getObjByRule(rule:string, body: DOMObject): DOMObject {
+        var ruleArr = rule.split('>');
+        if (ruleArr.length == 0) return null;
+        var baseElem: DOMObject;
+        var startInx: number = 0;
+        if (ruleArr[0].charAt(0) == '#') {
+            baseElem = this.$(ruleArr[0])[0];
+            if (!baseElem) return null;
+            startInx = 1;
+        } else {
+            baseElem = body;
+        }
+
+        var cnt = ruleArr.length;
+        for (var i = startInx; i < cnt; ++i) {
+            var inx: number = parseInt(ruleArr[i]);
+            if (baseElem.childrenElem.length <= inx) return null;
+            baseElem = baseElem.childrenElem[ruleArr[i]];
+        }
+        return baseElem;
+    }
+
+    getRule(object: DOMObject, body: DOMObject): string {
+        var p = object;
         var rootId: string;
-        var ruleArr: Array<number> = [];
+        var ruleArr: Array<string> = [];
         while (p != body) {
             if (p.attribs['id']) {
                 rootId = p.attribs['id'];
-                var elem: string = '#' + p.attribs['id'];
-                ruleArr.unshift(elem);
+                var xid: string = "#" + rootId;
+                ruleArr.unshift(xid);
                 break;
             } else {
                 //push here inx
-                var pos = p.parent.childrenElem.indexOf(p.parent);
-                ruleArr.unshift(pos);
+                var inx = p.parent.childrenElem.indexOf(p);
+                ruleArr.unshift(inx.toString());
+                //ruleArr.push();
                 object = p;
                 p = p.parent;
             }
@@ -66,8 +103,10 @@ export class gc_grouper extends gc_consts {
             var img = res[0].domObject;
             var par = img.parent;
             while (par && par != body) {
-                if (par.next) {
-                    var comp = this.t2tSuperposition(par, par.next);
+
+                //console.log(this.isList(par.parent));
+                if (par.nextElem) {
+                    var comp = this.t2tSuperposition(par, par.nextElem);
                     if (comp > imageComparsionThresh) {
                         console.log(par);
                     }
@@ -88,11 +127,11 @@ export class gc_grouper extends gc_consts {
         url = encodeURI(url);
         if (protocol) {
             var request = protocol.get(url, function (response) {
-            imagesize(response, function (err, result) {
-                cb(result, result);
-                request.abort();
+                imagesize(response, function (err, result) {
+                    cb(result, result);
+                    request.abort();
+                });
             });
-        });
         } else cb(false);
     }
 
@@ -103,7 +142,7 @@ export class gc_grouper extends gc_consts {
         async.parallel(funcs);
 
         if (body.children) {
-          _.each(body.children, function (el, i) {
+            _.each(body.children, function (el, i) {
                 if (el.name == 'img') list.push(el);
                 if (el == body)    return;
                 if (el.children)
@@ -139,12 +178,12 @@ export class gc_grouper extends gc_consts {
         });
 
         async.parallel(funcs, function done() {
-           for (var i = 0; i < results.length; ++i) {
-               if (!results[i] || results[i].width < MIN_IMG_WIDTH || results[i].height < MIN_IMG_HEIGHT) {
-                   results.splice(i, 1);
-                   i--;
-               }
-           }
+            for (var i = 0; i < results.length; ++i) {
+                if (!results[i] || results[i].width < MIN_IMG_WIDTH || results[i].height < MIN_IMG_HEIGHT) {
+                    results.splice(i, 1);
+                    i--;
+                }
+            }
             endCB(results);
         });
     }
@@ -237,19 +276,31 @@ export class gc_grouper extends gc_consts {
     }
 
     /*
-    Add depth and maxdepth info to every element
+     Add depth and maxdepth info to every element
      */
-    updateInfoTree (body) {
+    updateInfoTree (body: DOMObject) {
         if (!body.depth) body.depth = 0;
         if (!body.maxDepth) body.maxDepth = 0;
         var _this = this;
         var maxDepth = 0;
-        if (body.children)
+        if (body.children) {
+            body.childrenElem = [];
+
             _.each(body.children, function (elem) {
+                if (elem.name) {
+                    body.childrenElem.push(elem);
+                    if (body.childrenElem.length > 1) {
+                        elem.prevElem = body.childrenElem[body.childrenElem.length - 2];
+                        body.childrenElem[body.childrenElem.length - 2].nextElem = elem;
+                    }
+                }
                 elem.depth = body.depth + 1;
                 _this.updateInfoTree(elem);
                 if (elem.maxDepth > maxDepth) maxDepth = elem.maxDepth;
             });
+
+
+        }
 
         body.maxDepth += maxDepth + 1;
     }
