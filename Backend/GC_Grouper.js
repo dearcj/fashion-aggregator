@@ -35,20 +35,35 @@ var GcConsts = (function () {
 })();
 var GcGrouper = (function (_super) {
     __extends(GcGrouper, _super);
-    function GcGrouper($) {
+    function GcGrouper($, body) {
         _super.call(this);
         this.heavyAttribs = ['style', 'class'];
+        this.body = body;
         this.$ = $;
     }
     //call function func for every tree node
     GcGrouper.prototype.traverse = function (o, func) {
         var count = o.childrenElem.length;
         for (var i = 0; i < count; ++i) {
-            func.call(this, i, o[i]);
-            this.traverse(o[i], func);
+            func.call(this, o.childrenElem[i], i);
+            this.traverse(o.childrenElem[i], func);
         }
     };
-    GcGrouper.prototype.getObjByRule = function (rule, body) {
+    GcGrouper.prototype.collectSameOnThisLevel = function (pair) {
+        var lev = pair[0].depth;
+        var sameLev = [];
+        this.traverse(this.body, function (elem, inx) {
+            if (elem.depth == lev) {
+                if (this.t2tSuperposition(pair[0], elem) > this.COMPARSION_THRESHOLD) {
+                    sameLev.push(elem);
+                }
+            }
+        });
+        return sameLev;
+    };
+    GcGrouper.prototype.getObjByRule = function (rule, head) {
+        if (!head)
+            head = this.body;
         var ruleArr = rule.split('>');
         if (ruleArr.length == 0)
             return null;
@@ -61,7 +76,7 @@ var GcGrouper = (function (_super) {
             startInx = 1;
         }
         else {
-            baseElem = body;
+            baseElem = head;
         }
         var cnt = ruleArr.length;
         for (var i = startInx; i < cnt; ++i) {
@@ -72,24 +87,32 @@ var GcGrouper = (function (_super) {
         }
         return baseElem;
     };
-    GcGrouper.prototype.collectSameOnThisLevel = function (pair, body) {
-        var lev = pair[0].depth;
-        var sameLev = [];
-        this.traverse(body, function (inx, elem) {
-            if (elem.depth == lev) {
-                if (this.t2tSuperposition(pair[0], elem) > this.COMPARSION_THRESHOLD) {
-                    sameLev.push(elem);
-                }
-            }
-        });
-        return sameLev;
+    GcGrouper.prototype.getListByRules = function (head, rulesList) {
+        var headObj = this.getObjByRule(head, this.body);
+        if (!headObj)
+            return null;
+        var objList = [];
+        var cnt = rulesList.length;
+        for (var i = 0; i < cnt; ++i) {
+            var obj = this.getObjByRule(rulesList[i], headObj);
+            if (!obj)
+                return null;
+            else
+                objList.push(obj);
+        }
+        return objList;
     };
-    GcGrouper.prototype.getRule = function (object, body) {
+    /*
+        finds dom rule from object <head> to obj <object>
+     */
+    GcGrouper.prototype.getRule = function (object, head, onlyRelative) {
         var p = object;
         var rootId;
         var ruleArr = [];
-        while (p != body) {
-            if (p.attribs['id']) {
+        if (!head)
+            head = this.body;
+        while (p != head) {
+            if (!onlyRelative && p.attribs['id']) {
                 rootId = p.attribs['id'];
                 var xid = "#" + rootId;
                 ruleArr.unshift(xid);
@@ -119,36 +142,53 @@ var GcGrouper = (function (_super) {
         }
         return list2[0];
     };
-    GcGrouper.prototype.findModel = function (body, resCB) {
-        this.findImages(body, function (res) {
+    GcGrouper.prototype.findModel = function (resCB) {
+        this.findImages(function (res) {
             var img = res[0].domObject;
+            if (res.length == 0) {
+                resCB(null);
+                return;
+            }
             var par = img.parent;
-            while (par && par != body) {
+            while (par && par != this.body) {
                 //console.log(this.isList(par.parent));
                 if (par.nextElem) {
                     var comp = this.t2tSuperposition(par, par.nextElem);
                     if (comp > this.COMPARSION_THRESHOLD) {
                         var list = this.collectSameOnThisLevel([par, par.nextElem]);
-                        var h = this.getCommonHead(list);
+                        var head = this.getCommonHead(list);
+                        var rulesList = [];
+                        _.each(list, function (x) {
+                            rulesList.push(this.getRule(x, head, true));
+                        }.bind(this));
                         var result = {
                             list: list,
-                            head: h,
-                            ruleForHead: this.getRule(h)
+                            head: head,
+                            ruleHead: this.getRule(head),
+                            ruleElements: rulesList
                         };
-                        return result;
+                        resCB(result);
                     }
                 }
                 par = par.parent;
             }
-            return null;
+            resCB(null);
         }.bind(this));
     };
     GcGrouper.prototype.fastImageSize = function (url, cb) {
+        if (!url) {
+            cb(false);
+            return;
+        }
         var protocol = null;
         if (url.indexOf('https:') == 0)
             protocol = https;
         if (url.indexOf('http:') == 0)
             protocol = http;
+        if (!protocol) {
+            cb(false);
+            return;
+        }
         url = encodeURI(url);
         if (protocol) {
             var request = protocol.get(url, function (response) {
@@ -161,29 +201,25 @@ var GcGrouper = (function (_super) {
         else
             cb(false);
     };
-    GcGrouper.prototype.collectAllImages = function (body, list, d) {
+    GcGrouper.prototype.collectAllImages = function (list, d) {
         if (!list)
             list = [];
         var _this = this;
         var funcs = [];
         async.parallel(funcs);
-        if (body.children) {
-            _.each(body.children, function (el, i) {
+        if (this.body.children) {
+            this.traverse(this.body, function (el, i) {
                 if (el.name == 'img')
                     list.push(el);
-                if (el == body)
-                    return;
-                if (el.children)
-                    _this.collectAllImages(el, list, d + 1);
             });
         }
         //Ok. all images collected lets check img resolution
         return list;
     };
-    GcGrouper.prototype.findImages = function (body, endCB) {
+    GcGrouper.prototype.findImages = function (endCB) {
         var MIN_IMG_WIDTH = 200;
         var MIN_IMG_HEIGHT = 100;
-        var imgs = this.collectAllImages(body[0], null, null);
+        var imgs = this.collectAllImages(null, null);
         var results = [];
         var _this = this;
         var funcs = [];
@@ -303,6 +339,8 @@ var GcGrouper = (function (_super) {
      Add depth and maxdepth info to every element
      */
     GcGrouper.prototype.updateInfoTree = function (body) {
+        if (!body)
+            body = this.body;
         if (!body.depth)
             body.depth = 0;
         if (!body.maxDepth)

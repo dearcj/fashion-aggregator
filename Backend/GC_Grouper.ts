@@ -22,7 +22,8 @@ class ImgObj {
 interface ModelResult {
     list: Array<DOMObject>;
     head: DOMObject;
-    ruleForHead: string;
+    ruleHead: string;
+    ruleElements: Array<string>;
 }
 
 class DOMObject {
@@ -53,8 +54,11 @@ class GcConsts {
 export class GcGrouper extends GcConsts {
     heavyAttribs: Array<string> = ['style', 'class'];
     $; //cheerio jquery Object
-    constructor($) {
+    body: DOMObject;
+
+    constructor($, body: DOMObject) {
         super();
+        this.body = body;
         this.$ = $;
     }
 
@@ -62,13 +66,31 @@ export class GcGrouper extends GcConsts {
     traverse(o: DOMObject, func:Function): void {
         var count = o.childrenElem.length;
         for (var i = 0; i < count; ++i) {
-            func.call(this, i, o[i]);
+            func.call(this, o.childrenElem[i], i);
 
-            this.traverse(o[i], func);
+            this.traverse(o.childrenElem[i], func);
         }
     }
 
-    getObjByRule(rule:string, body: DOMObject): DOMObject {
+
+    collectSameOnThisLevel(pair: Array<DOMObject>): Array<DOMObject> {
+        var lev = pair[0].depth;
+        var sameLev: Array<DOMObject> = [];
+
+        this.traverse(this.body, function (elem: DOMObject, inx: number) {
+            if (elem.depth == lev) {
+                if (this.t2tSuperposition(pair[0], elem) > this.COMPARSION_THRESHOLD) {
+                    sameLev.push(elem);
+                }
+            }
+        })
+
+        return sameLev;
+    }
+
+    getObjByRule(rule:string, head: DOMObject): DOMObject {
+        if (!head) head = this.body;
+
         var ruleArr = rule.split('>');
         if (ruleArr.length == 0) return null;
         var baseElem: DOMObject;
@@ -78,7 +100,7 @@ export class GcGrouper extends GcConsts {
             if (!baseElem) return null;
             startInx = 1;
         } else {
-            baseElem = body;
+            baseElem = head;
         }
 
         var cnt = ruleArr.length;
@@ -90,27 +112,31 @@ export class GcGrouper extends GcConsts {
         return baseElem;
     }
 
-    collectSameOnThisLevel(pair: Array<DOMObject>, body: DOMObject): Array<DOMObject> {
-        var lev = pair[0].depth;
-        var sameLev: Array<DOMObject> = [];
+    getListByRules(head: string, rulesList: Array<string>): Array<DOMObject> {
+        var headObj = this.getObjByRule(head, this.body);
+        if (!headObj) return null;
 
-        this.traverse(body, function (inx: number, elem: DOMObject) {
-            if (elem.depth == lev) {
-                if (this.t2tSuperposition(pair[0], elem) > this.COMPARSION_THRESHOLD) {
-                    sameLev.push(elem);
-                }
-            }
-        })
+        var objList: Array<DOMObject> = [];
+        var cnt = rulesList.length;
+        for (var i = 0; i < cnt; ++i) {
+            var obj = this.getObjByRule(rulesList[i], headObj);
+            if (!obj) return null; else
+                objList.push(obj);
+        }
 
-        return sameLev;
+        return objList;
     }
 
-    getRule(object: DOMObject, body: DOMObject): string {
+    /*
+        finds dom rule from object <head> to obj <object>
+     */
+    getRule(object: DOMObject, head: DOMObject, onlyRelative): string {
         var p = object;
         var rootId: string;
         var ruleArr: Array<string> = [];
-        while (p != body) {
-            if (p.attribs['id']) {
+        if (!head) head = this.body;
+        while (p != head) {
+            if (!onlyRelative && p.attribs['id']) {
                 rootId = p.attribs['id'];
                 var xid: string = "#" + rootId;
                 ruleArr.unshift(xid);
@@ -142,12 +168,14 @@ export class GcGrouper extends GcConsts {
         return list2[0];
     }
 
-
-    findModel(body: DOMObject, resCB: Function) {
-        this.findImages(body, function (res: Array<ImgObj>) {
+    findModel(resCB: Function) {
+        this.findImages(function (res: Array<ImgObj>) {
             var img = res[0].domObject;
+
+            if (res.length == 0) { resCB(null); return; }
+
             var par = img.parent;
-            while (par && par != body) {
+            while (par && par != this.body) {
 
                 //console.log(this.isList(par.parent));
                 if (par.nextElem) {
@@ -155,28 +183,40 @@ export class GcGrouper extends GcConsts {
                     if (comp > this.COMPARSION_THRESHOLD) {
                         var list: Array<DOMObject> = this.collectSameOnThisLevel([par, par.nextElem]);
 
-                        var h: DOMObject = this.getCommonHead(list);
+                        var head: DOMObject = this.getCommonHead(list);
+                        var rulesList: Array<string> = [];
+                        _.each(list, function (x) {
+                            rulesList.push(this.getRule(x, head, true));
+                        }.bind(this));
+
                         var result: ModelResult = {
                             list: list,
-                            head: h,
-                            ruleForHead: this.getRule(h)
+                            head: head,
+                            ruleHead: this.getRule(head),
+                            ruleElements: rulesList
                         };
 
-                        return result;
+                        resCB(result);
                         //OK Possible a list here
                     }
                 }
                 par = par.parent;
             }
-            return null;
+            resCB(null);
         }.bind(this) );
     }
 
     fastImageSize(url: string, cb: Function) {
+        if (!url) {
+            cb(false); return;
+        }
+
         var protocol = null;
         if (url.indexOf('https:') == 0) protocol = https;
         if (url.indexOf('http:') == 0)
             protocol = http;
+
+        if (!protocol) { cb(false); return; }
 
         url = encodeURI(url);
         if (protocol) {
@@ -189,30 +229,27 @@ export class GcGrouper extends GcConsts {
         } else cb(false);
     }
 
-    collectAllImages(body: DOMObject, list: Array<DOMObject>, d) {
+    collectAllImages(list: Array<DOMObject>, d: number): Array<DOMObject> {
         if (!list) list = [];
         var _this = this;
         var funcs = [];
         async.parallel(funcs);
 
-        if (body.children) {
-            _.each(body.children, function (el, i) {
+        if (this.body.children) {
+            this.traverse(this.body,  function (el, i) {
                 if (el.name == 'img') list.push(el);
-                if (el == body)    return;
-                if (el.children)
-                    _this.collectAllImages(el, list, d + 1);
-            })
+            });
         }
 
         //Ok. all images collected lets check img resolution
         return list;
     }
 
-    findImages(body: DOMObject, endCB: Function) {
+    findImages(endCB: Function) {
         var MIN_IMG_WIDTH = 200;
         var MIN_IMG_HEIGHT = 100;
 
-        var imgs = this.collectAllImages(body[0], null, null);
+        var imgs = this.collectAllImages(null, null);
         var results = [];
         var _this = this;
         var funcs = [];
@@ -333,6 +370,7 @@ export class GcGrouper extends GcConsts {
      Add depth and maxdepth info to every element
      */
     updateInfoTree (body: DOMObject) {
+        if (!body) body = this.body;
         if (!body.depth) body.depth = 0;
         if (!body.maxDepth) body.maxDepth = 0;
         var _this = this;
