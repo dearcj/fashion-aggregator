@@ -19,6 +19,12 @@ class ImgObj {
     height: number;
 }
 
+interface ModelResult {
+    list: Array<DOMObject>;
+    head: DOMObject;
+    ruleForHead: string;
+}
+
 class DOMObject {
     /*
      Don't use this fields in childrenElem. Logic overwritten in childrenElem
@@ -40,6 +46,8 @@ class DOMObject {
 class GcConsts {
     NULL_ELEMENT_NEGATIVE: number = -1000;
     MAX_HEAVY_COMPARSION: number = 3;
+    COMPARSION_THRESHOLD = 500;
+
 }
 
 export class GcGrouper extends GcConsts {
@@ -48,6 +56,16 @@ export class GcGrouper extends GcConsts {
     constructor($) {
         super();
         this.$ = $;
+    }
+
+    //call function func for every tree node
+    traverse(o: DOMObject, func:Function): void {
+        var count = o.childrenElem.length;
+        for (var i = 0; i < count; ++i) {
+            func.call(this, i, o[i]);
+
+            this.traverse(o[i], func);
+        }
     }
 
     getObjByRule(rule:string, body: DOMObject): DOMObject {
@@ -70,6 +88,21 @@ export class GcGrouper extends GcConsts {
             baseElem = baseElem.childrenElem[ruleArr[i]];
         }
         return baseElem;
+    }
+
+    collectSameOnThisLevel(pair: Array<DOMObject>, body: DOMObject): Array<DOMObject> {
+        var lev = pair[0].depth;
+        var sameLev: Array<DOMObject> = [];
+
+        this.traverse(body, function (inx: number, elem: DOMObject) {
+            if (elem.depth == lev) {
+                if (this.t2tSuperposition(pair[0], elem) > this.COMPARSION_THRESHOLD) {
+                    sameLev.push(elem);
+                }
+            }
+        })
+
+        return sameLev;
     }
 
     getRule(object: DOMObject, body: DOMObject): string {
@@ -95,10 +128,22 @@ export class GcGrouper extends GcConsts {
         return ruleArr.join('>');
     }
 
+    getCommonHead(list: Array<DOMObject>) : DOMObject {
+        var list2: Array<DOMObject> = list.slice();
+        while (list2.length != 1) {
+            var list3: Array<DOMObject> = [];
+            for (var i = 0; i < list2.length; ++i) {
+                if (list3.indexOf(list2[i].parent) < 0) {
+                    list3.push(list2[i].parent);
+                }
+            }
+            list2 = list3;
+        }
+        return list2[0];
+    }
 
-    findModel(body: DOMObject) {
-        const imageComparsionThresh = 500;
 
+    findModel(body: DOMObject, resCB: Function) {
         this.findImages(body, function (res: Array<ImgObj>) {
             var img = res[0].domObject;
             var par = img.parent;
@@ -107,14 +152,23 @@ export class GcGrouper extends GcConsts {
                 //console.log(this.isList(par.parent));
                 if (par.nextElem) {
                     var comp = this.t2tSuperposition(par, par.nextElem);
-                    if (comp > imageComparsionThresh) {
-                        console.log(par);
-                    }
-                    console.log(comp);
+                    if (comp > this.COMPARSION_THRESHOLD) {
+                        var list: Array<DOMObject> = this.collectSameOnThisLevel([par, par.nextElem]);
 
+                        var h: DOMObject = this.getCommonHead(list);
+                        var result: ModelResult = {
+                            list: list,
+                            head: h,
+                            ruleForHead: this.getRule(h)
+                        };
+
+                        return result;
+                        //OK Possible a list here
+                    }
                 }
                 par = par.parent;
             }
+            return null;
         }.bind(this) );
     }
 
@@ -128,7 +182,7 @@ export class GcGrouper extends GcConsts {
         if (protocol) {
             var request = protocol.get(url, function (response) {
                 imagesize(response, function (err, result) {
-                    cb(result, result);
+                    cb(result);
                     request.abort();
                 });
             });

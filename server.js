@@ -36,12 +36,14 @@ function callClassificator(body, $) {
 
 	var element1 = $('.col-md-4')[2];
 
+
+
 	var rule = gc_grouper.getRule(element1, body[0]);
 
 	var obj = gc_grouper.getObjByRule(rule, body[0]);
 	console.log;
 
-	gc_grouper.findModel(body)
+	gc_grouper.findModel(body);
 
 
 	var elementFail = $('.col-smb-12')[0];
