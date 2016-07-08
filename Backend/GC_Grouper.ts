@@ -48,7 +48,6 @@ class GcConsts {
     NULL_ELEMENT_NEGATIVE: number = -1000;
     MAX_HEAVY_COMPARSION: number = 3;
     COMPARSION_THRESHOLD = 500;
-
 }
 
 export class GcGrouper extends GcConsts {

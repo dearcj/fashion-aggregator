@@ -3,7 +3,6 @@ var grouper = require('./Backend/GC_Grouper.js');
 
 var resource = "https://www.slimstore.com.ua";
 var _ = require('underscore');
-var url = require('url');
 
 var AppClass = require('./Backend/App.js');
 
