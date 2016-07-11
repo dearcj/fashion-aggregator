@@ -1,6 +1,6 @@
 'use strict';
 var grouper = require('./Backend/GC_Grouper.js');
-var config = require('./config/config.json');
+var config = require('./config/config.js');
 
 var dict = require('./Backend/BTreeDictionary/BTDictionary.js');
 var classify = require('./Backend/Classify.js');
