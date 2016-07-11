@@ -1,6 +1,3 @@
-/**
- * Created by mac-pc on 7/1/16.
- */
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -24,6 +21,7 @@ var DOMObject = (function () {
     }
     return DOMObject;
 }());
+exports.DOMObject = DOMObject;
 var GcConsts = (function () {
     function GcConsts() {
         this.NULL_ELEMENT_NEGATIVE = -1000;
@@ -367,3 +365,4 @@ var GcGrouper = (function (_super) {
     return GcGrouper;
 }(GcConsts));
 exports.GcGrouper = GcGrouper;
+//# sourceMappingURL=GC_Grouper.js.map

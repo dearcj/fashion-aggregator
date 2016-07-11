@@ -3,13 +3,13 @@ declare function require(name:string): any;
 var phantom = require('phantom');
 var cheerio = require("cheerio");
 var fs = require('fs');
-var request = require("request");
+var request: Function = require("request");
 
 export class App {
 
 
     loadTemplate (url: string, endCB: Function) {
-        var $ = cheerio.load(fs.readFileSync(url));
+        var $: Function = cheerio.load(fs.readFileSync(url));
         var bod = $('body');
         endCB(bod, $);
     }
@@ -18,7 +18,7 @@ export class App {
         request({
             uri:url,
         }, function(error, response, body) {
-            var $ = cheerio.load(body);
+            var $: Function = cheerio.load(body);
             var bod = $('body');
             endCB(body, $);
         });
@@ -28,8 +28,8 @@ export class App {
     Loading dynamic page and scroll it by 10k pix for infinite scrolls
      */
     loadDynamicPage (url: string, endCB: Function) {
-        phantom.create().then(function (ph) {
-            return ph.createPage().then(function (page) {
+        phantom.create().then(function (ph: any) {
+            return ph.createPage().then(function (page: any) {
                 page.open(url).then(function (status) {
                     console.log(page.content);
                     page.evaluate(function () {
@@ -37,7 +37,7 @@ export class App {
                         return window.pageYOffset;
                     }).then(function (r) {
                         var x = page.property('content').then(function (content) {
-                            var $ = cheerio.load(content);
+                            var $: Function = cheerio.load(content);
                             var bod = $('body');
                             endCB(bod);
                         });

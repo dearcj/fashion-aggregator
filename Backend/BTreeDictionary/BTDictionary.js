@@ -2,23 +2,23 @@
  * Created by KURWINDALLAS on 09.07.2016.
  */
 "use strict";
-class BTDictionary {
-    constructor() {
+var BTDictionary = (function () {
+    function BTDictionary() {
         this.root = {};
     }
-    saveNode(n) {
+    BTDictionary.prototype.saveNode = function (n) {
         var x = '';
         for (var prop in n) {
             x += prop + this.saveNode(n[prop]);
         }
         x += '^';
         return x;
-    }
-    save() {
+    };
+    BTDictionary.prototype.save = function () {
         var s = '';
         return this.saveNode(this.root);
-    }
-    load(str) {
+    };
+    BTDictionary.prototype.load = function (str) {
         //@@ - parent symbol
         var sl = str.length;
         this.root = {};
@@ -39,8 +39,9 @@ class BTDictionary {
                 current = current[c];
             }
         }
-    }
-    addWord(w, strict = false) {
+    };
+    BTDictionary.prototype.addWord = function (w, strict) {
+        if (strict === void 0) { strict = false; }
         var wl = w.length;
         var r = this.root;
         for (var i = 0; i < wl; ++i) {
@@ -54,8 +55,9 @@ class BTDictionary {
             if (!r['.'])
                 r['.'] = {};
         }
-    }
-    checkWord(w, strict = false) {
+    };
+    BTDictionary.prototype.checkWord = function (w, strict) {
+        if (strict === void 0) { strict = false; }
         var wl = w.length;
         var r = this.root;
         for (var i = 0; i < wl; ++i) {
@@ -69,7 +71,8 @@ class BTDictionary {
             return false;
         }
         return true;
-    }
-}
+    };
+    return BTDictionary;
+}());
 exports.BTDictionary = BTDictionary;
 //# sourceMappingURL=BTDictionary.js.map

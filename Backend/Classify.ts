@@ -1,10 +1,13 @@
-import { GcGrouper } from "./GC_Grouper.ts";
-import { Feature } from "./Features/Feature.ts";
-import { FImage } from "./Features/FImage.ts";
-import { FBrand } from "./Features/FBrand.ts";
-import { FLink } from "./Features/FLink.ts";
-import { FPrice } from "./Features/FPrice.ts";
-import { FTitle } from "./Features/FTitle.ts";
+import { GcGrouper } from "./GC_Grouper";
+import { Feature } from "./Features/Feature";
+import { FImage } from "./Features/FImage";
+import { FBrand } from "./Features/FBrand";
+import { FLink } from "./Features/FLink";
+import { FPrice } from "./Features/FPrice";
+import { FTitle } from "./Features/FTitle";
+import { DOMObject } from "./GC_Grouper";
+
+
 
 
 export class Classify {
@@ -12,11 +15,12 @@ export class Classify {
 
     constructor(g: GcGrouper, queryFunction: (q: string, params: Array<Object>, cv: Function) => void) {
         this.grouper = g;
-        this.addFeature(new FImage(queryFunction, 'image'));
-        this.addFeature(new FBrand(queryFunction, 'brand'));
-        this.addFeature(new FLink(queryFunction, 'link'));
-        this.addFeature(new FPrice(queryFunction, 'price'));
-        this.addFeature(new FTitle(queryFunction, 'title'));
+        var f = new FImage(queryFunction);
+        this.addFeature(f);
+        this.addFeature(new FBrand(queryFunction));
+        this.addFeature(new FLink(queryFunction));
+        this.addFeature(new FPrice(queryFunction));
+        this.addFeature(new FTitle(queryFunction));
     }
 
     addFeature(f: Feature) {

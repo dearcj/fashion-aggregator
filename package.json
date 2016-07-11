@@ -6,13 +6,15 @@
   "dependencies": {
     "async": "^2.0.0-rc.6",
     "cheerio": "^0.20.0",
-    "pg": "^6.0.1",
+    "pg": "^6.0.2",
     "phantom": "^2.1.11"
   },
+
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "preinstall": "npm i -g phantom"
   },
   "repository": {
     "type": "git",

@@ -1,7 +1,8 @@
+import { Feature } from "./Feature";
+
 export class FBrand extends Feature {
 
-    constructor () {
-        super();
-        this.initDictionary('brand');
+    constructor (queryFunction: (q: string, params: Array<Object>, cv: Function) => void) {
+        super(queryFunction, 'brand');
     }
 }

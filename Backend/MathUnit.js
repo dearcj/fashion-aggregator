@@ -17,3 +17,4 @@ var MathUnit = (function () {
     return MathUnit;
 }());
 exports.MathUnit = MathUnit;
+//# sourceMappingURL=MathUnit.js.map

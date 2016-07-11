@@ -19,5 +19,8 @@
     "./Backend/Classify.ts",
     "./Backend/MathUnit.ts",
     "./Backend/App.ts"
+  ],
+  exclude: [
+    "node_modules"
   ]
 }

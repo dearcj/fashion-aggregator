@@ -1,6 +1,3 @@
-/**
- * Created by mac-pc on 7/1/16.
- */
 "use strict";
 
 declare function require(name:string): any;
@@ -26,7 +23,7 @@ interface ModelResult {
     ruleElements: Array<string>;
 }
 
-class DOMObject {
+export class DOMObject {
     /*
      Don't use this fields in childrenElem. Logic overwritten in childrenElem
      */

@@ -1,16 +1,16 @@
-///<reference path="../GC_Grouper.ts" />
+import * as BTD from '../BTreeDictionary/BTDictionary';
+
+
 class DOMObject  {}
 
-///<reference path="../BTreeDictionary/BTDictionary.ts" />
-class BTDictionary {}
 
-export class Feature {
-    private dict: BTDictionary;
+export abstract class Feature {
+    private dict: BTD.BTDictionary;
     public qf: (q: string, params: Array<Object>, cv: Function) => void;
 
-    initDictionary(dbField) {
+    initDictionary(dbField): void {
         this.dbField = dbField;
-        this.dict = new BTDictionary();
+        this.dict = new BTD.BTDictionary();
         if (this.dbField)
             this.qf('SELECT * FROM features f where f.name = $1', [this.dbField], function (err, res) {
                 if (!err) {
@@ -22,6 +22,7 @@ export class Feature {
     constructor (queryFunction: (q: string, params: Array<Object>, cv: Function) => void, dbField: string) {
         this.qf = queryFunction;
         this.dbField = dbField;
+        this.initDictionary(dbField);
     }
 
     dbField: string;

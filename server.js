@@ -1,5 +1,6 @@
 'use strict';
 var grouper = require('./Backend/GC_Grouper.js');
+var config = require('./config/config.json');
 
 var dict = require('./Backend/BTreeDictionary/BTDictionary.js');
 var classify = require('./Backend/Classify.js');
@@ -29,7 +30,7 @@ var config = {
 	idleTimeoutMillis: 30000,
 };
 
-var pool = new pg.Pool(config);
+var pool = new pg.Pool(config.pgconnection);
 
 function pgq (q, params, cb) {
 	pool.connect(function(err, client, done) {
@@ -50,9 +51,6 @@ function pgq (q, params, cb) {
 
 pgq('SELECT * FROM features f where f.name = $1', ['image'], function (err, res) {
 });
-
-
-
 
 function callClassificator(body, $) {
 	var d = new dict.BTDictionary();
