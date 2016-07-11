@@ -1,9 +1,7 @@
-/**
- * Created by mac-pc on 7/8/16.
- */
-///<reference path="../GC_Grouper.ts" />
-class Feature {}
+export class FBrand extends Feature {
 
-class FBrand extends Feature {
-
+    constructor () {
+        super();
+        this.initDictionary('brand');
+    }
 }

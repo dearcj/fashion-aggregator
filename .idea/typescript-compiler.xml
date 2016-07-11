@@ -3,5 +3,6 @@
   <component name="TypeScriptCompiler">
     <option name="isCompilerEnabled" value="true" />
     <option name="typeScriptCompilerParams" value="--module commonjs --target es6" />
+    <option name="useConfig" value="true" />
   </component>
 </project>

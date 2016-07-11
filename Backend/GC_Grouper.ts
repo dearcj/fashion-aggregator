@@ -3,7 +3,7 @@
  */
 "use strict";
 
-declare function require(name:string);
+declare function require(name:string): any;
 var _ = require("underscore");
 var MathUnit = require('./MathUnit.js');
 var u = new MathUnit.MathUnit();

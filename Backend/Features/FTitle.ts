@@ -1,6 +1,6 @@
 ///<reference path="../GC_Grouper.ts" />
 class Feature {}
 
-class FTitle extends Feature {
+export class FTitle extends Feature {
 
 }

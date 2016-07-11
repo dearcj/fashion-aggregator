@@ -2,11 +2,10 @@
  * Created by mac-pc on 7/1/16.
  */
 "use strict";
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var _ = require("underscore");
 var MathUnit = require('./MathUnit.js');
@@ -19,12 +18,12 @@ var ImgObj = (function () {
     function ImgObj() {
     }
     return ImgObj;
-})();
+}());
 var DOMObject = (function () {
     function DOMObject() {
     }
     return DOMObject;
-})();
+}());
 var GcConsts = (function () {
     function GcConsts() {
         this.NULL_ELEMENT_NEGATIVE = -1000;
@@ -32,7 +31,7 @@ var GcConsts = (function () {
         this.COMPARSION_THRESHOLD = 500;
     }
     return GcConsts;
-})();
+}());
 var GcGrouper = (function (_super) {
     __extends(GcGrouper, _super);
     function GcGrouper($, body) {
@@ -366,6 +365,5 @@ var GcGrouper = (function (_super) {
         body.maxDepth += maxDepth + 1;
     };
     return GcGrouper;
-})(GcConsts);
+}(GcConsts));
 exports.GcGrouper = GcGrouper;
-//# sourceMappingURL=GC_Grouper.js.map

@@ -1,6 +1,6 @@
 ///<reference path="../GC_Grouper.ts" />
 class Feature {}
 
-class FLink extends Feature {
+export class FLink extends Feature {
 
 }

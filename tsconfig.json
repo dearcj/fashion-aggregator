@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "outFile": "ts.js",
+    "sourceMap": true
+  },
+  "files": [
+    "./Backend/BTreeDictionary.ts",
+    "./Features/Feature.ts",
+    "./Features/FBrand.ts",
+    "./Features/FImage.ts",
+    "./Features/FLink.ts",
+    "./Features/FPrice.ts",
+    "./Features/FTitle.ts",
+    "./Backend/GC_Grouper.ts",
+    "./Backend/Classify.ts",
+    "./Backend/MathUnit.ts",
+    "./Backend/App.ts"
+  ]
+}

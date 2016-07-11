@@ -1,8 +1,4 @@
-
-/**
- * Created by KURWINDALLAS on 03.07.2016.
- */
-declare function require(name:string);
+declare function require(name:string): any;
 
 var phantom = require('phantom');
 var cheerio = require("cheerio");

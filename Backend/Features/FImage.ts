@@ -1,6 +1,6 @@
-///<reference path="../GC_Grouper.ts" />
+///<reference path="./Feature.ts" />
 class Feature {}
 
-class FImage extends Feature {
+export class FImage extends Feature {
 
 }

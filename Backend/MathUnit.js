@@ -1,3 +1,4 @@
+"use strict";
 var MathUnit = (function () {
     function MathUnit() {
     }
@@ -14,6 +15,5 @@ var MathUnit = (function () {
         return { value: maxValue, arg: paramsArray[maxInx] };
     };
     return MathUnit;
-})();
+}());
 exports.MathUnit = MathUnit;
-//# sourceMappingURL=MathUnit.js.map

@@ -5,7 +5,9 @@
   "main": "server.js",
   "dependencies": {
     "async": "^2.0.0-rc.6",
-    "cheerio": "^0.20.0"
+    "cheerio": "^0.20.0",
+    "pg": "^6.0.1",
+    "phantom": "^2.1.11"
   },
   "devDependencies": {},
   "scripts": {

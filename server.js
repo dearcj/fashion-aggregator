@@ -1,6 +1,10 @@
 'use strict';
 var grouper = require('./Backend/GC_Grouper.js');
 
+var dict = require('./Backend/BTreeDictionary/BTDictionary.js');
+var classify = require('./Backend/Classify.js');
+
+
 var resource = "https://www.slimstore.com.ua";
 var _ = require('underscore');
 
@@ -14,16 +18,53 @@ app.loadTemplate('./templates/comfy_rows_example.html', callClassificator);
 
 var mode = sourceFromDisk;
 
-var mysql = require('mysql');
+var pg = require('pg');
 
-var connection = mysql.createConnection({
-	host     : '127.0.0.1',
-	user     : 'root',
-	password : '',
-	database : 'neuro_data'
+var config = {
+	user: 'postgres',
+	database: 'vagr',
+	password: 'root',
+	port: 5432,
+	max: 10,
+	idleTimeoutMillis: 30000,
+};
+
+var pool = new pg.Pool(config);
+
+function pgq (q, params, cb) {
+	pool.connect(function(err, client, done) {
+		if(err) {
+			return console.error('error fetching client from pool', err);
+		}
+		client.query(q, params, function(err, result) {
+			done();
+
+			if(err) {
+				return console.error('error running query', err);
+			}
+			cb(err, result.rows);
+		});
+	});
+
+}
+
+pgq('SELECT * FROM features f where f.name = $1', ['image'], function (err, res) {
 });
 
+
+
+
 function callClassificator(body, $) {
+	var d = new dict.BTDictionary();
+
+	d.addWord('adobe', true);
+	d.addWord('ax', true);
+	d.addWord('bobbyy', false);
+
+	var x = d.save();
+	d.load(x);
+	console.log(d.checkWord('adobe', true));
+	console.log(d.checkWord('adob', true));
 	var gc_grouper = new grouper.GcGrouper($, body[0]);
 	gc_grouper.updateInfoTree();
 
