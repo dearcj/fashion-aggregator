@@ -141,6 +141,7 @@ var GcGrouper = (function (_super) {
     };
     GcGrouper.prototype.findModel = function (resCB) {
         this.findImages(function (res) {
+            var _this = this;
             var img = res[0].domObject;
             if (res.length == 0) {
                 resCB(null);
@@ -155,9 +156,9 @@ var GcGrouper = (function (_super) {
                         var list = this.collectSameOnThisLevel([par, par.nextElem]);
                         var head = this.getCommonHead(list);
                         var rulesList = [];
-                        _.each(list, function (x) {
-                            rulesList.push(this.getRule(x, head, true));
-                        }.bind(this));
+                        _.each(list, function (y) {
+                            rulesList.push(_this.getRule(y, head, true));
+                        });
                         var result = {
                             list: list,
                             head: head,

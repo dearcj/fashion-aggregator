@@ -181,9 +181,9 @@ export class GcGrouper extends GcConsts {
 
                         var head: DOMObject = this.getCommonHead(list);
                         var rulesList: Array<string> = [];
-                        _.each(list, function (x) {
-                            rulesList.push(this.getRule(x, head, true));
-                        }.bind(this));
+                        _.each(list, y => {
+                            rulesList.push(this.getRule(y, head, true));
+                        });
 
                         var result: ModelResult = {
                             list: list,
