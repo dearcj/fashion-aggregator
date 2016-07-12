@@ -33,7 +33,7 @@ module.exports.connections = {
   },
 
   pg: {
-     adapter: 'sails-postgres',
+     adapter: 'sails-postgresql',
      host: '5.200.55.232',
      user: 'postgres',
      database: 'vagr',
