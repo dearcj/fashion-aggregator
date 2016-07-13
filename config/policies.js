@@ -1,13 +1,15 @@
-var rolePolicy = function (rolesArr) {
-  return function (req, res, next) {
-    if (Math.random() > 0.5) return next('zalupa'); else next();
-  }
-};
+var r = require('../api/controllers/RolesController');
+
+console;
 
 module.exports.policies = {
 
-  '*': ['passport']
- /* MenuController: {
+  '*': ['passport'],
+
+  UserController: {
+    findOne: rolePolicy([])
+  }
+  /* MenuController: {
     findOne: rolePolicy(['admin', 'user']),
   },
   UserController: {

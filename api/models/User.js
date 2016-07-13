@@ -3,8 +3,10 @@ var User = {
   connection: 'pg',
   table_name: 'user',
   attributes: {
-    name  : { type: 'string', unique: true },
-    email     : { type: 'email',  unique: true },
+    roles     : { type: 'integer' },
+    name      : { type: 'string' },
+    email     : { type: 'email' },
+    password  : { type: 'string' },
     passports : { collection: 'Passport', via: 'user' }
   }
 };
