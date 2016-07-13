@@ -1,4 +1,10 @@
-
+/**
+ * Authentication Controller
+ *
+ * This is merely meant as an example of how your Authentication controller
+ * should look. It currently includes the minimum amount of functionality for
+ * the basics of Passport.js to work.
+ */
 var AuthController = {
   /**
    * Render the login page
@@ -63,10 +69,10 @@ var AuthController = {
    */
   logout: function (req, res) {
     req.logout();
-    
+
     // mark the user as logged out for auth purposes
     req.session.authenticated = false;
-    
+
     res.redirect('/');
   },
 
@@ -158,10 +164,10 @@ var AuthController = {
         if (err) {
           return tryAgain(err);
         }
-        
+
         // Mark the session as authenticated to work with default Sails sessionAuth.js policy
         req.session.authenticated = true
-        
+
         // Upon successful login, send the user to the homepage were req.user
         // will be available.
         res.redirect('/');

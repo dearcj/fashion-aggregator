@@ -32,6 +32,7 @@ function hashPassword (passport, next) {
  * the user, but not the authentication data, to and from the session.
  */
 var Passport = {
+  connection: 'pg',
   table_name: 'passport',
   attributes: {
     // Required field: Protocol
@@ -74,7 +75,7 @@ var Passport = {
     //
     // For more information on associations in Waterline, check out:
     // https://github.com/balderdashy/waterline
-    user: { model: 'User', required: true },
+    user: { model: 'User', required: true, columnName: 'user_id' },
 
     /**
      * Validate password used by the local strategy.
