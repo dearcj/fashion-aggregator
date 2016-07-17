@@ -20,6 +20,11 @@
  * http://sailsjs.org/#!/documentation/concepts/Routes/RouteTargetSyntax.html
  */
 
+var r = require('../api/controllers/RolesController');
+
+
+var p = require('../api/controllers/PageController.js');
+
 module.exports.routes = {
 
   /***************************************************************************
@@ -31,13 +36,16 @@ module.exports.routes = {
   * `assets` directory)                                                      *
   *                                                                          *
   ***************************************************************************/
+/*  'get /': PageController.render('homepage'),
+*/
 
-  '/': {
-    view: 'homepage'
-  },
+  'get /': {view: 'homepage'},
+  'get /admin': p.render('admin/main', r.rolePolicy([r.ROLE_PROVIDER, r.ROLE_ADMIN])),
+
   'get /login': 'AuthController.login',
   'get /logout': 'AuthController.logout',
   'get /register': 'AuthController.register',
+  'get /parse/:linkp': 'ParserController.parse',
 
   'post /auth/local': 'AuthController.callback',
   'post /auth/local/:action': 'AuthController.callback',

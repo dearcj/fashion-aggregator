@@ -1,13 +1,14 @@
 var User = {
   schema: true,
-  connection: 'pg',
   table_name: 'user',
   attributes: {
     roles     : { type: 'integer' },
     name      : { type: 'string' },
     email     : { type: 'email' },
     password  : { type: 'string' },
-    passports : { collection: 'Passport', via: 'user' }
+    passports : { collection: 'Passport', via: 'user' },
+    websites : { collection: 'Websites', via: 'user' }
+
   }
 };
 

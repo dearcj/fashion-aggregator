@@ -1,0 +1,9 @@
+<div>
+  <% if (req && req.session.user){ %>
+  <h3 class="container">Youre logged as : <code><%= req.session.user.email %></code></h3>
+  <a href="/logout/">Sign out</a>
+  <% } else  { %>
+  <a href="/login/">Login</a>
+  <a href="/register/">Sign up</a>
+  <% } %>
+</div>

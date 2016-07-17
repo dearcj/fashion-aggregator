@@ -1,9 +1,10 @@
 var _ = require('underscore');
 
-module.export = {
+module.exports = {
   ROLE_USER: 2,
   ROLE_ADMIN: 4,
-
+  ROLE_PROVIDER: 8,
+  ROLE_NOBODY: 32768,
 
   containRole: function (fullrole, r) {
     return fullrole & r;
@@ -13,15 +14,17 @@ module.export = {
     return function (req, res, next) {
       var err = 'no access';
       if (req.session.user) {
-        _.each(rolesArr, function (x) {
-          if (req.session.user.roles & x) {
+        var l = rolesArr.length;
+        for (var i = 0; i < l; ++i) {
+          if (req.session.user.roles & rolesArr[i]) {
             next();
             return;
           }
-        });
-      } else next(err);
-
-      next(err);
+       }
+        next(err);
+      } else {
+        next(err);
+      }
     }
   }
 }

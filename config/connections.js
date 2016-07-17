@@ -32,12 +32,13 @@ module.exports.connections = {
     adapter: 'sails-disk'
   },
 
+
   pg: {
      adapter: 'sails-postgresql',
      host: '5.200.55.232',
      user: 'postgres',
      database: 'vagr',
-     password: 'vagr123',
+     password: '111',
      port: 5432,
      max: 10,
      idleTimeoutMillis: 30000,

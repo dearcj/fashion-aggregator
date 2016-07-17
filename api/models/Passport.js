@@ -32,7 +32,6 @@ function hashPassword (passport, next) {
  * the user, but not the authentication data, to and from the session.
  */
 var Passport = {
-  connection: 'pg',
   table_name: 'passport',
   attributes: {
     // Required field: Protocol

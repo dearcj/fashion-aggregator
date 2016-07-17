@@ -1,27 +1,26 @@
 'use strict';
 var grouper = require('./Backend/GC_Grouper.js');
 var config = require('./config/config.js');
-
+var express    = require('express');
+var app        = express();
 var dict = require('./Backend/BTreeDictionary/BTDictionary.js');
 var classify = require('./Backend/Classify.js');
-
-
+var api = require('./Backend/API/api.js');
 var resource = "https://www.slimstore.com.ua";
 var _ = require('underscore');
+var bodyParser = require('body-parser');
 
 var AppClass = require('./Backend/App.js');
 
 const sourceFromDisk = 1;
 const sourceFromPhantom = 2;
 
-var app = new AppClass.App();
-app.loadTemplate('./templates/comfy_rows_example.html', callClassificator);
 
-var mode = sourceFromDisk;
+
+
+/*var mode = sourceFromDisk;
 
 var pg = require('pg');
-
-
 var pool = new pg.Pool(config.pgconnection);
 
 function pgq (q, params, cb) {
@@ -43,6 +42,20 @@ function pgq (q, params, cb) {
 
 pgq('SELECT * FROM features f where f.name = $1', ['image'], function (err, res) {
 });
+*/
+
+var gcapp = new AppClass.App();
+gcapp.loadTemplate('./templates/comfy_rows_example.html', callClassificator);
+
+function pgq (q, params, cb) {
+  User.query({text: q, values: params}, function(err, results) {
+    cb(err, result.rows);
+
+    if (err) return res.serverError(err);
+    return res.ok(results.rows);
+  });
+}
+
 
 function callClassificator(body, $) {
 	var d = new dict.BTDictionary();
@@ -60,28 +73,11 @@ function callClassificator(body, $) {
 
 	var grouperResult = gc_grouper.findModel(function (res) {
 		console.log(res);
-
-		var l = gc_grouper.getListByRules(res.ruleHead, res.ruleElements);
+		if (res) {
+			var l = gc_grouper.getListByRules(res.ruleHead, res.ruleElements);
+		}
 	});
 
-	console;
-	//slimstore case
-	/*
-	var element1 = $('.col-md-4')[2];
-	var rule = gc_grouper.getRule(element1, body[0]);
-	var obj = gc_grouper.getObjByRule(rule, body[0]);
-	gc_grouper.findModel(body);
-
-	var elementFail = $('.col-smb-12')[0];
-	var element1 = $('.item-inner')[0];
-	var element2 = $('.item-inner')[1];
-
-	var res = gc_grouper.t2tSuperposition(element1, element2);
-
-
-	var res = gc_grouper.t2tSuperposition(element1, elementFail);
-	*/
 }
-
 
 

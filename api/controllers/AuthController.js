@@ -72,7 +72,8 @@ var AuthController = {
 
     // mark the user as logged out for auth purposes
     req.session.authenticated = false;
-
+    req.session.user = null;
+    
     res.redirect('/');
   },
 

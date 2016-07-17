@@ -44,7 +44,7 @@ module.exports.session = {
   *                                                                          *
   ***************************************************************************/
 
-  // adapter: 'redis',
+   adapter: 'connect-redis',
 
   /***************************************************************************
   *                                                                          *
@@ -54,7 +54,12 @@ module.exports.session = {
   * https://github.com/visionmedia/connect-redis                             *
   *                                                                          *
   ***************************************************************************/
-
+  host: '5.200.55.232',
+  port: 6379,
+  pass: 'vagr123',
+  db: 0,
+  ttl: 1500,
+  prefix: 'sess:'
   // host: 'localhost',
   // port: 6379,
   // ttl: <redis session TTL in seconds>,
