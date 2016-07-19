@@ -1,4 +1,6 @@
 'use strict';
+
+
 var grouper = require('./Backend/GC_Grouper.js');
 var config = require('./config/config.js');
 var express    = require('express');
@@ -16,11 +18,13 @@ const sourceFromDisk = 1;
 const sourceFromPhantom = 2;
 
 
+var gcapp = new AppClass.App();
+gcapp.loadTemplate('./templates/comfy_rows_example.html', callClassificator);
 
-
-/*var mode = sourceFromDisk;
+var mode = sourceFromDisk;
 
 var pg = require('pg');
+
 var pool = new pg.Pool(config.pgconnection);
 
 function pgq (q, params, cb) {
@@ -42,20 +46,6 @@ function pgq (q, params, cb) {
 
 pgq('SELECT * FROM features f where f.name = $1', ['image'], function (err, res) {
 });
-*/
-
-var gcapp = new AppClass.App();
-gcapp.loadTemplate('./templates/comfy_rows_example.html', callClassificator);
-
-function pgq (q, params, cb) {
-  User.query({text: q, values: params}, function(err, results) {
-    cb(err, result.rows);
-
-    if (err) return res.serverError(err);
-    return res.ok(results.rows);
-  });
-}
-
 
 function callClassificator(body, $) {
 	var d = new dict.BTDictionary();
@@ -78,6 +68,29 @@ function callClassificator(body, $) {
 		}
 	});
 
+	//slimstore case
+	/*
+	var element1 = $('.col-md-4')[2];
+	var rule = gc_grouper.getRule(element1, body[0]);
+	var obj = gc_grouper.getObjByRule(rule, body[0]);
+	gc_grouper.findModel(body);
+
+	var elementFail = $('.col-smb-12')[0];
+	var element1 = $('.item-inner')[0];
+	var element2 = $('.item-inner')[1];
+
+	var res = gc_grouper.t2tSuperposition(element1, element2);
+
+
+	var res = gc_grouper.t2tSuperposition(element1, elementFail);
+	*/
 }
+
+var router = express.Router();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+api.setupAPI(app, router);
+app.listen(config.port);
 
 

@@ -4,9 +4,9 @@ module.exports.policies = {
 
 
   '*': ['passport'],
-  
+
   ParserController: {
-    '*': r.rolePolicy([r.ROLE_ADMIN, r.ROLE_PROVIDER]),
+    '*': r.rolePolicy([r.ROLE_EVERYBODY, r.ROLE_ADMIN, r.ROLE_PROVIDER]),
   },
   UserController: {
     '*': r.rolePolicy([r.ROLE_ADMIN])

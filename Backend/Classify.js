@@ -4,6 +4,8 @@ var FBrand_1 = require("./Features/FBrand");
 var FLink_1 = require("./Features/FLink");
 var FPrice_1 = require("./Features/FPrice");
 var FTitle_1 = require("./Features/FTitle");
+var _ = require("underscore");
+var MathUnit = require('./MathUnit.js');
 var Classify = (function () {
     function Classify(g, queryFunction) {
         this.grouper = g;
@@ -13,12 +15,14 @@ var Classify = (function () {
         this.addFeature(new FLink_1.FLink(queryFunction));
         this.addFeature(new FPrice_1.FPrice(queryFunction));
         this.addFeature(new FTitle_1.FTitle(queryFunction));
+        this.addFeature(new FImage_1.FImage(queryFunction));
     }
     Classify.prototype.addFeature = function (f) {
         this.features.push(f);
     };
     Classify.prototype.analyzeList = function (l) {
-        var standart = l[0]; // Maybe better pick the Biggest guy of  them all
+        // Maybe better pick the Biggest guy of  them all
+        var standart = MathUnit.maxParam(l, 'maxDepth');
     };
     return Classify;
 }());

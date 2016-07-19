@@ -5,8 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var _ = require("underscore");
-var MathUnit = require('./MathUnit.js');
-var u = new MathUnit.MathUnit();
+var u = require('./MathUnit.js').MathUnit;
 var https = require('https');
 var http = require('http');
 var imagesize = require('imagesize');
@@ -26,7 +25,7 @@ var GcConsts = (function () {
     function GcConsts() {
         this.NULL_ELEMENT_NEGATIVE = -1000;
         this.MAX_HEAVY_COMPARSION = 3;
-        this.COMPARSION_THRESHOLD = 500;
+        this.COMPARSION_THRESHOLD = 100;
     }
     return GcConsts;
 }());
@@ -142,7 +141,7 @@ var GcGrouper = (function (_super) {
     GcGrouper.prototype.findModel = function (resCB) {
         this.findImages(function (res) {
             var _this = this;
-            var img = res[0].domObject;
+            var img = res[3].domObject;
             if (res.length == 0) {
                 resCB(null);
                 return;
@@ -152,6 +151,7 @@ var GcGrouper = (function (_super) {
                 //console.log(this.isList(par.parent));
                 if (par.nextElem) {
                     var comp = this.t2tSuperposition(par, par.nextElem);
+                    console.log(comp);
                     if (comp > this.COMPARSION_THRESHOLD) {
                         var list = this.collectSameOnThisLevel([par, par.nextElem]);
                         var head = this.getCommonHead(list);
@@ -337,6 +337,7 @@ var GcGrouper = (function (_super) {
      Add depth and maxdepth info to every element
      */
     GcGrouper.prototype.updateInfoTree = function (body) {
+        if (body === void 0) { body = null; }
         if (!body)
             body = this.body;
         if (!body.depth)

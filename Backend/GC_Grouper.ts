@@ -2,8 +2,7 @@
 
 declare function require(name:string): any;
 var _ = require("underscore");
-var MathUnit = require('./MathUnit.js');
-var u = new MathUnit.MathUnit();
+var u = require('./MathUnit.js').MathUnit;
 var https = require('https');
 var http = require('http');
 var imagesize = require('imagesize');
@@ -44,7 +43,7 @@ export class DOMObject {
 class GcConsts {
     NULL_ELEMENT_NEGATIVE: number = -1000;
     MAX_HEAVY_COMPARSION: number = 3;
-    COMPARSION_THRESHOLD = 500;
+    COMPARSION_THRESHOLD = 100;
 }
 
 export class GcGrouper extends GcConsts {
@@ -166,7 +165,7 @@ export class GcGrouper extends GcConsts {
 
     findModel(resCB: Function) {
         this.findImages(function (res: Array<ImgObj>) {
-            var img = res[0].domObject;
+            var img = res[3].domObject;
 
             if (res.length == 0) { resCB(null); return; }
 
@@ -176,6 +175,7 @@ export class GcGrouper extends GcConsts {
                 //console.log(this.isList(par.parent));
                 if (par.nextElem) {
                     var comp = this.t2tSuperposition(par, par.nextElem);
+                  console.log(comp);
                     if (comp > this.COMPARSION_THRESHOLD) {
                         var list: Array<DOMObject> = this.collectSameOnThisLevel([par, par.nextElem]);
 
@@ -365,7 +365,7 @@ export class GcGrouper extends GcConsts {
     /*
      Add depth and maxdepth info to every element
      */
-    updateInfoTree (body: DOMObject) {
+    updateInfoTree (body: DOMObject = null) {
         if (!body) body = this.body;
         if (!body.depth) body.depth = 0;
         if (!body.maxDepth) body.maxDepth = 0;
