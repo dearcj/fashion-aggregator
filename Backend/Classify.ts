@@ -33,9 +33,19 @@ export class Classify {
 
     analyzeList(l: Array<DOMObject>) {
         // Maybe better pick the Biggest guy of  them all
-
+        var res = [];
 
         var standart = MathUnit.maxParam(l, 'maxDepth');
+        _.each(l, function (el) {
 
+
+        });
+
+        return res;
     }
+
+    learn(featureName: string = null){
+      
+    }
+
 }

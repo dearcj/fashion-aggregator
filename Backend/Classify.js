@@ -22,7 +22,14 @@ var Classify = (function () {
     };
     Classify.prototype.analyzeList = function (l) {
         // Maybe better pick the Biggest guy of  them all
+        var res = [];
         var standart = MathUnit.maxParam(l, 'maxDepth');
+        _.each(l, function (el) {
+        });
+        return res;
+    };
+    Classify.prototype.learn = function (featureName) {
+        if (featureName === void 0) { featureName = null; }
     };
     return Classify;
 }());

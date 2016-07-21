@@ -9,7 +9,8 @@ var BTDictionary = (function () {
     BTDictionary.prototype.saveNode = function (n) {
         var x = '';
         for (var prop in n) {
-            x += prop + this.saveNode(n[prop]);
+            if (n[prop] != null)
+                x += prop + this.saveNode(n[prop]);
         }
         x += '^';
         return x;
@@ -40,8 +41,47 @@ var BTDictionary = (function () {
             }
         }
     };
-    BTDictionary.prototype.addWord = function (w, strict) {
+    BTDictionary.prototype.removeWord = function (w, strict) {
         if (strict === void 0) { strict = false; }
+        var wl = w.length;
+        var r = this.root;
+        var removeEntirely = false;
+        var keys = [];
+        function numChildren(node) {
+            var c = 0;
+            for (var propertyName in node) {
+                if (node[propertyName] != null)
+                    c++;
+            }
+            return c;
+        }
+        for (var i = 0; i < wl; ++i) {
+            var c = w.charAt(i);
+            if (!r[c]) {
+                return false;
+            }
+            keys.unshift({ objSym: c, parent: r, cur: r[c] });
+            r = r[c];
+            if (i == wl - 1) {
+                if ((r['.'])) {
+                }
+            }
+        }
+        var kl = keys.length;
+        for (var i = 0; i < kl; ++i) {
+            var cur = keys[i];
+            var childNum = numChildren(cur.cur);
+            if (childNum == 0 || (cur.cur['.'] && childNum == 1)) {
+                cur.parent[cur.objSym] = null;
+            }
+        }
+        if (strict && !r['.']) {
+            return false;
+        }
+        return true;
+    };
+    BTDictionary.prototype.addWord = function (w, strict) {
+        if (strict === void 0) { strict = true; }
         var wl = w.length;
         var r = this.root;
         for (var i = 0; i < wl; ++i) {
