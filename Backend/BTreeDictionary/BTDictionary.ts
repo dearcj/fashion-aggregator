@@ -4,6 +4,7 @@
 "use strict";
 
 export class BTDictionary {
+  wordEndSym: string = '♦';
   private root:Object;
 
   constructor() {
@@ -77,7 +78,7 @@ export class BTDictionary {
 
 
       if (i == wl - 1) {
-        if ((r['.'])) {
+        if ((r[this.wordEndSym])) {
         //  keys.unshift({objSym: '.', parent: r});
         }
       }
@@ -87,19 +88,21 @@ export class BTDictionary {
     for (var i = 0; i < kl; ++i) {
       var cur = keys[i];
       var childNum = numChildren(cur.cur);
-      if (childNum == 0 || (cur.cur['.'] && childNum == 1)) {
+      if (childNum == 0 || (cur.cur[this.wordEndSym] && childNum == 1)) {
         cur.parent[cur.objSym] = null;
       }
     }
 
 
-    if (strict && !r['.']) {
+    if (strict && !r[this.wordEndSym]) {
       return false;
     }
     return true;
   }
 
   addWord(w:string, strict:boolean = true) {
+    w = w.replace(/^/g, '');
+
     var wl:number = w.length;
     var r = this.root;
     for (var i = 0; i < wl; ++i) {
@@ -110,7 +113,7 @@ export class BTDictionary {
       r = r[c];
     }
     if (strict) {
-      if (!r['.']) r['.'] = {};
+      if (!r[this.wordEndSym]) r[this.wordEndSym] = {};
     }
   }
 
@@ -126,7 +129,7 @@ export class BTDictionary {
       r = r[c];
     }
 
-    if (strict && !r['.']) {
+    if (strict && !r[this.wordEndSym]) {
       return false;
     }
     return true;
