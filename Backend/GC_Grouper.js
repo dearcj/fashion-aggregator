@@ -174,30 +174,12 @@ var GcGrouper = (function (_super) {
         }.bind(this));
     };
     GcGrouper.prototype.fastImageSize = function (url, cb) {
-        if (!url) {
-            cb(false);
-            return;
-        }
-        var protocol = null;
-        if (url.indexOf('https:') == 0)
-            protocol = https;
-        if (url.indexOf('http:') == 0)
-            protocol = http;
-        if (!protocol) {
-            cb(false);
-            return;
-        }
-        url = encodeURI(url);
-        if (protocol) {
-            var request = protocol.get(url, function (response) {
-                imagesize(response, function (err, result) {
-                    cb(result);
-                    request.abort();
-                });
+        u.GET(url, cb, function (req, response) {
+            imagesize(response, function (err, result) {
+                cb(result);
+                req.abort();
             });
-        }
-        else
-            cb(false);
+        });
     };
     GcGrouper.prototype.collectAllImages = function (list, d) {
         if (!list)

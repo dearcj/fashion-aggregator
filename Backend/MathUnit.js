@@ -4,7 +4,7 @@ var https = require('https');
 var http = require('http');
 var MathUnit;
 (function (MathUnit) {
-    function GET(url, cb) {
+    function GET(url, cb, initReq) {
         var protocol = null;
         if (url.indexOf('https:') == 0)
             protocol = https;
@@ -14,13 +14,38 @@ var MathUnit;
             cb(true);
             return;
         }
-        //ADD TIMEOUT
+        var finished = false;
         url = encodeURI(url);
         if (protocol) {
-            var request = protocol.get(url, function (response, body) {
-                cb(null, response);
+            var body = '';
+            var request = protocol.get(url, function response(response) {
+                if (initReq) {
+                    initReq(request, response);
+                }
+                else {
+                    response.on('data', function (d) {
+                        body += d;
+                    });
+                    response.on('end', function () {
+                        finished = true;
+                        response.body = body;
+                        cb(null, response);
+                    });
+                    response.on('error', function (err) {
+                        finished = true;
+                        cb(err);
+                    });
+                }
+            });
+            var timeout = 12000;
+            if (typeof sails != 'undefined')
+                timeout = sails.config.globalTimeout;
+            request.setTimeout(timeout, function () {
+                if (!finished)
+                    request.abort();
             });
             request.on('error', function (err) {
+                finished = true;
                 cb(err);
             });
         }

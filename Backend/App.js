@@ -55,19 +55,29 @@ var App = (function () {
              });
            });
          });*/
-        request({
-            uri: url,
-            timeout: 12000
-        }, function (error, response, body) {
+        u.GET(url, function (error, response) {
             if (error) {
                 endCB(null, null);
             }
             else {
-                var $ = cheerio.load(body);
+                var $ = cheerio.load(response.body);
                 var bod = $('body')[0];
                 endCB(bod, $);
             }
         });
+        /*request({
+          uri: url,
+          timeout: 12000
+        }, function (error, response, body) {
+          if (error) {
+            endCB(null, null);
+          } else {
+    
+            var $:Function = cheerio.load(body);
+            var bod = $('body')[0];
+            endCB(bod, $);
+          }
+        });*/
     };
     /*
      Loading dynamic page and scroll it by 10k pix for infinite scrolls

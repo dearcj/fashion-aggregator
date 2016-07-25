@@ -67,8 +67,18 @@ export class App {
       });
     });*/
 
+    u.GET(url, function (error, response) {
+      if (error) {
+        endCB(null, null);
+      } else {
 
-    request({
+        var $:Function = cheerio.load(response.body);
+        var bod = $('body')[0];
+        endCB(bod, $);
+      }
+    });
+
+    /*request({
       uri: url,
       timeout: 12000
     }, function (error, response, body) {
@@ -80,7 +90,7 @@ export class App {
         var bod = $('body')[0];
         endCB(bod, $);
       }
-    });
+    });*/
   }
 
   /*

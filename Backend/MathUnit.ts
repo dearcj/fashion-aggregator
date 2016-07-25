@@ -2,10 +2,13 @@ declare function require(name:string):any;
 var as = require('async');
 var https = require('https');
 var http = require('http');
+declare var sails: any;
+
 export module MathUnit {
 
-  export function GET(url:string, cb:Function) {
+  export function GET(url:string, cb:Function, initReq: Function) {
     var protocol = null;
+
     if (url.indexOf('https:') == 0) protocol = https;
     if (url.indexOf('http:') == 0) protocol = http;
 
@@ -13,15 +16,44 @@ export module MathUnit {
       cb(true);
       return;
     }
-    //ADD TIMEOUT
+
+    var finished = false;
 
     url = encodeURI(url);
     if (protocol) {
-      var request = protocol.get(url, function (response, body) {
-        cb(null, response);
+      var body: string = '';
+
+      var request = protocol.get(url, function response(response) {
+        if (initReq) {
+          initReq(request, response);
+        } else {
+
+          response.on('data', function (d) {
+            body += d;
+          });
+
+          response.on('end', function () {
+            finished = true;
+            response.body = body;
+            cb(null, response);
+          });
+
+          response.on('error', function (err) {
+            finished = true;
+            cb(err);
+          });
+        }
+      });
+
+      var timeout = 12000;
+      if (typeof sails != 'undefined') timeout = sails.config.globalTimeout;
+
+      request.setTimeout( timeout, function( ) {
+        if (!finished) request.abort();
       });
 
       request.on('error', function(err) {
+        finished = true;
         cb(err);
       });
     } else cb(true);

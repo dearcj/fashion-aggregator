@@ -203,26 +203,12 @@ export class GcGrouper extends GcConsts {
     }
 
     fastImageSize(url: string, cb: Function) {
-        if (!url) {
-            cb(false); return;
-        }
-
-        var protocol = null;
-        if (url.indexOf('https:') == 0) protocol = https;
-        if (url.indexOf('http:') == 0)
-            protocol = http;
-
-        if (!protocol) { cb(false); return; }
-
-        url = encodeURI(url);
-        if (protocol) {
-            var request = protocol.get(url, function (response) {
-                imagesize(response, function (err, result) {
-                    cb(result);
-                    request.abort();
-                });
-            });
-        } else cb(false);
+        u.GET(url, cb, function (req, response) {
+          imagesize(response, function (err, result) {
+            cb(result);
+            req.abort();
+          });
+        });
     }
 
     collectAllImages(list: Array<DOMObject>, d: number): Array<DOMObject> {
