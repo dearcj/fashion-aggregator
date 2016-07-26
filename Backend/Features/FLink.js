@@ -7,8 +7,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 var Feature_1 = require("./Feature");
 var FLink = (function (_super) {
     __extends(FLink, _super);
-    function FLink(queryFunction) {
-        _super.call(this, queryFunction, 'link');
+    function FLink(queryFunction, cb) {
+        _super.call(this, queryFunction, 'link', cb);
     }
     return FLink;
 }(Feature_1.Feature));

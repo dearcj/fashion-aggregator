@@ -7,8 +7,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 var Feature_1 = require("./Feature");
 var FPrice = (function (_super) {
     __extends(FPrice, _super);
-    function FPrice(queryFunction) {
-        _super.call(this, queryFunction, 'price');
+    function FPrice(queryFunction, cb) {
+        _super.call(this, queryFunction, 'price', cb);
     }
     return FPrice;
 }(Feature_1.Feature));

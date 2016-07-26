@@ -6,18 +6,21 @@ var DOMObject = (function () {
     return DOMObject;
 }());
 var Feature = (function () {
-    function Feature(queryFunction, dbField) {
+    function Feature(queryFunction, dbField, cb) {
         this.qf = queryFunction;
         this.dbField = dbField;
-        this.initDictionary(dbField);
+        this.initDictionary(dbField, cb);
     }
-    Feature.prototype.initDictionary = function (dbField) {
+    Feature.prototype.initDictionary = function (dbField, cb) {
+        var self = this;
         this.dbField = dbField;
         this.dict = new BTD.BTDictionary();
         if (this.dbField)
             this.qf('SELECT * FROM features f where f.name = $1', [this.dbField], function (err, res) {
                 if (!err) {
-                    console.log();
+                    if (res[0].dictionary)
+                        self.dict = res[0].dictionary;
+                    cb();
                 }
             });
     };

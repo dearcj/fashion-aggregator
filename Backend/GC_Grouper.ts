@@ -46,6 +46,15 @@ class GcConsts {
     COMPARSION_THRESHOLD = 100;
 }
 
+export function traverse(o: DOMObject, func:Function): void {
+  var count = o.childrenElem.length;
+  for (var i = 0; i < count; ++i) {
+    func.call(this, o.childrenElem[i], i);
+
+    traverse(o.childrenElem[i], func);
+  }
+}
+
 export class GcGrouper extends GcConsts {
     heavyAttribs: Array<string> = ['style', 'class'];
     $; //cheerio jquery Object
@@ -58,21 +67,14 @@ export class GcGrouper extends GcConsts {
     }
 
     //call function func for every tree node
-    traverse(o: DOMObject, func:Function): void {
-        var count = o.childrenElem.length;
-        for (var i = 0; i < count; ++i) {
-            func.call(this, o.childrenElem[i], i);
 
-            this.traverse(o.childrenElem[i], func);
-        }
-    }
 
 
     collectSameOnThisLevel(pair: Array<DOMObject>): Array<DOMObject> {
         var lev = pair[0].depth;
         var sameLev: Array<DOMObject> = [];
 
-        this.traverse(this.body, function (elem: DOMObject, inx: number) {
+        traverse(this.body, function (elem: DOMObject, inx: number) {
             if (elem.depth == lev) {
                 if (this.t2tSuperposition(pair[0], elem) > this.COMPARSION_THRESHOLD) {
                     sameLev.push(elem);
@@ -218,7 +220,7 @@ export class GcGrouper extends GcConsts {
         async.parallel(funcs);
 
         if (this.body.children) {
-            this.traverse(this.body,  function (el, i) {
+            traverse(this.body,  function (el, i) {
                 if (el.name == 'img') list.push(el);
             });
         }

@@ -1,1 +1,1 @@
-{"version":3,"file":"FPrice.js","sourceRoot":"","sources":["FPrice.ts"],"names":[],"mappings":";;;;;;AAAA,wBAAwB,WAAW,CAAC,CAAA;AAEpC;IAA4B,0BAAO;IAC/B,gBAAa,aAAuE;QAChF,kBAAM,aAAa,EAAE,OAAO,CAAC,CAAC;IAClC,CAAC;IACL,aAAC;AAAD,CAAC,AAJD,CAA4B,iBAAO,GAIlC;AAJY,cAAM,SAIlB,CAAA"}
+{"version":3,"file":"FPrice.js","sourceRoot":"","sources":["FPrice.ts"],"names":[],"mappings":";;;;;;AAAA,wBAAwB,WAAW,CAAC,CAAA;AAEpC;IAA4B,0BAAO;IAC/B,gBAAa,aAAuE,EAAE,EAAY;QAC9F,kBAAM,aAAa,EAAE,OAAO,EAAE,EAAE,CAAC,CAAC;IACtC,CAAC;IACL,aAAC;AAAD,CAAC,AAJD,CAA4B,iBAAO,GAIlC;AAJY,cAAM,SAIlB,CAAA"}

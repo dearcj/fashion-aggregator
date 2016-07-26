@@ -29,6 +29,14 @@ var GcConsts = (function () {
     }
     return GcConsts;
 }());
+function traverse(o, func) {
+    var count = o.childrenElem.length;
+    for (var i = 0; i < count; ++i) {
+        func.call(this, o.childrenElem[i], i);
+        traverse(o.childrenElem[i], func);
+    }
+}
+exports.traverse = traverse;
 var GcGrouper = (function (_super) {
     __extends(GcGrouper, _super);
     function GcGrouper($, body) {
@@ -38,17 +46,10 @@ var GcGrouper = (function (_super) {
         this.$ = $;
     }
     //call function func for every tree node
-    GcGrouper.prototype.traverse = function (o, func) {
-        var count = o.childrenElem.length;
-        for (var i = 0; i < count; ++i) {
-            func.call(this, o.childrenElem[i], i);
-            this.traverse(o.childrenElem[i], func);
-        }
-    };
     GcGrouper.prototype.collectSameOnThisLevel = function (pair) {
         var lev = pair[0].depth;
         var sameLev = [];
-        this.traverse(this.body, function (elem, inx) {
+        traverse(this.body, function (elem, inx) {
             if (elem.depth == lev) {
                 if (this.t2tSuperposition(pair[0], elem) > this.COMPARSION_THRESHOLD) {
                     sameLev.push(elem);
@@ -188,7 +189,7 @@ var GcGrouper = (function (_super) {
         var funcs = [];
         async.parallel(funcs);
         if (this.body.children) {
-            this.traverse(this.body, function (el, i) {
+            traverse(this.body, function (el, i) {
                 if (el.name == 'img')
                     list.push(el);
             });
