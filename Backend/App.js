@@ -24,7 +24,7 @@ var App = (function () {
         var f = function (body, $, cb) {
             var gc_grouper = new GC_Grouper_1.GcGrouper($, body);
             gc_grouper.updateInfoTree();
-            var grouperResult = gc_grouper.findModel(cb);
+            gc_grouper.findModel(cb);
         };
         u.async(this.loadStaticPage.bind(this), links, function superdone(r) {
             u.async(f, r, function superdone2(everything) {

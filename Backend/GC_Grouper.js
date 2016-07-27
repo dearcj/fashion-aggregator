@@ -55,7 +55,7 @@ var GcGrouper = (function (_super) {
                     sameLev.push(elem);
                 }
             }
-        });
+        }.bind(this));
         return sameLev;
     };
     GcGrouper.prototype.getObjByRule = function (rule, head) {
@@ -141,8 +141,8 @@ var GcGrouper = (function (_super) {
     };
     GcGrouper.prototype.findModel = function (resCB) {
         this.findImages(function (res) {
-            var _this = this;
             var img = res[3].domObject;
+            var self = this;
             if (res.length == 0) {
                 resCB(null);
                 return;
@@ -157,16 +157,14 @@ var GcGrouper = (function (_super) {
                         var list = this.collectSameOnThisLevel([par, par.nextElem]);
                         var head = this.getCommonHead(list);
                         var rulesList = [];
-                        _.each(list, function (y) {
-                            rulesList.push(_this.getRule(y, head, true));
+                        var ruleHead = this.getRule(head);
+                        _.each(list, function (y, i) {
+                            y.head = head;
+                            y.ruleHead = ruleHead;
+                            y.grouper = self;
+                            y.rule = self.getRule(y, head, true);
                         });
-                        var result = {
-                            list: list,
-                            head: head,
-                            ruleHead: this.getRule(head),
-                            ruleElements: rulesList
-                        };
-                        resCB(result);
+                        resCB(list);
                     }
                 }
                 par = par.parent;

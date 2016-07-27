@@ -15,12 +15,7 @@ class ImgObj {
     height: number;
 }
 
-interface ModelResult {
-    list: Array<DOMObject>;
-    head: DOMObject;
-    ruleHead: string;
-    ruleElements: Array<string>;
-}
+
 
 export class DOMObject {
     /*
@@ -38,6 +33,11 @@ export class DOMObject {
     name: string;
     children: Array<DOMObject>;
     attribs: Array<string>;
+
+    ruleHead: string;
+    head: DOMObject;
+    rule: string;
+    grouper: GcGrouper;
 }
 
 class GcConsts {
@@ -80,7 +80,7 @@ export class GcGrouper extends GcConsts {
                     sameLev.push(elem);
                 }
             }
-        })
+        }.bind(this))
 
         return sameLev;
     }
@@ -168,7 +168,7 @@ export class GcGrouper extends GcConsts {
     findModel(resCB: Function) {
         this.findImages(function (res: Array<ImgObj>) {
             var img = res[3].domObject;
-
+            var self = this;
             if (res.length == 0) { resCB(null); return; }
 
             var par = img.parent;
@@ -183,18 +183,15 @@ export class GcGrouper extends GcConsts {
 
                         var head: DOMObject = this.getCommonHead(list);
                         var rulesList: Array<string> = [];
-                        _.each(list, y => {
-                            rulesList.push(this.getRule(y, head, true));
+                        var ruleHead = this.getRule(head);
+                        _.each(list, function (y, i) {
+                            y.head = head;
+                            y.ruleHead = ruleHead;
+                            y.grouper = self;
+                            y.rule = self.getRule(y, head, true);
                         });
 
-                        var result: ModelResult = {
-                            list: list,
-                            head: head,
-                            ruleHead: this.getRule(head),
-                            ruleElements: rulesList
-                        };
-
-                        resCB(result);
+                        resCB(list);
                         //OK Possible a list here
                     }
                 }

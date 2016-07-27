@@ -35,20 +35,29 @@ module.exports = {
 
     var x = d.save();
     d.load(x);
-    /*  gcapp.parse('https://www.slimstore.com.ua/clothes/all1/jackets', function cb(err, res) {
-     next(err)
-     }); */
-    var cl = new Classify(pgq, function complete (){
+
+    gcapp.parse('http://www.asos.com/men/new-in-clothing/cat/pgecategory.aspx?cid=6993&via=top#parentID=-1&pge=:page&pgeSize=36&sort=-1', function cb(res) {
+      var alldata = [];
+      for (var i = 0; i < res.length; ++i) {
+        if (res[i][0]) {
+          alldata = alldata.concat(res[i][0]);
+        }
+      }
+
+
+
+      var cl = new Classify(pgq);
+
+      var complete = function complete (){
+        var r = cl.analyzeList(alldata);
+        console.log(r);
+      };
+      
+      cl.loadFeatures(complete);
+
+
       console;
-    });
-
-
-  /*  gcapp.parse('http://www.asos.com/men/new-in-clothing/cat/pgecategory.aspx?cid=6993&via=top#parentID=-1&pge=:page&pgeSize=36&sort=-1', function cb(res) {
-
-        console;
       });
-      console.log(res);
-///  next(res) */
 
   }
 }
