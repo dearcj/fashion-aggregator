@@ -49,7 +49,20 @@ var categories = [
 ];
 
 var cat2 = ["Cardigan","Cargos","Chemise","Coat","Cufflinks","Cummerbund","Dress","Corset","Dungarees","Fleece","Gloves","Hat","Hoody","Jacket","Jeans","Jewellery","Jogging pants","Jogging suit","Joggers","Jumper","Kaftan","Kilt","Knickers","Lingerie","Nightwear","Overall","Pashmina","Polo Shirt","Polo","Poncho","Pyjamas","Robe","Romper","Sandals","Scarf","Shawl","Shirt","Shellsuit","Shoes","Skirt","Slippers","Stockings","Suit","Sunglasses","Sweatwear","Sweatshirt","Swimming Costume","Swimming Trunks","Swimwear","T-Shirt","Tailcoat","Tights","top","Tracksuit","Trainers","Trousers","Vest","Vest Underwear","Waistcoat","Waterproof"];
-
+var shoes = [
+  "Ballet flat",
+  "Sneakers",
+  "Ballet shoe",
+  "Brogues",
+  "Derby",
+  "Loafers",
+  "Oxfords",
+  "Slippers",
+  "Oxford shoes",
+  "Boots",
+  "moccasins",
+  "Fashion boots"
+];
 
 
 module.exports = {
