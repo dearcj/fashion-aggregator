@@ -46,12 +46,17 @@ class GcConsts {
     COMPARSION_THRESHOLD = 100;
 }
 
-export function traverse(o: DOMObject, func:Function): void {
-  var count = o.childrenElem.length;
+export function traverse(o: DOMObject, func:Function, onlyElements: boolean = true): void {
+  var arr = o.childrenElem;
+  if (!onlyElements) {
+    arr = o.children;
+  }
+  if (!arr) return;
+  var count = arr.length;
   for (var i = 0; i < count; ++i) {
-    func.call(this, o.childrenElem[i], i);
+    func.call(this, arr[i], i);
 
-    traverse(o.childrenElem[i], func);
+    traverse(arr[i], func);
   }
 }
 

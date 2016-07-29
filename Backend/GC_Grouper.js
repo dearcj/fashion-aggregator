@@ -29,11 +29,18 @@ var GcConsts = (function () {
     }
     return GcConsts;
 }());
-function traverse(o, func) {
-    var count = o.childrenElem.length;
+function traverse(o, func, onlyElements) {
+    if (onlyElements === void 0) { onlyElements = true; }
+    var arr = o.childrenElem;
+    if (!onlyElements) {
+        arr = o.children;
+    }
+    if (!arr)
+        return;
+    var count = arr.length;
     for (var i = 0; i < count; ++i) {
-        func.call(this, o.childrenElem[i], i);
-        traverse(o.childrenElem[i], func);
+        func.call(this, arr[i], i);
+        traverse(arr[i], func);
     }
 }
 exports.traverse = traverse;

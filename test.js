@@ -17,6 +17,40 @@ function pgq (q, params, cb) {
   });
 }
 
+var categories = [
+  'swim shorts',
+  'shorts',
+  'overshirt',
+  'over-shirt',
+  'shirt',
+  'pants',
+  'accessory',
+  'costume'
+  'knitwear',
+  'tie',
+  'sportswear',
+  'top',
+  'underwear',
+  'V-neck',
+  'uniform',
+  'socks',
+  'Baby Grow',
+  'Bag',
+  'Belt',
+  'Bikini',
+  'Blazer',
+  'Blouse',
+  'Boots',
+  'Bow Tie',
+  'Boxers',
+  'Bra',
+  'Briefs',
+  'Camisole',
+];
+
+var cat2 = ["Cardigan","Cargos","Chemise","Coat","Cufflinks","Cummerbund","Dress","Corset","Dungarees","Fleece","Gloves","Hat","Hoody","Jacket","Jeans","Jewellery","Jogging pants","Jogging suit","Joggers","Jumper","Kaftan","Kilt","Knickers","Lingerie","Nightwear","Overall","Pashmina","Polo Shirt","Polo","Poncho","Pyjamas","Robe","Romper","Sandals","Scarf","Shawl","Shirt","Shellsuit","Shoes","Skirt","Slippers","Stockings","Suit","Sunglasses","Sweatwear","Sweatshirt","Swimming Costume","Swimming Trunks","Swimwear","T-Shirt","Tailcoat","Tights","top","Tracksuit","Trainers","Trousers","Vest","Vest Underwear","Waistcoat","Waterproof"];
+
+
 
 module.exports = {
   runTest: function () {
@@ -52,12 +86,10 @@ module.exports = {
         var r = cl.analyzeList(alldata);
         console.log(r);
       };
-      
+
       cl.loadFeatures(complete);
 
-
-      console;
-      });
+    });
 
   }
 }

@@ -101,6 +101,7 @@ export class BTDictionary {
   }
 
   addWord(w:string, strict:boolean = true) {
+    w = w.toLowerCase();
     w = w.replace(/^/g, '');
 
     var wl:number = w.length;

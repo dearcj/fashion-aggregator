@@ -83,6 +83,7 @@ var BTDictionary = (function () {
     };
     BTDictionary.prototype.addWord = function (w, strict) {
         if (strict === void 0) { strict = true; }
+        w = w.toLowerCase();
         w = w.replace(/^/g, '');
         var wl = w.length;
         var r = this.root;

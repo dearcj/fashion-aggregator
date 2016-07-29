@@ -40,6 +40,9 @@ var Classify = (function () {
         var standart = MathUnit.maxParam(l, 'maxDepth');
         var ll = l.length;
         GC_Grouper_1.traverse(standart, function analyze(el) {
+            console.log(el.type);
+            if (el.type != 'text')
+                return;
             var rule = standart.grouper.getRule(el, standart, true);
             var stack = [];
             //only text
@@ -52,7 +55,7 @@ var Classify = (function () {
             console.log(stack);
             //ANALYZE STACK
             //get rule of el
-        });
+        }, false);
         return res;
     };
     Classify.prototype.learn = function (featureName) {
