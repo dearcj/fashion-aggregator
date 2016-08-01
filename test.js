@@ -105,13 +105,6 @@ module.exports = {
       f.updateDictionary();
     });*/
 
-    var f = new FPrice(pgq);
-    f.initDictionary(function () {
-      f.dict.addArray(prices);
-
-
-      f.updateDictionary();
-    });
 
 
 
