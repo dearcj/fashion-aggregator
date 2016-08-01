@@ -1,1 +1,1 @@
-{"version":3,"file":"FBrand.js","sourceRoot":"","sources":["FBrand.ts"],"names":[],"mappings":";;;;;;AAAA,wBAAwB,WAAW,CAAC,CAAA;AAEpC;IAA4B,0BAAO;IAE/B,gBAAa,aAAuE,EAAE,EAAY;QAC9F,kBAAM,aAAa,EAAE,OAAO,EAAE,EAAE,CAAC,CAAC;IACtC,CAAC;IACL,aAAC;AAAD,CAAC,AALD,CAA4B,iBAAO,GAKlC;AALY,cAAM,SAKlB,CAAA"}
+{"version":3,"file":"FBrand.js","sourceRoot":"","sources":["FBrand.ts"],"names":[],"mappings":";;;;;;AAAA,wBAAwB,WAAW,CAAC,CAAA;AAEpC;IAA4B,0BAAO;IAE/B,gBAAa,aAAuE;QAChF,kBAAM,aAAa,EAAE,OAAO,CAAC,CAAC;IAClC,CAAC;IACL,aAAC;AAAD,CAAC,AALD,CAA4B,iBAAO,GAKlC;AALY,cAAM,SAKlB,CAAA"}

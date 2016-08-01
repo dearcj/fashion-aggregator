@@ -27,7 +27,7 @@ export class App {
     } else links.push(linkp);
 
     var f = function (body, $, cb) {
-      var gc_grouper = new GcGrouper($, body);
+      var gc_grouper = new GcGrouper($, body, linkp);
       gc_grouper.updateInfoTree();
       gc_grouper.findModel(cb);
     };
@@ -102,7 +102,7 @@ export class App {
     phantom.create().then(function (ph:any) {
       return ph.createPage().then(function (page:any) {
         page.open(url).then(function (status) {
-          console.log(page.content);
+          //console.log(page.content);
           page.evaluate(function () {
             window.scrollBy(0, 10000);
             return window.pageYOffset;

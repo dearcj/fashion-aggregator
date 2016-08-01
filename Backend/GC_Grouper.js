@@ -10,6 +10,7 @@ var https = require('https');
 var http = require('http');
 var imagesize = require('imagesize');
 var async = require('async');
+var url = require('url');
 var ImgObj = (function () {
     function ImgObj() {
     }
@@ -46,11 +47,12 @@ function traverse(o, func, onlyElements) {
 exports.traverse = traverse;
 var GcGrouper = (function (_super) {
     __extends(GcGrouper, _super);
-    function GcGrouper($, body) {
+    function GcGrouper($, body, linkp) {
         _super.call(this);
         this.heavyAttribs = ['style', 'class'];
         this.body = body;
         this.$ = $;
+        this.linkp = linkp;
     }
     //call function func for every tree node
     GcGrouper.prototype.collectSameOnThisLevel = function (pair) {
@@ -65,9 +67,13 @@ var GcGrouper = (function (_super) {
         }.bind(this));
         return sameLev;
     };
-    GcGrouper.prototype.getObjByRule = function (rule, head) {
+    GcGrouper.prototype.getObjByRule = function (rule, head, noText) {
+        if (noText === void 0) { noText = true; }
         if (!head)
             head = this.body;
+        var childArr = 'children';
+        if (noText)
+            childArr = 'childrenElem';
         var ruleArr = rule.split('>');
         if (ruleArr.length == 0)
             return null;
@@ -85,9 +91,9 @@ var GcGrouper = (function (_super) {
         var cnt = ruleArr.length;
         for (var i = startInx; i < cnt; ++i) {
             var inx = parseInt(ruleArr[i]);
-            if (baseElem.childrenElem.length <= inx)
+            if (baseElem[childArr].length <= inx)
                 return null;
-            baseElem = baseElem.childrenElem[ruleArr[i]];
+            baseElem = baseElem[childArr][ruleArr[i]];
         }
         return baseElem;
     };
@@ -109,14 +115,15 @@ var GcGrouper = (function (_super) {
     /*
         finds dom rule from object <head> to obj <object>
      */
-    GcGrouper.prototype.getRule = function (object, head, onlyRelative) {
+    GcGrouper.prototype.getRule = function (object, head, onlyRelative, noText) {
+        if (noText === void 0) { noText = true; }
         var p = object;
         var rootId;
         var ruleArr = [];
         if (!head)
             head = this.body;
         while (p != head) {
-            if (!onlyRelative && p.attribs['id']) {
+            if (!onlyRelative && p.attribs && p.attribs['id']) {
                 rootId = p.attribs['id'];
                 var xid = "#" + rootId;
                 ruleArr.unshift(xid);
@@ -124,7 +131,10 @@ var GcGrouper = (function (_super) {
             }
             else {
                 //push here inx
-                var inx = p.parent.childrenElem.indexOf(p);
+                if (noText)
+                    var inx = p.parent.childrenElem.indexOf(p);
+                else
+                    var inx = p.parent.children.indexOf(p);
                 ruleArr.unshift(inx.toString());
                 //ruleArr.push();
                 object = p;
@@ -159,7 +169,7 @@ var GcGrouper = (function (_super) {
                 //console.log(this.isList(par.parent));
                 if (par.nextElem) {
                     var comp = this.t2tSuperposition(par, par.nextElem);
-                    console.log(comp);
+                    //console.log(comp);
                     if (comp > this.COMPARSION_THRESHOLD) {
                         var list = this.collectSameOnThisLevel([par, par.nextElem]);
                         var head = this.getCommonHead(list);
@@ -209,12 +219,19 @@ var GcGrouper = (function (_super) {
         var results = [];
         var _this = this;
         var funcs = [];
+        var baseLinkObj = url.parse(this.linkp);
+        var baseLink = baseLinkObj.protocol + '//' + baseLinkObj.host;
         _.each(imgs, function (x) {
+            var u = x.attribs['src'];
+            var p = url.parse(u);
+            if (!p.protocol) {
+                u = baseLink + u;
+            }
             funcs.push(function (callback) {
-                _this.fastImageSize(x.attribs['src'], function end(res) {
+                _this.fastImageSize(u, function end(res) {
                     if (res) {
                         res.domObject = x;
-                        res.url = x.attribs['src'];
+                        res.url = u;
                         results.push(res);
                     }
                     callback();
@@ -321,6 +338,11 @@ var GcGrouper = (function (_super) {
             comparsionLevel = -5;
         return comparsionLevel;
     };
+    GcGrouper.prototype.updateTextField = function (t) {
+        t = t.replace(/(\r\n|\n|\r)/gm, "");
+        t = t.replace(/\u00a0/g, " ");
+        return t;
+    };
     /*
      Add depth and maxdepth info to every element
      */
@@ -334,10 +356,26 @@ var GcGrouper = (function (_super) {
             body.maxDepth = 0;
         var _this = this;
         var maxDepth = 0;
+        var maxChildgroup = 6;
         if (body.children) {
             body.childrenElem = [];
             _.each(body.children, function (elem) {
                 if (elem.name) {
+                    if (elem.children.length <= maxChildgroup && elem.type != 'text') {
+                        var chl = elem.children.length;
+                        var str = '';
+                        for (var i = 0; i < chl; ++i) {
+                            if (elem.children[i].children && elem.children[i].children.length == 1 && elem.children[i].children[0].data) {
+                                str += elem.children[i].children[0].data;
+                            }
+                        }
+                        if (str != '') {
+                            elem.data = str;
+                            console.log(str);
+                        }
+                    }
+                    if (elem.data)
+                        elem.data = _this.updateTextField(elem.data);
                     body.childrenElem.push(elem);
                     if (body.childrenElem.length > 1) {
                         elem.prevElem = body.childrenElem[body.childrenElem.length - 2];

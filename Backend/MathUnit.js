@@ -4,6 +4,10 @@ var https = require('https');
 var http = require('http');
 var MathUnit;
 (function (MathUnit) {
+    function fastCheckStr(m) {
+        return m.match('^[a-zA-Z0-9]*$');
+    }
+    MathUnit.fastCheckStr = fastCheckStr;
     function GET(url, cb, initReq) {
         var protocol = null;
         if (url.indexOf('https:') == 0)
@@ -11,7 +15,7 @@ var MathUnit;
         if (url.indexOf('http:') == 0)
             protocol = http;
         if (!protocol) {
-            cb(true);
+            cb(false);
             return;
         }
         var finished = false;

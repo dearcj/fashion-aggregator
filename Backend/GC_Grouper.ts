@@ -7,6 +7,7 @@ var https = require('https');
 var http = require('http');
 var imagesize = require('imagesize');
 var async = require('async');
+var url = require('url');
 
 class ImgObj {
     url: string;
@@ -21,6 +22,8 @@ export class DOMObject {
     /*
      Don't use this fields in childrenElem. Logic overwritten in childrenElem
      */
+    data: string;
+
     next: DOMObject;
     prev: DOMObject;
     depth: number;
@@ -64,11 +67,13 @@ export class GcGrouper extends GcConsts {
     heavyAttribs: Array<string> = ['style', 'class'];
     $; //cheerio jquery Object
     body: DOMObject;
+    linkp: string;
 
-    constructor($, body: DOMObject) {
+    constructor($, body: DOMObject, linkp) {
         super();
         this.body = body;
         this.$ = $;
+        this.linkp = linkp;
     }
 
     //call function func for every tree node
@@ -85,13 +90,16 @@ export class GcGrouper extends GcConsts {
                     sameLev.push(elem);
                 }
             }
-        }.bind(this))
+        }.bind(this));
 
         return sameLev;
     }
 
-    getObjByRule(rule:string, head: DOMObject): DOMObject {
+    getObjByRule(rule:string, head: DOMObject, noText: boolean = true): DOMObject {
         if (!head) head = this.body;
+
+        var childArr = 'children';
+        if (noText) childArr = 'childrenElem';
 
         var ruleArr = rule.split('>');
         if (ruleArr.length == 0) return null;
@@ -108,8 +116,8 @@ export class GcGrouper extends GcConsts {
         var cnt = ruleArr.length;
         for (var i = startInx; i < cnt; ++i) {
             var inx: number = parseInt(ruleArr[i]);
-            if (baseElem.childrenElem.length <= inx) return null;
-            baseElem = baseElem.childrenElem[ruleArr[i]];
+            if (baseElem[childArr].length <= inx) return null;
+            baseElem = baseElem[childArr][ruleArr[i]];
         }
         return baseElem;
     }
@@ -132,20 +140,22 @@ export class GcGrouper extends GcConsts {
     /*
         finds dom rule from object <head> to obj <object>
      */
-    getRule(object: DOMObject, head: DOMObject, onlyRelative): string {
+    getRule(object: DOMObject, head: DOMObject, onlyRelative, noText: boolean = true): string {
         var p = object;
         var rootId: string;
         var ruleArr: Array<string> = [];
         if (!head) head = this.body;
         while (p != head) {
-            if (!onlyRelative && p.attribs['id']) {
+            if (!onlyRelative && p.attribs && p.attribs['id']) {
                 rootId = p.attribs['id'];
                 var xid: string = "#" + rootId;
                 ruleArr.unshift(xid);
                 break;
             } else {
                 //push here inx
-                var inx = p.parent.childrenElem.indexOf(p);
+                if (noText) var inx = p.parent.childrenElem.indexOf(p); else
+                var inx = p.parent.children.indexOf(p);
+
                 ruleArr.unshift(inx.toString());
                 //ruleArr.push();
                 object = p;
@@ -182,7 +192,7 @@ export class GcGrouper extends GcConsts {
                 //console.log(this.isList(par.parent));
                 if (par.nextElem) {
                     var comp = this.t2tSuperposition(par, par.nextElem);
-                  console.log(comp);
+                  //console.log(comp);
                     if (comp > this.COMPARSION_THRESHOLD) {
                         var list: Array<DOMObject> = this.collectSameOnThisLevel([par, par.nextElem]);
 
@@ -220,7 +230,6 @@ export class GcGrouper extends GcConsts {
         var _this = this;
         var funcs = [];
         async.parallel(funcs);
-
         if (this.body.children) {
             traverse(this.body,  function (el, i) {
                 if (el.name == 'img') list.push(el);
@@ -239,13 +248,21 @@ export class GcGrouper extends GcConsts {
         var results = [];
         var _this = this;
         var funcs = [];
+        var baseLinkObj = url.parse(this.linkp);
+        var baseLink = baseLinkObj.protocol + '//' + baseLinkObj.host;
 
         _.each(imgs, function(x) {
-            funcs.push(function (callback) {
-                _this.fastImageSize(x.attribs['src'], function end (res) {
+          var u = x.attribs['src'];
+          var p = url.parse(u);
+          if (!p.protocol) {
+             u = baseLink + u;
+          }
+
+          funcs.push(function (callback) {
+                _this.fastImageSize(u, function end (res) {
                     if (res) {
                         res.domObject = x;
-                        res.url = x.attribs['src'];
+                        res.url = u;
                         results.push(res);
                     }
                     callback();
@@ -352,6 +369,12 @@ export class GcGrouper extends GcConsts {
         return comparsionLevel;
     }
 
+
+    updateTextField (t: string): string {
+      t = t.replace(/(\r\n|\n|\r)/gm,"");
+      t = t.replace(/\u00a0/g, " ");
+      return t;
+    }
     /*
      Add depth and maxdepth info to every element
      */
@@ -361,11 +384,31 @@ export class GcGrouper extends GcConsts {
         if (!body.maxDepth) body.maxDepth = 0;
         var _this = this;
         var maxDepth = 0;
+
+        var maxChildgroup: number = 6;
+
         if (body.children) {
             body.childrenElem = [];
 
             _.each(body.children, function (elem) {
                 if (elem.name) {
+
+                    if (elem.children.length <= maxChildgroup && elem.type != 'text') {
+                        var chl = elem.children.length;
+                        var str = '';
+                        for (var i = 0; i < chl; ++i) {
+                            if (elem.children[i].children && elem.children[i].children.length == 1 && elem.children[i].children[0].data) {
+                              str += elem.children[i].children[0].data;
+                            }
+                        }
+
+                        if (str != '') {
+                            elem.data = str;
+                            console.log(str);
+                        }
+                    }
+                    if (elem.data) elem.data = _this.updateTextField(elem.data);
+
                     body.childrenElem.push(elem);
                     if (body.childrenElem.length > 1) {
                         elem.prevElem = body.childrenElem[body.childrenElem.length - 2];

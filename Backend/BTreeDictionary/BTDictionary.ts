@@ -2,6 +2,8 @@
  * Created by KURWINDALLAS on 09.07.2016.
  */
 "use strict";
+declare function require(name:string):any;
+var _ = require("underscore");
 
 export class BTDictionary {
   wordEndSym: string = '♦';
@@ -50,7 +52,7 @@ export class BTDictionary {
     }
   }
 
-  removeWord(w:string, strict:boolean = false) {
+  removeWord(w:string, strict:boolean = true) {
     var wl:number = w.length;
     var r = this.root;
     var removeEntirely = false;
@@ -100,6 +102,12 @@ export class BTDictionary {
     return true;
   }
 
+  addArray(a: Array<string>): void {
+    _.each(a, function (el) {
+      this.addWord(el);
+    }.bind(this));
+  }
+
   addWord(w:string, strict:boolean = true) {
     w = w.toLowerCase();
     w = w.replace(/^/g, '');
@@ -118,22 +126,28 @@ export class BTDictionary {
     }
   }
 
-  checkWord(w:string, strict:boolean = false):boolean {
+  checkWord(w:string, strict:boolean = true):string {
     var wl:number = w.length;
     var r = this.root;
     for (var i = 0; i < wl; ++i) {
       var c:string = w.charAt(i);
       if (!r[c]) {
-        return false;
+        return null;
       }
 
+
+
       r = r[c];
+
+      if (!strict) {
+        if (r[this.wordEndSym]) return w.substr(0, i + 1);
+      }
     }
 
     if (strict && !r[this.wordEndSym]) {
-      return false;
+      return null;
     }
-    return true;
+    return w;
   }
 
 

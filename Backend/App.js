@@ -22,7 +22,7 @@ var App = (function () {
         else
             links.push(linkp);
         var f = function (body, $, cb) {
-            var gc_grouper = new GC_Grouper_1.GcGrouper($, body);
+            var gc_grouper = new GC_Grouper_1.GcGrouper($, body, linkp);
             gc_grouper.updateInfoTree();
             gc_grouper.findModel(cb);
         };
@@ -87,7 +87,7 @@ var App = (function () {
         phantom.create().then(function (ph) {
             return ph.createPage().then(function (page) {
                 page.open(url).then(function (status) {
-                    console.log(page.content);
+                    //console.log(page.content);
                     page.evaluate(function () {
                         window.scrollBy(0, 10000);
                         return window.pageYOffset;

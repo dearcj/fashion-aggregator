@@ -28,15 +28,28 @@ export class Classify {
     }
   }
 
+  ft(name: string): Feature {
+    var ft: Feature;
+    _.each(this.features, function (el) {
+      if (el.dbField == name) ft = el;
+    });
+    return ft;
+  }
+
   loadFeatures(allLoaded:Function) {
     this.allFeaturesLoaded = allLoaded;
 
-    this.addFeature(new FImage(this.queryFunction, this.onLoadedFeature.bind(this)));
-    this.addFeature(new FBrand(this.queryFunction, this.onLoadedFeature.bind(this)));
-    this.addFeature(new FLink(this.queryFunction, this.onLoadedFeature.bind(this)));
-    this.addFeature(new FPrice(this.queryFunction, this.onLoadedFeature.bind(this)));
-    this.addFeature(new FTitle(this.queryFunction, this.onLoadedFeature.bind(this)));
-    this.addFeature(new FImage(this.queryFunction, this.onLoadedFeature.bind(this)));
+    this.addFeature(new FImage(this.queryFunction));
+    this.addFeature(new FBrand(this.queryFunction));
+    this.addFeature(new FLink(this.queryFunction));
+    this.addFeature(new FPrice(this.queryFunction));
+    this.addFeature(new FTitle(this.queryFunction));
+    this.addFeature(new FImage(this.queryFunction));
+
+    var self = this;
+    _.each(this.features, function (el) {
+      el.initDictionary(self.onLoadedFeature.bind(self));
+    });
   }
 
   constructor(queryFunction:(q:string, params:Array<Object>) => void) {
@@ -52,27 +65,28 @@ export class Classify {
   analyzeList(l:Array<DOMObject>) {
     // Maybe better pick the Biggest guy of  them all
 
+    var fprice = this.ft('price');
 
     var res = [];
     var standart:DOMObject = MathUnit.maxParam(l, 'maxDepth');
     var ll = l.length;
 
     traverse(standart, function analyze(el) {
-      console.log(el.type);
+      //console.log(el.type);
       if (el.type != 'text') return;
 
-      var rule = standart.grouper.getRule(el, standart, true);
+      var rule = standart.grouper.getRule(el, standart, true, false);
 
       var stack = [];
       //only text
       for (var i = 0; i < ll; ++i) {
-        var obj = l[i].grouper.getObjByRule(rule, l[i]);
+        var obj = l[i].grouper.getObjByRule(rule, l[i], false);
         if (obj) {
           stack.push(obj);
         }
       }
-      console.log(stack);
-
+      //console.log(stack);
+      fprice.analyzeList(stack);
       //ANALYZE STACK
 
       //get rule of el

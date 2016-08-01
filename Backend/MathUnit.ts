@@ -6,8 +6,11 @@ declare var sails: any;
 
 export module MathUnit {
 
-  
-  
+
+  export function fastCheckStr(m: string): void {
+    return m.match('^[a-zA-Z0-9]*$');
+  }
+
   export function GET(url:string, cb:Function, initReq: Function) {
     var protocol = null;
 
@@ -15,7 +18,7 @@ export module MathUnit {
     if (url.indexOf('http:') == 0) protocol = http;
 
     if (!protocol) {
-      cb(true);
+      cb(false);
       return;
     }
 

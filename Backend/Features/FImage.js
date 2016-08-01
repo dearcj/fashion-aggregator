@@ -7,8 +7,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 var Feature_1 = require("./Feature");
 var FImage = (function (_super) {
     __extends(FImage, _super);
-    function FImage(queryFunction, cb) {
-        _super.call(this, queryFunction, 'image', cb);
+    function FImage(queryFunction) {
+        _super.call(this, queryFunction, 'image');
     }
     return FImage;
 }(Feature_1.Feature));

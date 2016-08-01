@@ -2,6 +2,7 @@
  * Created by KURWINDALLAS on 09.07.2016.
  */
 "use strict";
+var _ = require("underscore");
 var BTDictionary = (function () {
     function BTDictionary() {
         this.wordEndSym = '♦';
@@ -43,7 +44,7 @@ var BTDictionary = (function () {
         }
     };
     BTDictionary.prototype.removeWord = function (w, strict) {
-        if (strict === void 0) { strict = false; }
+        if (strict === void 0) { strict = true; }
         var wl = w.length;
         var r = this.root;
         var removeEntirely = false;
@@ -81,6 +82,11 @@ var BTDictionary = (function () {
         }
         return true;
     };
+    BTDictionary.prototype.addArray = function (a) {
+        _.each(a, function (el) {
+            this.addWord(el);
+        }.bind(this));
+    };
     BTDictionary.prototype.addWord = function (w, strict) {
         if (strict === void 0) { strict = true; }
         w = w.toLowerCase();
@@ -100,20 +106,24 @@ var BTDictionary = (function () {
         }
     };
     BTDictionary.prototype.checkWord = function (w, strict) {
-        if (strict === void 0) { strict = false; }
+        if (strict === void 0) { strict = true; }
         var wl = w.length;
         var r = this.root;
         for (var i = 0; i < wl; ++i) {
             var c = w.charAt(i);
             if (!r[c]) {
-                return false;
+                return null;
             }
             r = r[c];
+            if (!strict) {
+                if (r[this.wordEndSym])
+                    return w.substr(0, i + 1);
+            }
         }
         if (strict && !r[this.wordEndSym]) {
-            return false;
+            return null;
         }
-        return true;
+        return w;
     };
     return BTDictionary;
 }());

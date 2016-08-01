@@ -21,14 +21,26 @@ var Classify = (function () {
             this.allFeaturesLoaded();
         }
     };
+    Classify.prototype.ft = function (name) {
+        var ft;
+        _.each(this.features, function (el) {
+            if (el.dbField == name)
+                ft = el;
+        });
+        return ft;
+    };
     Classify.prototype.loadFeatures = function (allLoaded) {
         this.allFeaturesLoaded = allLoaded;
-        this.addFeature(new FImage_1.FImage(this.queryFunction, this.onLoadedFeature.bind(this)));
-        this.addFeature(new FBrand_1.FBrand(this.queryFunction, this.onLoadedFeature.bind(this)));
-        this.addFeature(new FLink_1.FLink(this.queryFunction, this.onLoadedFeature.bind(this)));
-        this.addFeature(new FPrice_1.FPrice(this.queryFunction, this.onLoadedFeature.bind(this)));
-        this.addFeature(new FTitle_1.FTitle(this.queryFunction, this.onLoadedFeature.bind(this)));
-        this.addFeature(new FImage_1.FImage(this.queryFunction, this.onLoadedFeature.bind(this)));
+        this.addFeature(new FImage_1.FImage(this.queryFunction));
+        this.addFeature(new FBrand_1.FBrand(this.queryFunction));
+        this.addFeature(new FLink_1.FLink(this.queryFunction));
+        this.addFeature(new FPrice_1.FPrice(this.queryFunction));
+        this.addFeature(new FTitle_1.FTitle(this.queryFunction));
+        this.addFeature(new FImage_1.FImage(this.queryFunction));
+        var self = this;
+        _.each(this.features, function (el) {
+            el.initDictionary(self.onLoadedFeature.bind(self));
+        });
     };
     Classify.prototype.addFeature = function (f) {
         this.featuresToLoad++;
@@ -36,23 +48,25 @@ var Classify = (function () {
     };
     Classify.prototype.analyzeList = function (l) {
         // Maybe better pick the Biggest guy of  them all
+        var fprice = this.ft('price');
         var res = [];
         var standart = MathUnit.maxParam(l, 'maxDepth');
         var ll = l.length;
         GC_Grouper_1.traverse(standart, function analyze(el) {
-            console.log(el.type);
+            //console.log(el.type);
             if (el.type != 'text')
                 return;
-            var rule = standart.grouper.getRule(el, standart, true);
+            var rule = standart.grouper.getRule(el, standart, true, false);
             var stack = [];
             //only text
             for (var i = 0; i < ll; ++i) {
-                var obj = l[i].grouper.getObjByRule(rule, l[i]);
+                var obj = l[i].grouper.getObjByRule(rule, l[i], false);
                 if (obj) {
                     stack.push(obj);
                 }
             }
-            console.log(stack);
+            //console.log(stack);
+            fprice.analyzeList(stack);
             //ANALYZE STACK
             //get rule of el
         }, false);
