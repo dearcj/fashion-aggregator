@@ -1,5 +1,8 @@
 import { Feature } from "./Feature";
 import {DOMObject} from "../GC_Grouper";
+declare function require(name:string): any;
+
+var _ = require("underscore");
 
 export class FPrice extends Feature {
     constructor (queryFunction: (q: string, params: Array<Object>, cv: Function) => void) {
@@ -8,14 +11,23 @@ export class FPrice extends Feature {
 
   extractValue (s: string): number {
     var match: Array<string> = s.match(/[+\-]?\d+(,\d+)?(\.\d+)?/);
-    if (match.length == 0) return null; else {
+    if (!match) return null; else {
       return parseFloat(match[0]);
     }
   }
 
-  analyzeDOMElem (e: DOMObject) {
+ /* analyzeList (l: Array<DOMObject>): void {
+    var self = this;
+    _.each(l, function (x) {
+      self.analyzeDOMElem(x);
+    }.bind(this))
+  }*/
+
+  analyzeDOMElem (e: DOMObject): Object {
     var bestValue = -1;
+    var inf: number = 0;
     if (e.data) {
+
       var sub = e.data.split(' ');
       var currency = null;
       var sl = sub.length;
@@ -29,14 +41,13 @@ export class FPrice extends Feature {
             var value = this.extractValue(rest);
             if (value && value > bestValue) {
               bestValue = value;
-              console.log(bestValue);
+              inf = (value.toString().length + c.length) / e.data.length;
             }
-
-
         }
-
       }
-
     }
+
+    e.price = {value: bestValue, currency: c};
+    return {information: inf};
   }
 }

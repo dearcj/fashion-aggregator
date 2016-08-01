@@ -5,6 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Feature_1 = require("./Feature");
+var _ = require("underscore");
 var FPrice = (function (_super) {
     __extends(FPrice, _super);
     function FPrice(queryFunction) {
@@ -12,14 +13,21 @@ var FPrice = (function (_super) {
     }
     FPrice.prototype.extractValue = function (s) {
         var match = s.match(/[+\-]?\d+(,\d+)?(\.\d+)?/);
-        if (match.length == 0)
+        if (!match)
             return null;
         else {
             return parseFloat(match[0]);
         }
     };
+    /* analyzeList (l: Array<DOMObject>): void {
+       var self = this;
+       _.each(l, function (x) {
+         self.analyzeDOMElem(x);
+       }.bind(this))
+     }*/
     FPrice.prototype.analyzeDOMElem = function (e) {
         var bestValue = -1;
+        var inf = 0;
         if (e.data) {
             var sub = e.data.split(' ');
             var currency = null;
@@ -33,11 +41,13 @@ var FPrice = (function (_super) {
                     var value = this.extractValue(rest);
                     if (value && value > bestValue) {
                         bestValue = value;
-                        console.log(bestValue);
+                        inf = (value.toString().length + c.length) / e.data.length;
                     }
                 }
             }
         }
+        e.price = { value: bestValue, currency: c };
+        return { information: inf };
     };
     return FPrice;
 }(Feature_1.Feature));

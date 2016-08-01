@@ -33,11 +33,16 @@ var Feature = (function () {
         }
     };
     Feature.prototype.analyzeList = function (l) {
+        var i = 0;
+        var self = this;
         _.each(l, function (x) {
-            this.analyzeDOMElem(x);
+            i += self.analyzeDOMElem(x).information;
         }.bind(this));
+        var avg = i / l.length;
+        return { information: avg };
     };
     Feature.prototype.analyzeDOMElem = function (e) {
+        return null;
     };
     return Feature;
 }());

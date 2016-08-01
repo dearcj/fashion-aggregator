@@ -1,5 +1,6 @@
 import {DOMObject} from "./GC_Grouper";
 import {GcGrouper} from "./GC_Grouper";
+import {ImgObj} from "./GC_Grouper";
 
 declare function require(name:string):any;
 
@@ -10,12 +11,12 @@ var u = require('./MathUnit.js').MathUnit;
 var phantom = require('phantom');
 var cheerio = require("cheerio");
 var fs = require('fs');
-var request:Function = require("request");
+var request = require('requestretry');
 
 export class App {
 
   MAX_PREV_PAGES:number = 5;
-
+  images: Array<ImgObj>;
   parse(linkp:string, cb:Function) {
     var links = [];
 
@@ -26,10 +27,19 @@ export class App {
       }
     } else links.push(linkp);
 
+    var self = this;
     var f = function (body, $, cb) {
+      if (!body) {
+        console.log('ERROR: NO BODY');
+        return;
+      }
+
       var gc_grouper = new GcGrouper($, body, linkp);
       gc_grouper.updateInfoTree();
-      gc_grouper.findModel(cb);
+      gc_grouper.findModel(function (res) {
+        self.images = gc_grouper.images;
+        cb(res);
+      });
     };
 
     u.async(this.loadStaticPage.bind(this), links, function superdone(r) {
@@ -48,6 +58,7 @@ export class App {
   }
 
   loadStaticPage(url:string, endCB:Function) {
+    console.log('loading static page: ' + url);
 
    /* phantom.create().then(function (ph:any) {
       return ph.createPage().then(function (page:any) {
@@ -80,11 +91,15 @@ export class App {
       }
     });*/
 
-      request({
+    request({
       uri: url,
-      timeout: 12000
+      maxAttempts: 5,   // (default) try 5 times
+      retryDelay: 5000,  // (default) wait for 5s before trying again
+      retryStrategy: request.RetryStrategies.HTTPOrNetworkError
     }, function (error, response, body) {
+
       if (error) {
+        console.log(error);
         endCB(null, null);
       } else {
 
@@ -99,6 +114,8 @@ export class App {
    Loading dynamic page and scroll it by 10k pix for infinite scrolls
    */
   loadDynamicPage(url:string, endCB:Function) {
+    console.log('loading dynamic page');
+
     phantom.create().then(function (ph:any) {
       return ph.createPage().then(function (page:any) {
         page.open(url).then(function (status) {

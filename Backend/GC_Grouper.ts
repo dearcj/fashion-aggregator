@@ -9,7 +9,7 @@ var imagesize = require('imagesize');
 var async = require('async');
 var url = require('url');
 
-class ImgObj {
+export class ImgObj {
     url: string;
     domObject: DOMObject;
     width: number;
@@ -23,6 +23,10 @@ export class DOMObject {
      Don't use this fields in childrenElem. Logic overwritten in childrenElem
      */
     data: string;
+
+    price: any;
+    image: any;
+
 
     next: DOMObject;
     prev: DOMObject;
@@ -68,6 +72,7 @@ export class GcGrouper extends GcConsts {
     $; //cheerio jquery Object
     body: DOMObject;
     linkp: string;
+    images: Array<ImgObj>;
 
     constructor($, body: DOMObject, linkp) {
         super();
@@ -182,6 +187,7 @@ export class GcGrouper extends GcConsts {
 
     findModel(resCB: Function) {
         this.findImages(function (res: Array<ImgObj>) {
+            this.images = res;
             var img = res[3].domObject;
             var self = this;
             if (res.length == 0) { resCB(null); return; }
@@ -372,6 +378,7 @@ export class GcGrouper extends GcConsts {
 
     updateTextField (t: string): string {
       t = t.replace(/(\r\n|\n|\r)/gm,"");
+      t = t.replace(/(\n\t|\n|\t)/gm,"");
       t = t.replace(/\u00a0/g, " ");
       return t;
     }
@@ -379,7 +386,7 @@ export class GcGrouper extends GcConsts {
      Add depth and maxdepth info to every element
      */
     updateInfoTree (body: DOMObject = null) {
-        if (!body) body = this.body;
+      if (!body) body = this.body;
         if (!body.depth) body.depth = 0;
         if (!body.maxDepth) body.maxDepth = 0;
         var _this = this;
@@ -404,7 +411,6 @@ export class GcGrouper extends GcConsts {
 
                         if (str != '') {
                             elem.data = str;
-                            console.log(str);
                         }
                     }
                     if (elem.data) elem.data = _this.updateTextField(elem.data);

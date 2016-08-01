@@ -17,7 +17,7 @@ export class Classify {
   featuresLoaded:number = 0;
   allFeaturesLoaded:Function = null;
   queryFunction:(q:string, params:Array<Object>) => void;
-
+  images: Array<any>;
   grouper:GcGrouper;
   private features:Array<Feature> = [];
 
@@ -45,6 +45,7 @@ export class Classify {
     this.addFeature(new FPrice(this.queryFunction));
     this.addFeature(new FTitle(this.queryFunction));
     this.addFeature(new FImage(this.queryFunction));
+    this.ft('image').images = this.images;
 
     var self = this;
     _.each(this.features, function (el) {
@@ -52,7 +53,8 @@ export class Classify {
     });
   }
 
-  constructor(queryFunction:(q:string, params:Array<Object>) => void) {
+  constructor(queryFunction:(q:string, params:Array<Object>) => void, images: Array<any>) {
+    this.images = images;
     this.queryFunction = queryFunction;
   }
 
@@ -63,9 +65,26 @@ export class Classify {
 
 
   analyzeList(l:Array<DOMObject>) {
+    console.log('classify::analyzeList');
+
     // Maybe better pick the Biggest guy of  them all
 
     var fprice = this.ft('price');
+    var fimage = this.ft('image');
+
+    var bestPriceRule: any = {
+      information: 0,
+      rule: null,
+      elements: null
+    };
+
+    var bestImageRule: any = {
+      information: 0,
+      rule: null,
+      elements: null
+    };
+
+
 
     var res = [];
     var standart:DOMObject = MathUnit.maxParam(l, 'maxDepth');
@@ -73,7 +92,6 @@ export class Classify {
 
     traverse(standart, function analyze(el) {
       //console.log(el.type);
-      if (el.type != 'text') return;
 
       var rule = standart.grouper.getRule(el, standart, true, false);
 
@@ -86,12 +104,32 @@ export class Classify {
         }
       }
       //console.log(stack);
-      fprice.analyzeList(stack);
+      var res = fprice.analyzeList(stack);
+
+      console.log(res.information);
+      if (res.information > bestPriceRule.information) {
+        bestPriceRule.information = res.information;
+        bestPriceRule.elements = stack;
+        bestPriceRule.rule = rule;
+      }
+
+      var res = fimage.analyzeList(stack);
+      if (res.information > bestImageRule.information) {
+        bestImageRule.information = res.information;
+        bestImageRule.elements = stack;
+        bestImageRule.rule = rule;
+      }
+
       //ANALYZE STACK
 
       //get rule of el
     }, false);
 
+    for (var i = 0; i < bestPriceRule.elements.length; ++i) {
+      console.log(bestPriceRule.elements[i].price.value);
+      console.log(bestImageRule.elements[i].image.value);
+
+    }
 
     return res;
   }

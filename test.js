@@ -105,15 +105,13 @@ module.exports = {
       f.updateDictionary();
     });*/
 
-    var f = new FPrice(pgq);
+   /* var f = new FPrice(pgq);
     f.initDictionary(function () {
       f.dict.addArray(prices);
 
 
       f.updateDictionary();
-    });
-
-
+    });*/
 
     var x = d.save();
     d.load(x);
@@ -126,11 +124,12 @@ module.exports = {
         }
       }
 
-      var cl = new Classify(pgq);
+      var cl = new Classify(pgq, gcapp.images);
 
       cl.loadFeatures(function complete (){
         var r = cl.analyzeList(alldata);
       });
+
 
 
       console;

@@ -1,4 +1,5 @@
 import * as BTD from '../BTreeDictionary/BTDictionary';
+import {ImgObj} from "../GC_Grouper";
 declare function require(name:string): any;
 
 var _ = require("underscore");
@@ -10,7 +11,7 @@ class DOMObject  {}
 export abstract class Feature {
     public dict: BTD.BTDictionary;
     public qf: (q: string, params: Array<Object>, cv: Function) => void;
-
+    public images: Array<ImgObj>;
 
     initDictionary(cb): void {
         var self = this;
@@ -44,13 +45,19 @@ export abstract class Feature {
 
     dbField: string;
 
-    analyzeList (l: Array<DOMObject>): void {
+    analyzeList (l: Array<DOMObject>): any {
+      var i = 0;
+      var self = this;
       _.each(l, function (x) {
-        this.analyzeDOMElem(x);
-      }.bind(this))
+        i += self.analyzeDOMElem(x).information;
+      }.bind(this));
 
+      var avg = i / l.length;
+
+      return {information: avg}
     }
 
-    analyzeDOMElem (e: DOMObject) {
+    analyzeDOMElem (e: DOMObject): any {
+      return null;
     }
 }

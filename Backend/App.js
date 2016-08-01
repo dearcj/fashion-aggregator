@@ -6,7 +6,7 @@ var u = require('./MathUnit.js').MathUnit;
 var phantom = require('phantom');
 var cheerio = require("cheerio");
 var fs = require('fs');
-var request = require("request");
+var request = require('requestretry');
 var App = (function () {
     function App() {
         this.MAX_PREV_PAGES = 5;
@@ -21,10 +21,18 @@ var App = (function () {
         }
         else
             links.push(linkp);
+        var self = this;
         var f = function (body, $, cb) {
+            if (!body) {
+                console.log('ERROR: NO BODY');
+                return;
+            }
             var gc_grouper = new GC_Grouper_1.GcGrouper($, body, linkp);
             gc_grouper.updateInfoTree();
-            gc_grouper.findModel(cb);
+            gc_grouper.findModel(function (res) {
+                self.images = gc_grouper.images;
+                cb(res);
+            });
         };
         u.async(this.loadStaticPage.bind(this), links, function superdone(r) {
             u.async(f, r, function superdone2(everything) {
@@ -38,6 +46,7 @@ var App = (function () {
         endCB(bod, $);
     };
     App.prototype.loadStaticPage = function (url, endCB) {
+        console.log('loading static page: ' + url);
         /* phantom.create().then(function (ph:any) {
            return ph.createPage().then(function (page:any) {
              page.open(url).then(function (status) {
@@ -68,9 +77,12 @@ var App = (function () {
         });*/
         request({
             uri: url,
-            timeout: 12000
+            maxAttempts: 5,
+            retryDelay: 5000,
+            retryStrategy: request.RetryStrategies.HTTPOrNetworkError
         }, function (error, response, body) {
             if (error) {
+                console.log(error);
                 endCB(null, null);
             }
             else {
@@ -84,6 +96,7 @@ var App = (function () {
      Loading dynamic page and scroll it by 10k pix for infinite scrolls
      */
     App.prototype.loadDynamicPage = function (url, endCB) {
+        console.log('loading dynamic page');
         phantom.create().then(function (ph) {
             return ph.createPage().then(function (page) {
                 page.open(url).then(function (status) {

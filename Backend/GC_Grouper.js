@@ -16,6 +16,7 @@ var ImgObj = (function () {
     }
     return ImgObj;
 }());
+exports.ImgObj = ImgObj;
 var DOMObject = (function () {
     function DOMObject() {
     }
@@ -158,6 +159,7 @@ var GcGrouper = (function (_super) {
     };
     GcGrouper.prototype.findModel = function (resCB) {
         this.findImages(function (res) {
+            this.images = res;
             var img = res[3].domObject;
             var self = this;
             if (res.length == 0) {
@@ -340,6 +342,7 @@ var GcGrouper = (function (_super) {
     };
     GcGrouper.prototype.updateTextField = function (t) {
         t = t.replace(/(\r\n|\n|\r)/gm, "");
+        t = t.replace(/(\n\t|\n|\t)/gm, "");
         t = t.replace(/\u00a0/g, " ");
         return t;
     };
@@ -371,7 +374,6 @@ var GcGrouper = (function (_super) {
                         }
                         if (str != '') {
                             elem.data = str;
-                            console.log(str);
                         }
                     }
                     if (elem.data)
