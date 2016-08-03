@@ -118,7 +118,7 @@ module.exports = {
     var x = d.save();
     d.load(x);
 
-    gcapp.parse('https://marketplace.asos.com/men/sale', function cb(res) {
+    gcapp.parse('https://marketplace.asos.com/men/shirts', function cb(res) {
       var alldata = [];
       for (var i = 0; i < res.length; ++i) {
         if (res[i][0]) {
