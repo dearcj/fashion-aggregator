@@ -33,8 +33,6 @@ var GcConsts = (function () {
 }());
 function traverse(o, func, onlyElements) {
     if (onlyElements === void 0) { onlyElements = true; }
-  if (!o)
-    console;
     var arr = o.childrenElem;
     if (!onlyElements) {
         arr = o.children;

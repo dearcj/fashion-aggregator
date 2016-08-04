@@ -54,9 +54,6 @@ class GcConsts {
 }
 
 export function traverse(o: DOMObject, func:Function, onlyElements: boolean = true): void {
-  if (!o)
-    console;
-
   var arr = o.childrenElem;
   if (!onlyElements) {
     arr = o.children;

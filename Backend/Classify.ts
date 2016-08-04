@@ -40,11 +40,11 @@ export class Classify {
     this.allFeaturesLoaded = allLoaded;
 
     this.addFeature(new FImage(this.queryFunction));
-    this.addFeature(new FBrand(this.queryFunction));
-    this.addFeature(new FLink(this.queryFunction));
+    // this.addFeature(new FBrand(this.queryFunction));
+    // this.addFeature(new FLink(this.queryFunction));
     this.addFeature(new FPrice(this.queryFunction));
-    this.addFeature(new FTitle(this.queryFunction));
-    this.addFeature(new FImage(this.queryFunction));
+    // this.addFeature(new FTitle(this.queryFunction));
+    //  this.addFeature(new FImage(this.queryFunction));
     this.ft('image').images = this.images;
 
     var self = this;
@@ -66,33 +66,24 @@ export class Classify {
 
   analyzeList(l:Array<DOMObject>) {
     console.log('classify::analyzeList');
-
     // Maybe better pick the Biggest guy of  them all
 
     var fprice = this.ft('price');
     var fimage = this.ft('image');
 
-    var bestPriceRule: any = {
-      information: 0,
-      rule: null,
-      elements: null
-    };
-
-    var bestImageRule: any = {
-      information: 0,
-      rule: null,
-      elements: null
-    };
-
-
+    _.each(this.features, function (el) {
+      el.classifyResult = {
+        information: 0,
+        rule: null,
+        elements: null
+      }
+    });
 
     var res = [];
     var standart:DOMObject = MathUnit.maxParam(l, 'maxDepth');
     var ll = l.length;
 
     traverse(standart, function analyze(el) {
-      //console.log(el.type);
-
       var rule = standart.grouper.getRule(el, standart, true, false);
 
       var stack = [];
@@ -104,32 +95,30 @@ export class Classify {
         }
       }
       //console.log(stack);
-      var res = fprice.analyzeList(stack);
-
-      console.log(res.information);
-      if (res.information > bestPriceRule.information) {
-        bestPriceRule.information = res.information;
-        bestPriceRule.elements = stack;
-        bestPriceRule.rule = rule;
-      }
-
-      var res = fimage.analyzeList(stack);
-      if (res.information > bestImageRule.information) {
-        bestImageRule.information = res.information;
-        bestImageRule.elements = stack;
-        bestImageRule.rule = rule;
-      }
+      _.each(this.features, function (feature) {
+        var res = feature.analyzeList(stack);
+        if (res.information > feature.classifyResult.information)
+          feature.classifyResult = {
+            information: res.information,
+            elements: stack,
+            rule: rule
+          }
+      });
 
       //ANALYZE STACK
 
       //get rule of el
-    }, false);
+    }.bind(this), false);
 
-    for (var i = 0; i < bestPriceRule.elements.length; ++i) {
-      console.log(bestPriceRule.elements[i].price.value);
-      console.log(bestImageRule.elements[i].image.value);
 
+    var len = this.features[0].classifyResult.elements.length;
+
+    for (var i:number = 0; i < len; ++i) {
+      _.each(this.features, function (feature) {
+        console.log(feature.classifyResult.elements[i][feature.dbField].value);
+      });
     }
+
 
     return res;
   }

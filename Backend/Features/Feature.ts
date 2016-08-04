@@ -7,11 +7,17 @@ var _ = require("underscore");
 
 class DOMObject  {}
 
+export class ClassifyResults {
+  information:number;
+  rule:string;
+  elements:Array<DOMObject>;
+}
 
 export abstract class Feature {
     public dict: BTD.BTDictionary;
     public qf: (q: string, params: Array<Object>, cv: Function) => void;
     public images: Array<ImgObj>;
+  public classifyResult:ClassifyResults;
 
     initDictionary(cb): void {
         var self = this;

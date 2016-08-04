@@ -6,6 +6,13 @@ var DOMObject = (function () {
     }
     return DOMObject;
 }());
+var ClassifyResults = (function () {
+  function ClassifyResults() {
+  }
+
+  return ClassifyResults;
+}());
+exports.ClassifyResults = ClassifyResults;
 var Feature = (function () {
     function Feature(queryFunction, dbField) {
         this.qf = queryFunction;

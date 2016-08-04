@@ -1,9 +1,6 @@
 "use strict";
 var FImage_1 = require("./Features/FImage");
-var FBrand_1 = require("./Features/FBrand");
-var FLink_1 = require("./Features/FLink");
 var FPrice_1 = require("./Features/FPrice");
-var FTitle_1 = require("./Features/FTitle");
 var GC_Grouper_1 = require("./GC_Grouper");
 var _ = require("underscore");
 var MathUnit = require('./MathUnit.js').MathUnit;
@@ -33,11 +30,11 @@ var Classify = (function () {
     Classify.prototype.loadFeatures = function (allLoaded) {
         this.allFeaturesLoaded = allLoaded;
         this.addFeature(new FImage_1.FImage(this.queryFunction));
-        this.addFeature(new FBrand_1.FBrand(this.queryFunction));
-        this.addFeature(new FLink_1.FLink(this.queryFunction));
+      // this.addFeature(new FBrand(this.queryFunction));
+      // this.addFeature(new FLink(this.queryFunction));
         this.addFeature(new FPrice_1.FPrice(this.queryFunction));
-        this.addFeature(new FTitle_1.FTitle(this.queryFunction));
-        this.addFeature(new FImage_1.FImage(this.queryFunction));
+      // this.addFeature(new FTitle(this.queryFunction));
+      //  this.addFeature(new FImage(this.queryFunction));
         this.ft('image').images = this.images;
         var self = this;
         _.each(this.features, function (el) {
@@ -53,21 +50,17 @@ var Classify = (function () {
         // Maybe better pick the Biggest guy of  them all
         var fprice = this.ft('price');
         var fimage = this.ft('image');
-        var bestPriceRule = {
-            information: 0,
-            rule: null,
-            elements: null
+      _.each(this.features, function (el) {
+        el.classifyResult = {
+          information: 0,
+          rule: null,
+          elements: null
         };
-        var bestImageRule = {
-            information: 0,
-            rule: null,
-            elements: null
-        };
+      });
         var res = [];
         var standart = MathUnit.maxParam(l, 'maxDepth');
         var ll = l.length;
         GC_Grouper_1.traverse(standart, function analyze(el) {
-            //console.log(el.type);
             var rule = standart.grouper.getRule(el, standart, true, false);
             var stack = [];
             //only text
@@ -78,25 +71,23 @@ var Classify = (function () {
                 }
             }
             //console.log(stack);
-            var res = fprice.analyzeList(stack);
-            console.log(res.information);
-            if (res.information > bestPriceRule.information) {
-                bestPriceRule.information = res.information;
-                bestPriceRule.elements = stack;
-                bestPriceRule.rule = rule;
-            }
-            var res = fimage.analyzeList(stack);
-            if (res.information > bestImageRule.information) {
-                bestImageRule.information = res.information;
-                bestImageRule.elements = stack;
-                bestImageRule.rule = rule;
-            }
+          _.each(this.features, function (feature) {
+            var res = feature.analyzeList(stack);
+            if (res.information > feature.classifyResult.information)
+              feature.classifyResult = {
+                information: res.information,
+                elements: stack,
+                rule: rule
+              };
+          });
             //ANALYZE STACK
             //get rule of el
-        }, false);
-        for (var i = 0; i < bestPriceRule.elements.length; ++i) {
-            console.log(bestPriceRule.elements[i].price.value);
-            console.log(bestImageRule.elements[i].image.value);
+        }.bind(this), false);
+      var len = this.features[0].classifyResult.elements.length;
+      for (var i = 0; i < len; ++i) {
+        _.each(this.features, function (feature) {
+          console.log(feature.classifyResult.elements[i][feature.dbField].value);
+        });
         }
         return res;
     };
