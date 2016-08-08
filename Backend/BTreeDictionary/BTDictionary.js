@@ -6,13 +6,19 @@ var _ = require("underscore");
 var BTDictionary = (function () {
     function BTDictionary() {
         this.wordEndSym = '♦';
+        this.dataSym = 'data';
         this.root = {};
     }
     BTDictionary.prototype.saveNode = function (n) {
         var x = '';
         for (var prop in n) {
-            if (n[prop] != null)
-                x += prop + this.saveNode(n[prop]);
+            if (n[prop] != null) {
+                if (prop != this.dataSym) {
+                    x += prop + this.saveNode(n[prop]);
+                }
+                else
+                    x += n[prop];
+            }
         }
         x += '^';
         return x;
@@ -87,8 +93,9 @@ var BTDictionary = (function () {
             this.addWord(el);
         }.bind(this));
     };
-    BTDictionary.prototype.addWord = function (w, strict) {
+    BTDictionary.prototype.addWord = function (w, strict, param) {
         if (strict === void 0) { strict = true; }
+        if (param === void 0) { param = null; }
         w = w.toLowerCase();
         w = w.replace(/^/g, '');
         var wl = w.length;
@@ -101,8 +108,11 @@ var BTDictionary = (function () {
             r = r[c];
         }
         if (strict) {
-            if (!r[this.wordEndSym])
+            if (!r[this.wordEndSym]) {
                 r[this.wordEndSym] = {};
+                if (param)
+                    r[this.wordEndSym][this.dataSym] = param;
+            }
         }
     };
     BTDictionary.prototype.checkWord = function (w, strict) {

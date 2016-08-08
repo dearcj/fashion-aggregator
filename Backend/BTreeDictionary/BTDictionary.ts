@@ -7,6 +7,8 @@ var _ = require("underscore");
 
 export class BTDictionary {
   wordEndSym: string = '♦';
+  dataSym:string = 'data';
+
   private root:Object;
 
   constructor() {
@@ -16,8 +18,11 @@ export class BTDictionary {
   private saveNode(n:Object):string {
     var x:string = '';
     for (var prop in n) {
-      if (n[prop] != null)
-      x += prop + this.saveNode(n[prop]);
+      if (n[prop] != null) {
+        if (prop != this.dataSym) {
+          x += prop + this.saveNode(n[prop]);
+        } else x += n[prop];
+      }
     }
     x += '^';
     return x;
@@ -108,7 +113,7 @@ export class BTDictionary {
     }.bind(this));
   }
 
-  addWord(w:string, strict:boolean = true) {
+  addWord(w:string, strict:boolean = true, param:string = null) {
     w = w.toLowerCase();
     w = w.replace(/^/g, '');
 
@@ -122,7 +127,11 @@ export class BTDictionary {
       r = r[c];
     }
     if (strict) {
-      if (!r[this.wordEndSym]) r[this.wordEndSym] = {};
+      if (!r[this.wordEndSym]) {
+        r[this.wordEndSym] = {};
+        if (param)
+          r[this.wordEndSym][this.dataSym] = param;
+      }
     }
   }
 
