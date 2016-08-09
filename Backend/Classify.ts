@@ -40,7 +40,7 @@ export class Classify {
     this.allFeaturesLoaded = allLoaded;
 
     this.addFeature(new FImage(this.queryFunction));
-    // this.addFeature(new FBrand(this.queryFunction));
+    this.addFeature(new FBrand(this.queryFunction));
     // this.addFeature(new FLink(this.queryFunction));
     this.addFeature(new FPrice(this.queryFunction));
     // this.addFeature(new FTitle(this.queryFunction));
@@ -63,13 +63,11 @@ export class Classify {
     this.features.push(f);
   }
 
-
   analyzeList(l:Array<DOMObject>) {
     console.log('classify::analyzeList');
     // Maybe better pick the Biggest guy of  them all
 
-    var fprice = this.ft('price');
-    var fimage = this.ft('image');
+
 
     _.each(this.features, function (el) {
       el.classifyResult = {
@@ -115,6 +113,7 @@ export class Classify {
 
     for (var i:number = 0; i < len; ++i) {
       _.each(this.features, function (feature) {
+          console.log(feature.classifyResult.elements[i]);
         console.log(feature.classifyResult.elements[i][feature.dbField].value);
       });
     }

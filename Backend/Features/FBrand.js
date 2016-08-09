@@ -10,6 +10,20 @@ var FBrand = (function (_super) {
     function FBrand(queryFunction) {
         _super.call(this, queryFunction, 'brand');
     }
+    FBrand.prototype.extractValue = function (s) {
+        return '';
+    };
+    FBrand.prototype.analyzeDOMElem = function (e) {
+        var obj;
+        if (e.data) {
+            obj = this.fieldDictIntersection(e.data);
+        }
+        else
+            obj = { information: 0, value: null };
+        console.log('!!!!!!!' + obj.information);
+        e[this.dbField] = obj;
+        return obj;
+    };
     return FBrand;
 }(Feature_1.Feature));
 exports.FBrand = FBrand;

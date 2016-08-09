@@ -10,6 +10,9 @@ var FImage = (function (_super) {
     function FImage(queryFunction) {
         _super.call(this, queryFunction, 'image');
     }
+    FImage.prototype.extractValue = function (s) {
+        return '';
+    };
     FImage.prototype.isBigImage = function (link) {
         for (var i = 0, tl = this.images.length; i < tl; ++i) {
             if (this.images[i].url == link)

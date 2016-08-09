@@ -41,10 +41,10 @@ function traverse(o, func, onlyElements) {
         return;
     var count = arr.length;
     for (var i = 0; i < count; ++i) {
-      if (arr[i]) {
-        func.call(this, arr[i], i);
-        traverse(arr[i], func);
-      }
+        if (arr[i]) {
+            func.call(this, arr[i], i);
+            traverse(arr[i], func);
+        }
     }
 }
 exports.traverse = traverse;

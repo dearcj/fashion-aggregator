@@ -7,7 +7,7 @@ declare var sails: any;
 export module MathUnit {
 
 
-  export function fastCheckStr(m: string): void {
+  export function fastCheckStr(m: string): RegExpMatchArray {
     return m.match('^[a-zA-Z0-9]*$');
   }
 

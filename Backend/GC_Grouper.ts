@@ -23,7 +23,7 @@ export class DOMObject {
      Don't use this fields in childrenElem. Logic overwritten in childrenElem
      */
     data: string;
-
+    type: string;
     price: any;
     image: any;
 

@@ -31,6 +31,24 @@ export abstract class Feature {
             });
     }
 
+    abstract extractValue(field: string): any;
+
+    fieldDictIntersection(field: string): any {
+      var sub = field.split(' ');
+      var sl = sub.length;
+      var inf = 0;
+      var value = null;
+      for (var i = 0; i < sl; ++i) {
+        var c = this.dict.checkWord(sub[i], false);
+        if (c) {
+          inf = (c.length) / field.length;
+          value = c;
+        }
+      }
+
+      return {information: inf, value: value};
+    }
+
     updateDictionary(): void {
       if (this.dbField) {
         var dict = this.dict.save();

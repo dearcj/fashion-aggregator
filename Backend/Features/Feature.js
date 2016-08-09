@@ -7,10 +7,9 @@ var DOMObject = (function () {
     return DOMObject;
 }());
 var ClassifyResults = (function () {
-  function ClassifyResults() {
-  }
-
-  return ClassifyResults;
+    function ClassifyResults() {
+    }
+    return ClassifyResults;
 }());
 exports.ClassifyResults = ClassifyResults;
 var Feature = (function () {
@@ -29,6 +28,20 @@ var Feature = (function () {
                     cb();
                 }
             });
+    };
+    Feature.prototype.fieldDictIntersection = function (field) {
+        var sub = field.split(' ');
+        var sl = sub.length;
+        var inf = 0;
+        var value = null;
+        for (var i = 0; i < sl; ++i) {
+            var c = this.dict.checkWord(sub[i], false);
+            if (c) {
+                inf = (c.length) / field.length;
+                value = c;
+            }
+        }
+        return { information: inf, value: value };
     };
     Feature.prototype.updateDictionary = function () {
         if (this.dbField) {

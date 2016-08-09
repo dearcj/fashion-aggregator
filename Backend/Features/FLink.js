@@ -10,6 +10,9 @@ var FLink = (function (_super) {
     function FLink(queryFunction) {
         _super.call(this, queryFunction, 'link');
     }
+    FLink.prototype.extractValue = function (s) {
+        return '';
+    };
     return FLink;
 }(Feature_1.Feature));
 exports.FLink = FLink;

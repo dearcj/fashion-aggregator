@@ -4,6 +4,10 @@ import {ImgObj} from "../GC_Grouper";
 
 export class FImage extends Feature {
     images: Array<ImgObj>;
+  
+  extractValue(s: string) {
+    return '';
+  }
 
     isBigImage (link: string): boolean {
       for (var i = 0, tl = this.images.length; i < tl; ++i) {

@@ -10,6 +10,9 @@ var FTitle = (function (_super) {
     function FTitle(queryFunction) {
         _super.call(this, queryFunction, 'title');
     }
+    FTitle.prototype.extractValue = function (s) {
+        return '';
+    };
     return FTitle;
 }(Feature_1.Feature));
 exports.FTitle = FTitle;
