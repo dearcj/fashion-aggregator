@@ -25,8 +25,10 @@ function pgq (q, params, cb) {
 
 module.exports = {
   runTest: function () {
-    d.addWord('adobe', true);
-    d.addWord('ax', true, '123');
+    d.addWord('adobe', true, '123');
+    d.addWord('ax', true, null);
+    d.addWord('axa', true, null);
+
     d.addWord('bobbyy', false);
     //  d.addWordWithId('bobbyy', true, 1232);
 

@@ -7,6 +7,8 @@ var _ = require("underscore");
 
 export class BTDictionary {
   wordEndSym: string = '♦';
+  goUpSym:string = '^';
+
   dataSym:string = 'data';
 
   private root:Object;
@@ -40,19 +42,35 @@ export class BTDictionary {
     var current = this.root;
     var currentList:Array<Object> = [];
 
+    var doReadData = false;
     for (var i = 0; i < sl; ++i) {
       var c = str.charAt(i);
 
-      if (c == '^') {
+
+      if (c == this.goUpSym) {
+        doReadData = false;
         if (currentList.length == 0) {
           current = this.root;
         } else
           current = currentList.pop();
       } else {
-        currentList.push(current);
-        current[c] = {};
 
-        current = current[c];
+        if (doReadData) {
+          if (!current[this.dataSym])
+            current[this.dataSym] = '';
+
+          current[this.dataSym] += c;
+        } else {
+          currentList.push(current);
+          current[c] = {};
+
+          current = current[c];
+        }
+        if (c == this.wordEndSym) {
+          doReadData = true;
+          //  continue;
+        }
+
       }
     }
   }

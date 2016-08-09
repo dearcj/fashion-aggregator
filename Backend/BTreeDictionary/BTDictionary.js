@@ -6,6 +6,7 @@ var _ = require("underscore");
 var BTDictionary = (function () {
     function BTDictionary() {
         this.wordEndSym = '♦';
+        this.goUpSym = '^';
         this.dataSym = 'data';
         this.root = {};
     }
@@ -33,9 +34,11 @@ var BTDictionary = (function () {
         this.root = {};
         var current = this.root;
         var currentList = [];
+        var doReadData = false;
         for (var i = 0; i < sl; ++i) {
             var c = str.charAt(i);
-            if (c == '^') {
+            if (c == this.goUpSym) {
+                doReadData = false;
                 if (currentList.length == 0) {
                     current = this.root;
                 }
@@ -43,9 +46,19 @@ var BTDictionary = (function () {
                     current = currentList.pop();
             }
             else {
-                currentList.push(current);
-                current[c] = {};
-                current = current[c];
+                if (doReadData) {
+                    if (!current[this.dataSym])
+                        current[this.dataSym] = '';
+                    current[this.dataSym] += c;
+                }
+                else {
+                    currentList.push(current);
+                    current[c] = {};
+                    current = current[c];
+                }
+                if (c == this.wordEndSym) {
+                    doReadData = true;
+                }
             }
         }
     };
