@@ -31,7 +31,7 @@ export abstract class Feature {
             });
     }
 
-    abstract extractValue(field: string): any;
+  abstract extractValue(e:DOMObject):any;
 
     fieldDictIntersection(field: string): any {
       var sub = field.split(' ');

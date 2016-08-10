@@ -3,17 +3,15 @@ import {DOMObject} from "../GC_Grouper";
 
 export class FBrand extends Feature {
 
-  extractValue(s: string) {
-    return '';
+  extractValue(e:DOMObject) {
+    return e.data;
   }
 
   analyzeDOMElem (e: DOMObject): Object {
     var obj;
     if (e.data) {
-      obj = this.fieldDictIntersection(e.data);
+      obj = this.fieldDictIntersection(this.extractValue(e));
     } else obj = {information: 0, value: null};
-
-    console.log('!!!!!!!' + obj.information);
 
     e[this.dbField] = obj;
     return obj;

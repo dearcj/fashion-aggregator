@@ -83,12 +83,19 @@ var Classify = (function () {
             //get rule of el
         }.bind(this), false);
         var len = this.features[0].classifyResult.elements.length;
-        for (var i = 0; i < len; ++i) {
-            _.each(this.features, function (feature) {
-                console.log(feature.classifyResult.elements[i].brand);
-                console.log(feature.classifyResult.elements[i][feature.dbField].value);
-            });
+      _.each(this.features, function (feature) {
+        var r = feature.classifyResult.rule;
+        for (var i = 0; i < ll; ++i) {
+          var obj = l[i].grouper.getObjByRule(r, l[i], false);
+          var value = feature.extractValue(obj);
+          if (feature.dbField == 'brand') {
+            console.log(obj);
+          }
+          console.log(feature.dbField + ': ' + value);
         }
+        //  console.log(feature.classifyResult.elements[i]);
+        //     console.log(feature.classifyResult.elements[i][feature.dbField].value);
+      });
         return res;
     };
     Classify.prototype.learn = function (featureName) {

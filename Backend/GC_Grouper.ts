@@ -400,9 +400,9 @@ export class GcGrouper extends GcConsts {
             body.childrenElem = [];
 
             _.each(body.children, function (elem) {
-                if (elem.name) {
 
-                    if (elem.children.length <= maxChildgroup && elem.type != 'text') {
+              if (!elem.data) elem.data = '';
+              if (elem.children && elem.children.length <= maxChildgroup && elem.type != 'text') {
                         var chl = elem.children.length;
                         var str = '';
                         for (var i = 0; i < chl; ++i) {
@@ -412,10 +412,10 @@ export class GcGrouper extends GcConsts {
                         }
 
                         if (str != '') {
-                            elem.data = str;
+                          elem.data = elem.data + str;
                         }
-                    }
-                    if (elem.data) elem.data = _this.updateTextField(elem.data);
+
+                elem.data = _this.updateTextField(elem.data);
 
                     body.childrenElem.push(elem);
                     if (body.childrenElem.length > 1) {

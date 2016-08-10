@@ -67,8 +67,6 @@ export class Classify {
     console.log('classify::analyzeList');
     // Maybe better pick the Biggest guy of  them all
 
-
-
     _.each(this.features, function (el) {
       el.classifyResult = {
         information: 0,
@@ -95,6 +93,7 @@ export class Classify {
       //console.log(stack);
       _.each(this.features, function (feature) {
         var res = feature.analyzeList(stack);
+
         if (res.information > feature.classifyResult.information)
           feature.classifyResult = {
             information: res.information,
@@ -111,12 +110,20 @@ export class Classify {
 
     var len = this.features[0].classifyResult.elements.length;
 
-    for (var i:number = 0; i < len; ++i) {
       _.each(this.features, function (feature) {
-          console.log(feature.classifyResult.elements[i]);
-        console.log(feature.classifyResult.elements[i][feature.dbField].value);
+        var r = feature.classifyResult.rule;
+        for (var i = 0; i < ll; ++i) {
+          var obj = l[i].grouper.getObjByRule(r, l[i], false);
+          var value = feature.extractValue(obj);
+          if (feature.dbField == 'brand') {
+            console.log(obj);
+          }
+
+          console.log(feature.dbField + ': ' + value);
+        }
+        //  console.log(feature.classifyResult.elements[i]);
+        //     console.log(feature.classifyResult.elements[i][feature.dbField].value);
       });
-    }
 
 
     return res;

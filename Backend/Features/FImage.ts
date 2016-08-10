@@ -4,9 +4,13 @@ import {ImgObj} from "../GC_Grouper";
 
 export class FImage extends Feature {
     images: Array<ImgObj>;
-  
-  extractValue(s: string) {
-    return '';
+
+  extractValue(e:DOMObject) {
+    if (e.name == 'img' && this.isBigImage(e.attribs['src'])) {
+      return {value: e.attribs['src']};
+    }
+
+    return null;
   }
 
     isBigImage (link: string): boolean {
@@ -17,14 +21,11 @@ export class FImage extends Feature {
     }
 
     analyzeDOMElem (e: DOMObject): Object {
-      var value: string;
-      var information: number = 0;
-      if (e.name == 'img' && this.isBigImage(e.attribs['src'])) {
-        information = 1;
-        e.image = {value: e.attribs['src']};
-      }
+      var value = this.extractValue(e);
 
-      return {information: information, value: value}
+      var information: number = 0;
+      if (value) information = 1;
+      return {information: information, value: value ? value.value : null}
     }
 
     constructor (queryFunction: (q: string, params: Array<Object>, cv: Function) => void) {

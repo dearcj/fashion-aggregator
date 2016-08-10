@@ -10,8 +10,12 @@ var FImage = (function (_super) {
     function FImage(queryFunction) {
         _super.call(this, queryFunction, 'image');
     }
-    FImage.prototype.extractValue = function (s) {
-        return '';
+
+  FImage.prototype.extractValue = function (e) {
+    if (e.name == 'img' && this.isBigImage(e.attribs['src'])) {
+      return {value: e.attribs['src']};
+    }
+    return null;
     };
     FImage.prototype.isBigImage = function (link) {
         for (var i = 0, tl = this.images.length; i < tl; ++i) {
@@ -21,13 +25,11 @@ var FImage = (function (_super) {
         return false;
     };
     FImage.prototype.analyzeDOMElem = function (e) {
-        var value;
+      var value = this.extractValue(e);
         var information = 0;
-        if (e.name == 'img' && this.isBigImage(e.attribs['src'])) {
+      if (value)
             information = 1;
-            e.image = { value: e.attribs['src'] };
-        }
-        return { information: information, value: value };
+      return {information: information, value: value ? value.value : null};
     };
     return FImage;
 }(Feature_1.Feature));

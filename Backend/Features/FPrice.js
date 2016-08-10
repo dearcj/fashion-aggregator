@@ -11,7 +11,29 @@ var FPrice = (function (_super) {
     function FPrice(queryFunction) {
         _super.call(this, queryFunction, 'price');
     }
-    FPrice.prototype.extractValue = function (s) {
+
+  FPrice.prototype.extractValue = function (e) {
+    var sub = e.data.split(' ');
+    var currency = null;
+    var sl = sub.length;
+    var bestValue = null;
+    for (var i = 0; i < sl; ++i) {
+      var c = this.dict.checkWord(sub[i], false);
+      if (c) {
+        currency = c;
+        var inx = e.data.indexOf(currency);
+        var rest = e.data.substr(inx);
+        var value = this.regexExtractPrice(rest);
+        if (value && value > bestValue) {
+          bestValue = value;
+        }
+      }
+    }
+    if (!bestValue)
+      return null;
+    return {value: bestValue, curr: currency};
+  };
+  FPrice.prototype.regexExtractPrice = function (s) {
         var match = s.match(/[+\-]?\d+(,\d+)?(\.\d+)?/);
         if (!match)
             return null;
@@ -26,27 +48,14 @@ var FPrice = (function (_super) {
        }.bind(this))
      }*/
     FPrice.prototype.analyzeDOMElem = function (e) {
-        var bestValue = -1;
         var inf = 0;
         if (e.data) {
-            var sub = e.data.split(' ');
-            var currency = null;
-            var sl = sub.length;
-            for (var i = 0; i < sl; ++i) {
-                var c = this.dict.checkWord(sub[i], false);
-                if (c) {
-                    currency = c;
-                    var inx = e.data.indexOf(currency);
-                    var rest = e.data.substr(inx);
-                    var value = this.extractValue(rest);
-                    if (value && value > bestValue) {
-                        bestValue = value;
-                        inf = (value.toString().length + c.length) / e.data.length;
-                    }
-                }
-            }
+          var value = this.extractValue(e);
+          if (value)
+            inf = (value.value.toString().length + value.curr.length) / e.data.length;
         }
-        e.price = { value: bestValue, currency: c };
+      if (value)
+        e.price = {value: value.value, currency: value.curr};
         return { information: inf };
     };
     return FPrice;

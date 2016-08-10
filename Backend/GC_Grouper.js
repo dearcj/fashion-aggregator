@@ -365,21 +365,20 @@ var GcGrouper = (function (_super) {
         if (body.children) {
             body.childrenElem = [];
             _.each(body.children, function (elem) {
-                if (elem.name) {
-                    if (elem.children.length <= maxChildgroup && elem.type != 'text') {
-                        var chl = elem.children.length;
-                        var str = '';
-                        for (var i = 0; i < chl; ++i) {
-                            if (elem.children[i].children && elem.children[i].children.length == 1 && elem.children[i].children[0].data) {
-                                str += elem.children[i].children[0].data;
-                            }
-                        }
-                        if (str != '') {
-                            elem.data = str;
+              if (!elem.data)
+                elem.data = '';
+              if (elem.children && elem.children.length <= maxChildgroup && elem.type != 'text') {
+                var chl = elem.children.length;
+                var str = '';
+                for (var i = 0; i < chl; ++i) {
+                  if (elem.children[i].children && elem.children[i].children.length == 1 && elem.children[i].children[0].data) {
+                    str += elem.children[i].children[0].data;
                         }
                     }
-                    if (elem.data)
-                        elem.data = _this.updateTextField(elem.data);
+                if (str != '') {
+                  elem.data = elem.data + str;
+                }
+                elem.data = _this.updateTextField(elem.data);
                     body.childrenElem.push(elem);
                     if (body.childrenElem.length > 1) {
                         elem.prevElem = body.childrenElem[body.childrenElem.length - 2];
