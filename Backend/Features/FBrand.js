@@ -10,17 +10,19 @@ var FBrand = (function (_super) {
     function FBrand(queryFunction) {
         _super.call(this, queryFunction, 'brand');
     }
-
-  FBrand.prototype.extractValue = function (e) {
-    return e.data;
+    FBrand.prototype.extractValue = function (e) {
+        if (!e)
+            console;
+        return e.data;
     };
     FBrand.prototype.analyzeDOMElem = function (e) {
         var obj;
         if (e.data) {
-          obj = this.fieldDictIntersection(this.extractValue(e));
+            obj = this.fieldDictIntersection(this.extractValue(e));
         }
         else
             obj = { information: 0, value: null };
+        console.log(obj.information, obj.value, e.data);
         e[this.dbField] = obj;
         return obj;
     };

@@ -39,7 +39,7 @@ export abstract class Feature {
       var inf = 0;
       var value = null;
       for (var i = 0; i < sl; ++i) {
-        var c = this.dict.checkWord(sub[i], false);
+        var c = this.dict.checkWord(sub[i], true);
         if (c) {
           inf = (c.length) / field.length;
           value = c;

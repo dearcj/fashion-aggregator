@@ -116,7 +116,7 @@ var GcGrouper = (function (_super) {
         return objList;
     };
     /*
-        finds dom rule from object <head> to obj <object>
+     finds dom rule from object <head> to obj <object>
      */
     GcGrouper.prototype.getRule = function (object, head, onlyRelative, noText) {
         if (noText === void 0) { noText = true; }
@@ -205,8 +205,6 @@ var GcGrouper = (function (_super) {
         if (!list)
             list = [];
         var _this = this;
-        var funcs = [];
-        async.parallel(funcs);
         if (this.body.children) {
             traverse(this.body, function (el, i) {
                 if (el.name == 'img')
@@ -345,8 +343,22 @@ var GcGrouper = (function (_super) {
     GcGrouper.prototype.updateTextField = function (t) {
         t = t.replace(/(\r\n|\n|\r)/gm, "");
         t = t.replace(/(\n\t|\n|\t)/gm, "");
-        t = t.replace(/\u00a0/g, " ");
+        t = t.replace(/\u00a0/g, "");
         return t;
+    };
+    GcGrouper.prototype.collectTextBelow = function (elem, depth) {
+        if (depth < 0)
+            return '';
+        if (!elem.data)
+            elem.data = '';
+        var str = '';
+        if (elem.children) {
+            var chl = elem.children.length;
+            for (var i = 0; i < chl; ++i) {
+                str += this.collectTextBelow(elem.children[i], depth - 1);
+            }
+        }
+        return elem.data + str;
     };
     /*
      Add depth and maxdepth info to every element
@@ -365,20 +377,13 @@ var GcGrouper = (function (_super) {
         if (body.children) {
             body.childrenElem = [];
             _.each(body.children, function (elem) {
-              if (!elem.data)
-                elem.data = '';
-              if (elem.children && elem.children.length <= maxChildgroup && elem.type != 'text') {
-                var chl = elem.children.length;
-                var str = '';
-                for (var i = 0; i < chl; ++i) {
-                  if (elem.children[i].children && elem.children[i].children.length == 1 && elem.children[i].children[0].data) {
-                    str += elem.children[i].children[0].data;
-                        }
+                if (elem.children) {
+                    if (!elem.data)
+                        elem.data = '';
+                    if (elem.children && elem.type != 'text') {
+                        elem.data = _this.collectTextBelow(elem, 2);
                     }
-                if (str != '') {
-                  elem.data = elem.data + str;
-                }
-                elem.data = _this.updateTextField(elem.data);
+                    elem.data = _this.updateTextField(elem.data);
                     body.childrenElem.push(elem);
                     if (body.childrenElem.length > 1) {
                         elem.prevElem = body.childrenElem[body.childrenElem.length - 2];

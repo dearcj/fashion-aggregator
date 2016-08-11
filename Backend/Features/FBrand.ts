@@ -4,6 +4,8 @@ import {DOMObject} from "../GC_Grouper";
 export class FBrand extends Feature {
 
   extractValue(e:DOMObject) {
+    if (!e)
+      console;
     return e.data;
   }
 
@@ -12,6 +14,8 @@ export class FBrand extends Feature {
     if (e.data) {
       obj = this.fieldDictIntersection(this.extractValue(e));
     } else obj = {information: 0, value: null};
+
+    console.log(obj.information, obj.value, e.data);
 
     e[this.dbField] = obj;
     return obj;

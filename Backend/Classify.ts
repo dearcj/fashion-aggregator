@@ -39,13 +39,14 @@ export class Classify {
   loadFeatures(allLoaded:Function) {
     this.allFeaturesLoaded = allLoaded;
 
-    this.addFeature(new FImage(this.queryFunction));
+    //this.addFeature(new FImage(this.queryFunction));
     this.addFeature(new FBrand(this.queryFunction));
     // this.addFeature(new FLink(this.queryFunction));
-    this.addFeature(new FPrice(this.queryFunction));
+    //this.addFeature(new FPrice(this.queryFunction));
     // this.addFeature(new FTitle(this.queryFunction));
+
     //  this.addFeature(new FImage(this.queryFunction));
-    this.ft('image').images = this.images;
+    //this.ft('image').images = this.images;
 
     var self = this;
     _.each(this.features, function (el) {
@@ -81,6 +82,7 @@ export class Classify {
 
     traverse(standart, function analyze(el) {
       var rule = standart.grouper.getRule(el, standart, true, false);
+      console.log(rule);
 
       var stack = [];
       //only text
@@ -93,6 +95,10 @@ export class Classify {
       //console.log(stack);
       _.each(this.features, function (feature) {
         var res = feature.analyzeList(stack);
+
+        if (feature.dbField == 'brand') {
+          console.log(res.information);
+        }
 
         if (res.information > feature.classifyResult.information)
           feature.classifyResult = {
@@ -115,10 +121,9 @@ export class Classify {
         for (var i = 0; i < ll; ++i) {
           var obj = l[i].grouper.getObjByRule(r, l[i], false);
           var value = feature.extractValue(obj);
-          if (feature.dbField == 'brand') {
-            console.log(obj);
+          if (feature.dbField == 'brand' && i == 1) {
+          //  console.log(obj);
           }
-
           console.log(feature.dbField + ': ' + value);
         }
         //  console.log(feature.classifyResult.elements[i]);
