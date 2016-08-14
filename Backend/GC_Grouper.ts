@@ -234,7 +234,7 @@ export class GcGrouper extends GcConsts {
     });
   }
 
-  collectAllImages(list:Array<DOMObject>, d:number):Array<DOMObject> {
+  collectAllImages(list:Array<DOMObject>):Array<DOMObject> {
     if (!list) list = [];
     var _this = this;
 
@@ -252,7 +252,7 @@ export class GcGrouper extends GcConsts {
     var MIN_IMG_WIDTH = 200;
     var MIN_IMG_HEIGHT = 100;
 
-    var imgs = this.collectAllImages(null, null);
+    var imgs = this.collectAllImages(null);
     var results = [];
     var _this = this;
     var funcs = [];
@@ -415,7 +415,6 @@ export class GcGrouper extends GcConsts {
       body.childrenElem = [];
 
       _.each(body.children, function (elem) {
-        if (!elem) return;
         if (elem.children) {
           if (!elem.data) elem.data = '';
           if (elem.children && elem.type != 'text') {

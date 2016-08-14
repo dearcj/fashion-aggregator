@@ -201,7 +201,7 @@ var GcGrouper = (function (_super) {
             });
         });
     };
-    GcGrouper.prototype.collectAllImages = function (list, d) {
+  GcGrouper.prototype.collectAllImages = function (list) {
         if (!list)
             list = [];
         var _this = this;
@@ -217,7 +217,7 @@ var GcGrouper = (function (_super) {
     GcGrouper.prototype.findImages = function (endCB) {
         var MIN_IMG_WIDTH = 200;
         var MIN_IMG_HEIGHT = 100;
-        var imgs = this.collectAllImages(null, null);
+      var imgs = this.collectAllImages(null);
         var results = [];
         var _this = this;
         var funcs = [];
@@ -378,8 +378,6 @@ var GcGrouper = (function (_super) {
         if (body.children) {
             body.childrenElem = [];
             _.each(body.children, function (elem) {
-              if (!elem)
-                return;
                 if (elem.children) {
                     if (!elem.data)
                         elem.data = '';
