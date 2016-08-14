@@ -379,9 +379,10 @@ export class GcGrouper extends GcConsts {
 
 
   updateTextField(t:string):string {
-    t = t.replace(/(\r\n|\n|\r)/gm, "");
-    t = t.replace(/(\n\t|\n|\t)/gm, "");
-    t = t.replace(/\u00a0/g, "");
+    t = t.replace(/\s\s+/g, ' ');//tabs and multiple spaces to space
+    t = t.replace(/(\r\n|\n|\r)/gm, ""); //remove enters, breaklines
+    t = t.replace(/(\n\t|\n|\t)/gm, ""); //same
+    t = t.replace(/\u00a0/g, ""); //same
     return t;
   }
 
@@ -414,6 +415,7 @@ export class GcGrouper extends GcConsts {
       body.childrenElem = [];
 
       _.each(body.children, function (elem) {
+        if (!elem) return;
         if (elem.children) {
           if (!elem.data) elem.data = '';
           if (elem.children && elem.type != 'text') {

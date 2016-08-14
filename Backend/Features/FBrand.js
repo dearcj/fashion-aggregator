@@ -22,7 +22,6 @@ var FBrand = (function (_super) {
         }
         else
             obj = { information: 0, value: null };
-        console.log(obj.information, obj.value, e.data);
         e[this.dbField] = obj;
         return obj;
     };

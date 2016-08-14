@@ -41,12 +41,12 @@ export class Classify {
 
     //this.addFeature(new FImage(this.queryFunction));
     this.addFeature(new FBrand(this.queryFunction));
-    // this.addFeature(new FLink(this.queryFunction));
-    //this.addFeature(new FPrice(this.queryFunction));
+    //this.addFeature(new FLink(this.queryFunction));
+    this.addFeature(new FPrice(this.queryFunction));
     // this.addFeature(new FTitle(this.queryFunction));
 
-    //  this.addFeature(new FImage(this.queryFunction));
-    //this.ft('image').images = this.images;
+    this.addFeature(new FImage(this.queryFunction));
+    this.ft('image').images = this.images;
 
     var self = this;
     _.each(this.features, function (el) {
@@ -121,13 +121,9 @@ export class Classify {
         for (var i = 0; i < ll; ++i) {
           var obj = l[i].grouper.getObjByRule(r, l[i], false);
           var value = feature.extractValue(obj);
-          if (feature.dbField == 'brand' && i == 1) {
-          //  console.log(obj);
-          }
-          console.log(feature.dbField + ': ' + value);
+
+          console.log(feature.dbField + ': ' + JSON.stringify(value));
         }
-        //  console.log(feature.classifyResult.elements[i]);
-        //     console.log(feature.classifyResult.elements[i][feature.dbField].value);
       });
 
 

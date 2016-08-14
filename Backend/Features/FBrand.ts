@@ -15,7 +15,6 @@ export class FBrand extends Feature {
       obj = this.fieldDictIntersection(this.extractValue(e));
     } else obj = {information: 0, value: null};
 
-    console.log(obj.information, obj.value, e.data);
 
     e[this.dbField] = obj;
     return obj;

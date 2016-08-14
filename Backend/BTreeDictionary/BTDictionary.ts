@@ -153,6 +153,30 @@ export class BTDictionary {
     }
   }
 
+  getIntersectionDepth(w:string):any {
+    var wl:number = w.length;
+    var r = this.root;
+    var prevStrict = false;
+    var count = 0;
+
+    for (var i = 0; i < wl; ++i) {
+      var c:string = w.charAt(i);
+      if (!r[c]) {
+        return {count: count, prevStrict: prevStrict};
+      }
+
+      count++;
+
+      r = r[c];
+      if (r[this.wordEndSym]) {
+        prevStrict = true;
+      } else prevStrict = false;
+    }
+
+    return {count: count, prevStrict: prevStrict};
+  }
+
+
   checkWord(w:string, strict:boolean = true):string {
     var wl:number = w.length;
     var r = this.root;
@@ -161,8 +185,6 @@ export class BTDictionary {
       if (!r[c]) {
         return null;
       }
-
-
 
       r = r[c];
 

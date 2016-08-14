@@ -128,6 +128,26 @@ var BTDictionary = (function () {
             }
         }
     };
+    BTDictionary.prototype.getIntersectionDepth = function (w) {
+        var wl = w.length;
+        var r = this.root;
+        var prevStrict = false;
+        var count = 0;
+        for (var i = 0; i < wl; ++i) {
+            var c = w.charAt(i);
+            if (!r[c]) {
+                return { count: count, prevStrict: prevStrict };
+            }
+            count++;
+            r = r[c];
+            if (r[this.wordEndSym]) {
+                prevStrict = true;
+            }
+            else
+                prevStrict = false;
+        }
+        return { count: count, prevStrict: prevStrict };
+    };
     BTDictionary.prototype.checkWord = function (w, strict) {
         if (strict === void 0) { strict = true; }
         var wl = w.length;

@@ -5,9 +5,6 @@ declare function require(name:string): any;
 var _ = require("underscore");
 
 export class FPrice extends Feature {
-
-
-
   constructor (queryFunction: (q: string, params: Array<Object>, cv: Function) => void) {
         super(queryFunction, 'price');
     }

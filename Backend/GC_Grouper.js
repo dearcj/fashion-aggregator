@@ -341,9 +341,10 @@ var GcGrouper = (function (_super) {
         return comparsionLevel;
     };
     GcGrouper.prototype.updateTextField = function (t) {
-        t = t.replace(/(\r\n|\n|\r)/gm, "");
-        t = t.replace(/(\n\t|\n|\t)/gm, "");
-        t = t.replace(/\u00a0/g, "");
+      t = t.replace(/\s\s+/g, ' '); //tabs and multiple spaces to space
+      t = t.replace(/(\r\n|\n|\r)/gm, ""); //remove enters, breaklines
+      t = t.replace(/(\n\t|\n|\t)/gm, ""); //same
+      t = t.replace(/\u00a0/g, ""); //same
         return t;
     };
     GcGrouper.prototype.collectTextBelow = function (elem, depth) {
@@ -377,6 +378,8 @@ var GcGrouper = (function (_super) {
         if (body.children) {
             body.childrenElem = [];
             _.each(body.children, function (elem) {
+              if (!elem)
+                return;
                 if (elem.children) {
                     if (!elem.data)
                         elem.data = '';

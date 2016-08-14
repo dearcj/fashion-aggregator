@@ -1,5 +1,7 @@
 "use strict";
+var FImage_1 = require("./Features/FImage");
 var FBrand_1 = require("./Features/FBrand");
+var FPrice_1 = require("./Features/FPrice");
 var GC_Grouper_1 = require("./GC_Grouper");
 var _ = require("underscore");
 var MathUnit = require('./MathUnit.js').MathUnit;
@@ -30,11 +32,11 @@ var Classify = (function () {
         this.allFeaturesLoaded = allLoaded;
         //this.addFeature(new FImage(this.queryFunction));
         this.addFeature(new FBrand_1.FBrand(this.queryFunction));
-        // this.addFeature(new FLink(this.queryFunction));
-        //this.addFeature(new FPrice(this.queryFunction));
+      //this.addFeature(new FLink(this.queryFunction));
+      this.addFeature(new FPrice_1.FPrice(this.queryFunction));
         // this.addFeature(new FTitle(this.queryFunction));
-        //  this.addFeature(new FImage(this.queryFunction));
-        //this.ft('image').images = this.images;
+      this.addFeature(new FImage_1.FImage(this.queryFunction));
+      this.ft('image').images = this.images;
         var self = this;
         _.each(this.features, function (el) {
             el.initDictionary(self.onLoadedFeature.bind(self));
@@ -90,12 +92,8 @@ var Classify = (function () {
             for (var i = 0; i < ll; ++i) {
                 var obj = l[i].grouper.getObjByRule(r, l[i], false);
                 var value = feature.extractValue(obj);
-                if (feature.dbField == 'brand' && i == 1) {
-                }
-                console.log(feature.dbField + ': ' + value);
+              console.log(feature.dbField + ': ' + JSON.stringify(value));
             }
-            //  console.log(feature.classifyResult.elements[i]);
-            //     console.log(feature.classifyResult.elements[i][feature.dbField].value);
         });
         return res;
     };

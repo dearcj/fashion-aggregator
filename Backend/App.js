@@ -34,7 +34,7 @@ var App = (function () {
                 cb(res);
             });
         };
-        u.async(this.loadStaticPage.bind(this), links, function superdone(r) {
+      u.async(this.loadDynamicPage.bind(this), links, function superdone(r) {
             u.async(f, r, function superdone2(everything) {
                 cb(everything);
             });

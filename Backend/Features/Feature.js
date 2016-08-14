@@ -30,18 +30,42 @@ var Feature = (function () {
             });
     };
     Feature.prototype.fieldDictIntersection = function (field) {
-        var sub = field.split(' ');
+        var sub = [];
+        field = field.toLowerCase();
+        if (field.indexOf('polo ralph') >= 0) {
+            console;
+        }
+        //field.split(' ');
         var sl = sub.length;
         var inf = 0;
         var value = null;
-        for (var i = 0; i < sl; ++i) {
-            var c = this.dict.checkWord(sub[i], true);
-            if (c) {
-                inf = (c.length) / field.length;
-                value = c;
+        var str = field.slice(0);
+        sub.push(str);
+        while (str != '') {
+            var inx = str.indexOf(" ");
+            if (~inx) {
+                str = str.substr(inx + 1);
             }
+            else
+                break;
+            if (str != '')
+                sub.push(str);
         }
-        return { information: inf, value: value };
+        //vintage tommy hilfiger garbage
+        // 1) as is
+        // 2) tommy hilfiger garbage
+        // 3) hilfiger garbage
+        // 4) garbage
+        var maxInf = 0;
+        var sl = sub.length;
+        for (var i = 0; i < sl; ++i) {
+            var obj = this.dict.getIntersectionDepth(sub[i]);
+            var inf = (obj.count) / field.length;
+            if (!obj.prevStrict)
+                inf *= 0.15; //penalty for partial word
+            maxInf = inf > maxInf ? inf : maxInf;
+        }
+        return { information: maxInf, value: '' };
     };
     Feature.prototype.updateDictionary = function () {
         if (this.dbField) {
