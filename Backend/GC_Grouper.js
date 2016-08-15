@@ -201,7 +201,7 @@ var GcGrouper = (function (_super) {
             });
         });
     };
-  GcGrouper.prototype.collectAllImages = function (list) {
+    GcGrouper.prototype.collectAllImages = function (list) {
         if (!list)
             list = [];
         var _this = this;
@@ -217,7 +217,7 @@ var GcGrouper = (function (_super) {
     GcGrouper.prototype.findImages = function (endCB) {
         var MIN_IMG_WIDTH = 200;
         var MIN_IMG_HEIGHT = 100;
-      var imgs = this.collectAllImages(null);
+        var imgs = this.collectAllImages(null);
         var results = [];
         var _this = this;
         var funcs = [];
@@ -341,10 +341,10 @@ var GcGrouper = (function (_super) {
         return comparsionLevel;
     };
     GcGrouper.prototype.updateTextField = function (t) {
-      t = t.replace(/\s\s+/g, ' '); //tabs and multiple spaces to space
-      t = t.replace(/(\r\n|\n|\r)/gm, ""); //remove enters, breaklines
-      t = t.replace(/(\n\t|\n|\t)/gm, ""); //same
-      t = t.replace(/\u00a0/g, ""); //same
+        t = t.replace(/\s\s+/g, ' '); //tabs and multiple spaces to space
+        t = t.replace(/(\r\n|\n|\r)/gm, ""); //remove enters, breaklines
+        t = t.replace(/(\n\t|\n|\t)/gm, ""); //same
+        t = t.replace(/\u00a0/g, ""); //same
         return t;
     };
     GcGrouper.prototype.collectTextBelow = function (elem, depth) {

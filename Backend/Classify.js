@@ -32,11 +32,11 @@ var Classify = (function () {
         this.allFeaturesLoaded = allLoaded;
         //this.addFeature(new FImage(this.queryFunction));
         this.addFeature(new FBrand_1.FBrand(this.queryFunction));
-      //this.addFeature(new FLink(this.queryFunction));
-      this.addFeature(new FPrice_1.FPrice(this.queryFunction));
+        //this.addFeature(new FLink(this.queryFunction));
+        this.addFeature(new FPrice_1.FPrice(this.queryFunction));
         // this.addFeature(new FTitle(this.queryFunction));
-      this.addFeature(new FImage_1.FImage(this.queryFunction));
-      this.ft('image').images = this.images;
+        this.addFeature(new FImage_1.FImage(this.queryFunction));
+        this.ft('image').images = this.images;
         var self = this;
         _.each(this.features, function (el) {
             el.initDictionary(self.onLoadedFeature.bind(self));
@@ -92,7 +92,7 @@ var Classify = (function () {
             for (var i = 0; i < ll; ++i) {
                 var obj = l[i].grouper.getObjByRule(r, l[i], false);
                 var value = feature.extractValue(obj);
-              console.log(feature.dbField + ': ' + JSON.stringify(value));
+                console.log(feature.dbField + ': ' + JSON.stringify(value));
             }
         });
         return res;
