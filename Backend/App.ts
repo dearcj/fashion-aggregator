@@ -138,8 +138,7 @@ export class App {
                 page.on('onResourceRequested', function (requestData, networkRequest, obj) {
                   urls.push(requestData.url); // this would push the url into the urls array above
 
-                  obj.push('asdasdsa');
-                  console.log('Request ' + JSON.stringify(request, undefined, 4));
+                  console.log('Request ' + JSON.stringify(requestData, undefined, 4));
                 }, obj);
 
                 page.open(url).then(function (status) {
@@ -214,15 +213,14 @@ export class App {
             return window.pageYOffset;
 
           }).then(function (r) {
-            pg.property('content')
-              .then(function (content) {
+            pg.property('content').then(function (content) {
                 var $ = cheerio.load(content);
                 var body = $('body');
 
+              endCB(body[0], $);
                 pg.close();
                 ph.exit();
-                endCB(body[0]);
-              });
+            });
           });
 
         }, 5000);

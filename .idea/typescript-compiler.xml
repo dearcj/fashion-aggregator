@@ -3,7 +3,7 @@
   <component name="TypeScriptCompiler">
     <option name="isCompilerEnabled" value="true" />
     <option name="typeScriptCompilerParams" value="--module commonjs" />
-    <option name="scopeName" value="Open Files" />
+    <option name="scopeName" value="Module 'VAggr'" />
     <option name="mainFilePath" value="$PROJECT_DIR$/Backend/App.js" />
   </component>
 </project>

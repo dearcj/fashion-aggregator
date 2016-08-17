@@ -95,7 +95,7 @@ var App = (function () {
     /*
      Loading dynamic page and scroll it by 10k pix for infinite scrolls
      */
-    App.prototype.oadDynamicPage = function (url, endCB) {
+    App.prototype.loadDynamicPage = function (url, endCB) {
         console.log('loading dynamic page');
         var obj = [];
         var urls = [];
@@ -114,8 +114,7 @@ var App = (function () {
                         }).then(function () {
                             page.on('onResourceRequested', function (requestData, networkRequest, obj) {
                                 urls.push(requestData.url); // this would push the url into the urls array above
-                                obj.push('asdasdsa');
-                                console.log('Request ' + JSON.stringify(request, undefined, 4));
+                                console.log('Request ' + JSON.stringify(requestData, undefined, 4));
                             }, obj);
                             page.open(url).then(function (status) {
                                 //console.log(page.content);
@@ -172,13 +171,12 @@ var App = (function () {
                         window.scrollBy(0, 10000);
                         return window.pageYOffset;
                     }).then(function (r) {
-                        pg.property('content')
-                            .then(function (content) {
+                        pg.property('content').then(function (content) {
                             var $ = cheerio.load(content);
                             var body = $('body');
+                            endCB(body[0], $);
                             pg.close();
                             ph.exit();
-                            endCB(body[0]);
                         });
                     });
                 }, 5000);
