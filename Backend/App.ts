@@ -113,7 +113,7 @@ export class App {
   /*
    Loading dynamic page and scroll it by 10k pix for infinite scrolls
    */
-  oadDynamicPage(url:string, endCB:Function) {
+  loadDynamicPage(url:string, endCB:Function) {
     console.log('loading dynamic page');
     var obj = [];
     var urls = [];
