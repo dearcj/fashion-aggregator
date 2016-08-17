@@ -11,8 +11,23 @@ var App = (function () {
     function App() {
         this.MAX_PREV_PAGES = 5;
     }
+    App.prototype.onePageParse = function (body, $, cb) {
+        var self = this;
+        if (!body) {
+            console.log('ERROR: NO BODY');
+            return;
+        }
+        var gc_grouper = new GC_Grouper_1.GcGrouper($, body, this.linkp);
+        gc_grouper.updateInfoTree();
+        gc_grouper.findModel(function (res) {
+            self.images = gc_grouper.images;
+            cb(res);
+        });
+    };
+    ;
     App.prototype.parse = function (linkp, cb) {
         var links = [];
+        this.linkp = linkp;
         if (~linkp.indexOf(':page')) {
             for (var i = 0; i < this.MAX_PREV_PAGES; ++i) {
                 var x = linkp.replace(":page", i.toString());
@@ -22,20 +37,8 @@ var App = (function () {
         else
             links.push(linkp);
         var self = this;
-        var f = function (body, $, cb) {
-            if (!body) {
-                console.log('ERROR: NO BODY');
-                return;
-            }
-            var gc_grouper = new GC_Grouper_1.GcGrouper($, body, linkp);
-            gc_grouper.updateInfoTree();
-            gc_grouper.findModel(function (res) {
-                self.images = gc_grouper.images;
-                cb(res);
-            });
-        };
-      u.async(this.loadDynamicPageWithInject, links, function superdone(r) {
-            u.async(f, r, function superdone2(everything) {
+        u.async(this.loadDynamicPageWithInject, links, function superdone(arrayLoadedPages) {
+            u.async(self.onePageParse, arrayLoadedPages, function superdone2(everything) {
                 cb(everything);
             });
         });
