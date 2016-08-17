@@ -42,7 +42,7 @@ export class App {
       });
     };
 
-    u.async(this.loadDynamicPageWithInject.bind(this), links, function superdone(r) {
+    u.async(this.loadDynamicPageWithInject, links, function superdone(r) {
 
       u.async(f, r, function superdone2(everything) {
         cb(everything);
