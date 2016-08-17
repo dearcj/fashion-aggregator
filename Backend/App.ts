@@ -124,7 +124,6 @@ export class App {
       return pg.then(function (page:any) {
 
         page.property('viewportSize', {width: 1024, height: 768}).then(function () {
-
           page.property('customHeaders', {}).then(
             function () {
               page.property('customHeaders', {
@@ -143,7 +142,6 @@ export class App {
                   console.log('Request ' + JSON.stringify(request, undefined, 4));
                 }, obj);
 
-
                 page.open(url).then(function (status) {
                   //console.log(page.content);
                   page.evaluate(function () {
@@ -160,10 +158,7 @@ export class App {
               });
             }
           );
-
         });
-
-
       });
     });
   }
