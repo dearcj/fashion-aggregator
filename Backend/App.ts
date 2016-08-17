@@ -42,7 +42,7 @@ export class App {
       });
     };
 
-    u.async(this.loadDynamicPage.bind(this), links, function superdone(r) {
+    u.async(this.loadDynamicPageWithInject.bind(this), links, function superdone(r) {
 
       u.async(f, r, function superdone2(everything) {
         cb(everything);
@@ -115,57 +115,151 @@ export class App {
    */
   loadDynamicPage(url:string, endCB:Function) {
     console.log('loading dynamic page');
+
     var obj = [];
     var urls = [];
+    var pg= null, ph = null;
 
-    phantom.create(['--ignore-ssl-errors=yes', '--load-images=no']).then(function (ph:any) {
-      var pg = ph.createPage();
+    phantom.create(['--ignore-ssl-errors=yes', '--load-images=no'])
+      .then(function (instance:any) {
+        ph = instance;
+        return pg = ph.createPage();
 
-      return pg.then(function (page:any) {
+      })
+      .then(function(page:any){
+        return  page.property('viewportSize', {width: 1024, height: 768});
 
-        page.property('viewportSize', {width: 1024, height: 768}).then(function () {
+      }).then(function(page:any){
+        return  page.setting('userAgent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1b2) Gecko/20081201 Firefox/3.1b2');
 
-          page.property('customHeaders', {}).then(
-            function () {
-              page.property('customHeaders', {
-                'Host': 'localhost:1337',
-                'Connection': 'keep-alive',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
-                'Accept-Encoding': 'gzip, deflate, sdch',
-                'Accept-Language': 'en-US,en;q=0.8,ru;q=0.6'
-              }).then(function () {
+      }).then(function(page:any){
+        return  page.property('customHeaders', {
+          "Accept-Language": "en-US,en;q=0.5"
+        });
 
-                page.on('onResourceRequested', function (requestData, networkRequest, obj) {
-                  urls.push(requestData.url); // this would push the url into the urls array above
-
-                  obj.push('asdasdsa');
-                  console.log('Request ' + JSON.stringify(request, undefined, 4));
-                }, obj);
-
-
-                page.open(url).then(function (status) {
-                  //console.log(page.content);
-                  page.evaluate(function () {
-                    window.scrollBy(0, 10000);
-                    return window.pageYOffset;
-                  }).then(function (r) {
-                    var x = page.property('content').then(function (content) {
-                      var $:Function = cheerio.load(content);
-                      var bod = $('body');
-                      endCB(bod[0]);
-                    });
-                  });
-                });
-              });
-            }
-          );
+      }).then(function(page:any){
+        page.on('onResourceRequested', function(requestData, networkRequest){
+          urls.push(requestData.url); // this would push the url into the urls array above
+          obj.push('asdasdsa');
+          console.log('Request ' + JSON.stringify(request, undefined, 4));
 
         });
 
+        page.on('onInitialized',true, function(){
+          page.invokeMethod('injectJs','./helpers/phantom/polyfill.js');
+
+        });
+
+        return  page.open(url);
+
+      }).then(function(status){
+
+        if(status){
+
+          pg.evaluate(function () {
+            window.scrollBy(0, 10000);
+            return window.pageYOffset;
+
+          }).then(function (r) {
+            var x = page.property('content')
+              .then(function (content) {
+                var $:Function = cheerio.load(content);
+                var bod = $('body');
+
+                pg.close();
+                ph.exit();
+                endCB(bod[0]);
+              });
+          });
+
+        }else{
+          pg.close();
+          ph.exit();
+          endCB();
+        }
+
+      })
+
+    }
+
+  loadDynamicPageWithInject(url:string, endCB:Function) {
+    console.log('loading dynamic page with polyfill');
+
+    var obj = [];
+    var urls = [];
+    var pg= null, ph = null;
+
+    phantom.create(['--ignore-ssl-errors=yes', '--load-images=no'])//, '--proxy=127.0.0.1:8888'])
+      .then(function (instance) {
+        ph = instance;
+        return ph.createPage();
+
+
+      })
+      .then(function(page){
+        pg = page;
+        return pg.property('viewportSize', {width: 1024, height: 768});
+
+
+      }).then(function(){
+      return pg.setting('userAgent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1b2) Gecko/20081201 Firefox/3.1b2')
+
+
+    }).then(function(){
+      return pg.property('customHeaders', {
+        "Accept-Language": "en-US,en;q=0.5"
+      });
+
+    }).then(function(){
+      return pg.on('onResourceRequested', false, function(requestData, networkRequest){
+        urls.push(requestData.url); // this would push the url into the urls array above
 
       });
-    });
+
+    }).then(function(){
+      return pg.on('onInitialized', true, function(){
+        this.injectJs('./helpers/phantom/polyfill.js');
+
+      });
+
+    }).then(function(){
+      return pg.open(url);
+
+    }).then(function(status){
+      if(status){
+        setTimeout(function(){
+          pg.evaluate(function () {
+            window.scrollBy(0, 10000);
+            return window.pageYOffset;
+
+          }).then(function (r) {
+            pg.property('content')
+              .then(function (content) {
+                var $ = cheerio.load(content);
+                var body = $('body');
+
+                pg.close();
+                ph.exit();
+                endCB(body[0]);
+              });
+          });
+
+        }, 5000);
+
+      }else{
+        pg.close();
+        ph.exit();
+        endCB();
+      }
+
+    }).catch(function(error){
+      console.log(error);
+
+      pg.close();
+      ph.exit();
+      endCB();
+    })
+
   }
 
 }
