@@ -49,7 +49,7 @@ export class App {
 
     u.async(this.loadDynamicPageWithInject, links, function superdone(arrayLoadedPages) {
 
-      u.async(self.onePageParse, arrayLoadedPages, function superdone2(everything) {
+      u.async(self.onePageParse.bind(self), arrayLoadedPages, function superdone2(everything) {
         cb(everything);
       });
 
