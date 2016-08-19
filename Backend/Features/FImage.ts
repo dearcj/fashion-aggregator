@@ -6,8 +6,13 @@ export class FImage extends Feature {
     images: Array<ImgObj>;
 
   extractValue(e:DOMObject) {
-    if (e.name == 'img' && this.isBigImage(e.attribs['src'])) {
-      return {value: e.attribs['src']};
+    if (e.name == 'img') {
+
+      //there should be finding link algorithm
+
+      var link = e.attribs['data-src'] ? e.attribs['data-src'] : e.attribs['src'];
+      if (this.isBigImage(link))
+        return {value: link};
     }
 
     return null;

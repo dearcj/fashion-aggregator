@@ -10,6 +10,7 @@ export class FPrice extends Feature {
     }
 
   extractValue(e:DOMObject):any {
+    if (!e || !e.data) return null;
     var sub = e.data.split(' ');
     var currency = null;
     var sl = sub.length;

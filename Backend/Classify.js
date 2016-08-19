@@ -92,6 +92,10 @@ var Classify = (function () {
             for (var i = 0; i < ll; ++i) {
                 var obj = l[i].grouper.getObjByRule(r, l[i], false);
                 var value = feature.extractValue(obj);
+              if (!value && feature.dbField == 'image') {
+                console;
+                var value = feature.extractValue(obj);
+              }
                 console.log(feature.dbField + ': ' + JSON.stringify(value));
             }
         });

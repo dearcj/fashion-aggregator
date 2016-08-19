@@ -27,7 +27,7 @@ var GcConsts = (function () {
     function GcConsts() {
         this.NULL_ELEMENT_NEGATIVE = -1000;
         this.MAX_HEAVY_COMPARSION = 3;
-        this.COMPARSION_THRESHOLD = 100;
+        this.COMPARSION_THRESHOLD = 50;
     }
     return GcConsts;
 }());
@@ -58,6 +58,16 @@ var GcGrouper = (function (_super) {
         this.linkp = linkp;
     }
     //call function func for every tree node
+    GcGrouper.getImagesFromObj = function (o) {
+        var a = [];
+        var imagesRegexp = new RegExp('(https?:\/\/.*\.(?:png|jpg))', 'i');
+        for (var prop in o.attribs) {
+            if (imagesRegexp.test(o.attribs[prop])) {
+                a.push(o.attribs[prop]);
+            }
+        }
+        return a;
+    };
     GcGrouper.prototype.collectSameOnThisLevel = function (pair) {
         var lev = pair[0].depth;
         var sameLev = [];
@@ -173,7 +183,7 @@ var GcGrouper = (function (_super) {
                 //console.log(this.isList(par.parent));
                 if (par.nextElem) {
                     var comp = this.t2tSuperposition(par, par.nextElem);
-                    //console.log(comp);
+                    console.log(comp);
                     if (comp > this.COMPARSION_THRESHOLD) {
                         var list = this.collectSameOnThisLevel([par, par.nextElem]);
                         var head = this.getCommonHead(list);
@@ -206,9 +216,12 @@ var GcGrouper = (function (_super) {
             list = [];
         var _this = this;
         if (this.body.children) {
-            traverse(this.body, function (el, i) {
-                if (el.name == 'img')
-                    list.push(el);
+            traverse(this.body, function (el) {
+                if (el.name == 'img') {
+                    var imgs = GcGrouper.getImagesFromObj(el);
+                    for (var i = 0, il = imgs.length; i < il; ++i)
+                        list.push({ el: el, linkToImage: imgs[i] });
+                }
             });
         }
         //Ok. all images collected lets check img resolution
@@ -224,7 +237,7 @@ var GcGrouper = (function (_super) {
         var baseLinkObj = url.parse(this.linkp);
         var baseLink = baseLinkObj.protocol + '//' + baseLinkObj.host;
         _.each(imgs, function (x) {
-            var u = x.attribs['src'];
+            var u = x.linkToImage;
             var p = url.parse(u);
             if (!p.protocol) {
                 u = baseLink + u;
@@ -232,7 +245,7 @@ var GcGrouper = (function (_super) {
             funcs.push(function (callback) {
                 _this.fastImageSize(u, function end(res) {
                     if (res) {
-                        res.domObject = x;
+                        res.domObject = x.el;
                         res.url = u;
                         results.push(res);
                     }

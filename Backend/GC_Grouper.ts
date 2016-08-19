@@ -49,7 +49,7 @@ export class DOMObject {
 class GcConsts {
   NULL_ELEMENT_NEGATIVE:number = -1000;
   MAX_HEAVY_COMPARSION:number = 3;
-  COMPARSION_THRESHOLD = 100;
+  COMPARSION_THRESHOLD = 50;
 }
 
 export function traverse(o:DOMObject, func:Function, onlyElements:boolean = true):void {
@@ -83,7 +83,17 @@ export class GcGrouper extends GcConsts {
   }
 
   //call function func for every tree node
+  static getImagesFromObj(o:DOMObject):Array<string> {
+    var a = [];
+    var imagesRegexp = new RegExp('(https?:\/\/.*\.(?:png|jpg))', 'i');
+    for (var prop in o.attribs) {
+      if (imagesRegexp.test(o.attribs[prop])) {
+        a.push(o.attribs[prop]);
+      }
+    }
 
+    return a;
+  }
 
   collectSameOnThisLevel(pair:Array<DOMObject>):Array<DOMObject> {
     var lev = pair[0].depth;
@@ -201,7 +211,7 @@ export class GcGrouper extends GcConsts {
         //console.log(this.isList(par.parent));
         if (par.nextElem) {
           var comp = this.t2tSuperposition(par, par.nextElem);
-          //console.log(comp);
+          console.log(comp);
           if (comp > this.COMPARSION_THRESHOLD) {
             var list:Array<DOMObject> = this.collectSameOnThisLevel([par, par.nextElem]);
 
@@ -234,13 +244,17 @@ export class GcGrouper extends GcConsts {
     });
   }
 
-  collectAllImages(list:Array<DOMObject>):Array<DOMObject> {
+  collectAllImages(list:Array<any>):Array<any> {
     if (!list) list = [];
     var _this = this;
 
     if (this.body.children) {
-      traverse(this.body, function (el, i) {
-        if (el.name == 'img') list.push(el);
+      traverse(this.body, function (el) {
+        if (el.name == 'img') {
+          var imgs = GcGrouper.getImagesFromObj(el);
+          for (var i = 0, il = imgs.length; i < il; ++i)
+            list.push({el: el, linkToImage: imgs[i]});
+        }
       });
     }
 
@@ -260,7 +274,7 @@ export class GcGrouper extends GcConsts {
     var baseLink = baseLinkObj.protocol + '//' + baseLinkObj.host;
 
     _.each(imgs, function (x) {
-      var u = x.attribs['src'];
+      var u = x.linkToImage;
       var p = url.parse(u);
       if (!p.protocol) {
         u = baseLink + u;
@@ -269,7 +283,7 @@ export class GcGrouper extends GcConsts {
       funcs.push(function (callback) {
         _this.fastImageSize(u, function end(res) {
           if (res) {
-            res.domObject = x;
+            res.domObject = x.el;
             res.url = u;
             results.push(res);
           }
