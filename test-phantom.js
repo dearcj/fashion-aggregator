@@ -5,11 +5,11 @@ var fs = require('fs');
 
 //'http://www.endclothing.com/'
 loadDynamicPage('http://www.endclothing.com/', function(){
-	
-	
+
+
 	console.log("all ok");
-	
-	
+
+
 });
 
 function loadDynamicPage(url, endCB) {
@@ -19,7 +19,7 @@ function loadDynamicPage(url, endCB) {
 	var urls = [];
 	var pg= null, ph = null;
 
-	phantom.create(['--ignore-ssl-errors=yes', '--load-images=no'])//, '--proxy=127.0.0.1:8888'])
+	phantom.create([])//, '--proxy=127.0.0.1:8888'])
 	.then(function (instance) {
 		ph = instance;
 		return ph.createPage();
@@ -28,11 +28,11 @@ function loadDynamicPage(url, endCB) {
 	})
 	.then(function(page){
 		pg = page;
-		return pg.property('viewportSize', {width: 1024, height: 768});
+		return pg.property('viewportSize', {width: 1805, height: 832});
 
 
 	}).then(function(){
-		return pg.setting('userAgent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1b2) Gecko/20081201 Firefox/3.1b2')
+		return pg.setting('userAgent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36');
 
 
 	}).then(function(){
