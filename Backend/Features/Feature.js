@@ -32,9 +32,6 @@ var Feature = (function () {
     Feature.prototype.fieldDictIntersection = function (field) {
         var sub = [];
         field = field.toLowerCase();
-        if (field.indexOf('polo ralph') >= 0) {
-            console;
-        }
         //field.split(' ');
         var sl = sub.length;
         var inf = 0;

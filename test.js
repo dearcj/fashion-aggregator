@@ -84,7 +84,11 @@ module.exports = {
 
       var cl = new Classify(pgq, gcapp.images);
 
+
       cl.loadFeatures(function complete (){
+        //cl.learnFeature('title', 'abracadabra');
+        //   cl.revertHistory(historyId)
+
         var r = cl.analyzeList(alldata);
       });
     });

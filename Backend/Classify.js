@@ -2,7 +2,9 @@
 var FImage_1 = require("./Features/FImage");
 var FBrand_1 = require("./Features/FBrand");
 var FPrice_1 = require("./Features/FPrice");
+var FTitle_1 = require("./Features/FTitle");
 var GC_Grouper_1 = require("./GC_Grouper");
+var History_1 = require("./History");
 var _ = require("underscore");
 var MathUnit = require('./MathUnit.js').MathUnit;
 var Classify = (function () {
@@ -13,6 +15,7 @@ var Classify = (function () {
         this.features = [];
         this.images = images;
         this.queryFunction = queryFunction;
+        this.history = new History_1.History(queryFunction);
     }
     Classify.prototype.onLoadedFeature = function () {
         this.featuresLoaded++;
@@ -34,7 +37,7 @@ var Classify = (function () {
         this.addFeature(new FBrand_1.FBrand(this.queryFunction));
         //this.addFeature(new FLink(this.queryFunction));
         this.addFeature(new FPrice_1.FPrice(this.queryFunction));
-        // this.addFeature(new FTitle(this.queryFunction));
+        this.addFeature(new FTitle_1.FTitle(this.queryFunction));
         this.addFeature(new FImage_1.FImage(this.queryFunction));
         this.ft('image').images = this.images;
         var self = this;
@@ -43,8 +46,25 @@ var Classify = (function () {
         });
     };
     Classify.prototype.addFeature = function (f) {
+        f.classify = this;
         this.featuresToLoad++;
         this.features.push(f);
+    };
+    Classify.prototype.revertHistory = function (hid) {
+        this.history.select(hid, function (err, r) {
+            var history = r[0];
+            if (history.action == 'learn') {
+                var f = this.ft(history.location);
+                f.dict.removeWord(history.value);
+                f.updateDictionary();
+                this.history.remove(hid);
+            }
+        }.bind(this));
+    };
+    Classify.prototype.learnFeature = function (fname, value) {
+        this.ft(fname).dict.addWord(value);
+        this.ft(fname).updateDictionary();
+        this.history.track('learn', fname, value);
     };
     Classify.prototype.analyzeList = function (l) {
         console.log('classify::analyzeList');
@@ -92,10 +112,6 @@ var Classify = (function () {
             for (var i = 0; i < ll; ++i) {
                 var obj = l[i].grouper.getObjByRule(r, l[i], false);
                 var value = feature.extractValue(obj);
-              if (!value && feature.dbField == 'image') {
-                console;
-                var value = feature.extractValue(obj);
-              }
                 console.log(feature.dbField + ': ' + JSON.stringify(value));
             }
         });

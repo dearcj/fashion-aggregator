@@ -10,8 +10,24 @@ var FTitle = (function (_super) {
     function FTitle(queryFunction) {
         _super.call(this, queryFunction, 'title');
     }
-    FTitle.prototype.extractValue = function (s) {
+    FTitle.prototype.extractValue = function (e) {
+        //brand substraction
+        if (e && e.data)
+            return e.data;
         return '';
+    };
+    FTitle.prototype.analyzeDOMElem = function (e) {
+        var obj;
+        var fcat = this.classify.ft('category');
+        var fbrand = this.classify.ft('category');
+        if (e.data) {
+            obj = fcat.fieldDictIntersection(this.extractValue(e));
+            obj.containFeature = 'category';
+        }
+        else
+            obj = { information: 0, value: null };
+        e[this.dbField] = obj;
+        return obj;
     };
     return FTitle;
 }(Feature_1.Feature));

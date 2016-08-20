@@ -1,5 +1,6 @@
 import * as BTD from '../BTreeDictionary/BTDictionary';
 import {ImgObj} from "../GC_Grouper";
+import {Classify} from "../Classify";
 declare function require(name:string): any;
 
 var _ = require("underscore");
@@ -18,7 +19,8 @@ export abstract class Feature {
     public qf: (q: string, params: Array<Object>, cv: Function) => void;
     public images: Array<ImgObj>;
   public classifyResult:ClassifyResults;
-
+  public classify:Classify;
+  
     initDictionary(cb): void {
         var self = this;
         this.dict = new BTD.BTDictionary();
@@ -37,11 +39,6 @@ export abstract class Feature {
       var sub = [];
 
       field = field.toLowerCase();
-
-
-      if (field.indexOf('polo ralph') >= 0) {
-        console;
-      }
 
       //field.split(' ');
       var sl = sub.length;

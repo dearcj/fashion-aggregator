@@ -7,6 +7,7 @@ import {FPrice} from "./Features/FPrice";
 import {FTitle} from "./Features/FTitle";
 import {DOMObject} from "./GC_Grouper";
 import {traverse} from "./GC_Grouper";
+import {History} from "./History";
 
 declare function require(name:string):any;
 var _ = require("underscore");
@@ -19,6 +20,8 @@ export class Classify {
   queryFunction:(q:string, params:Array<Object>) => void;
   images: Array<any>;
   grouper:GcGrouper;
+  history:History;
+
   private features:Array<Feature> = [];
 
   onLoadedFeature() {
@@ -43,7 +46,7 @@ export class Classify {
     this.addFeature(new FBrand(this.queryFunction));
     //this.addFeature(new FLink(this.queryFunction));
     this.addFeature(new FPrice(this.queryFunction));
-    // this.addFeature(new FTitle(this.queryFunction));
+    this.addFeature(new FTitle(this.queryFunction));
 
     this.addFeature(new FImage(this.queryFunction));
     this.ft('image').images = this.images;
@@ -57,11 +60,31 @@ export class Classify {
   constructor(queryFunction:(q:string, params:Array<Object>) => void, images: Array<any>) {
     this.images = images;
     this.queryFunction = queryFunction;
+    this.history = new History(queryFunction);
   }
 
   addFeature(f:Feature) {
+    f.classify = this;
     this.featuresToLoad++;
     this.features.push(f);
+  }
+
+  revertHistory(hid:number):void {
+    this.history.select(hid, function (err, r) {
+      var history = r[0];
+      if (history.action == 'learn') {
+        var f = this.ft(history.location);
+        f.dict.removeWord(history.value);
+        f.updateDictionary();
+        this.history.remove(hid);
+      }
+    }.bind(this));
+  }
+
+  learnFeature(fname:string, value:string):void {
+    this.ft(fname).dict.addWord(value);
+    this.ft(fname).updateDictionary();
+    this.history.track('learn', fname, value);
   }
 
   analyzeList(l:Array<DOMObject>) {
@@ -121,11 +144,7 @@ export class Classify {
         for (var i = 0; i < ll; ++i) {
           var obj = l[i].grouper.getObjByRule(r, l[i], false);
           var value = feature.extractValue(obj);
-          if (!value && feature.dbField == 'image') {
-            console;
-            var value = feature.extractValue(obj);
 
-          }
           console.log(feature.dbField + ': ' + JSON.stringify(value));
         }
       });
