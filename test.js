@@ -72,7 +72,9 @@ module.exports = {
     var x = d.save();
     d.load(x);
 
-    gcapp.parse('http://www.endclothing.com/us/clothing/blazers', function cb(res) {
+    gcapp.parse('https://www.lyst.com/shop/mens-knitwear/', function cb(res) {
+
+//      gcapp.parse('http://www.endclothing.com/us/clothing/blazers', function cb(res) {
 
 
 //    gcapp.parse('https://marketplace.asos.com/men/shirts', function cb(res) {
