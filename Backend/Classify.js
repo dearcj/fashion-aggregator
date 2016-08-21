@@ -2,6 +2,7 @@
 var FImage_1 = require("./Features/FImage");
 var FBrand_1 = require("./Features/FBrand");
 var FPrice_1 = require("./Features/FPrice");
+var FCategory_1 = require("./Features/FCategory");
 var FTitle_1 = require("./Features/FTitle");
 var GC_Grouper_1 = require("./GC_Grouper");
 var History_1 = require("./History");
@@ -38,6 +39,7 @@ var Classify = (function () {
         //this.addFeature(new FLink(this.queryFunction));
         this.addFeature(new FPrice_1.FPrice(this.queryFunction));
         this.addFeature(new FTitle_1.FTitle(this.queryFunction));
+      this.addFeature(new FCategory_1.FCategory(this.queryFunction));
         this.addFeature(new FImage_1.FImage(this.queryFunction));
         this.ft('image').images = this.images;
         var self = this;

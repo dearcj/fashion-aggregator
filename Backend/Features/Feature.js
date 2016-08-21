@@ -29,14 +29,10 @@ var Feature = (function () {
                 }
             });
     };
-    Feature.prototype.fieldDictIntersection = function (field) {
+    Feature.prototype.textToStringArray = function (f) {
+        f = f.toLowerCase();
         var sub = [];
-        field = field.toLowerCase();
-        //field.split(' ');
-        var sl = sub.length;
-        var inf = 0;
-        var value = null;
-        var str = field.slice(0);
+        var str = f.slice(0);
         sub.push(str);
         while (str != '') {
             var inx = str.indexOf(" ");
@@ -48,6 +44,12 @@ var Feature = (function () {
             if (str != '')
                 sub.push(str);
         }
+        return sub;
+    };
+    Feature.prototype.fieldDictIntersection = function (field) {
+        field = field.toLowerCase();
+        //field.split(' ');
+        var sub = this.textToStringArray(field);
         //vintage tommy hilfiger garbage
         // 1) as is
         // 2) tommy hilfiger garbage

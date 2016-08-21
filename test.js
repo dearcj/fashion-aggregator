@@ -7,6 +7,7 @@ var dict = require('./Backend/BTreeDictionary/BTDictionary.js');
 var FCategory = require('./Backend/Features/FCategory.js').FCategory;
 var FPrice = require('./Backend/Features/FPrice.js').FPrice;
 var FBrand = require('./Backend/Features/FBrand.js').FBrand;
+var datainit = require('./datainit.js');
 
 var AppClass = require('./Backend/App.js');
 var gcapp = new AppClass.App();
@@ -41,22 +42,20 @@ module.exports = {
     d.removeWord('adobe');
 
 
-    /* var f = new FBrand(pgq);
-     f.initDictionary(function () {
-     f.dict.addArray(brands);
+    /*  var b = new FBrand(pgq);
+     b.initDictionary(function () {
+     b.dict.addArray(datainit.brands);
 
 
-     f.updateDictionary();
-     });*/
-
-    /* var f = new FCategory(pgq);
-     f.initDictionary(function () {
-     f.dict.addArray(cat2);
-     f.dict.addArray(shoes);
-
-
-     f.updateDictionary();
-     });*/
+     b.updateDictionary();
+     });
+     */
+    var c = new FCategory(pgq);
+    c.initDictionary(function () {
+      c.dict.addArray(datainit.shoes);
+      c.dict.addArray(datainit.categories);
+      c.updateDictionary();
+    });
 
     /* var f = new FPrice(pgq);
      f.initDictionary(function () {
@@ -88,7 +87,7 @@ module.exports = {
       cl.loadFeatures(function complete (){
         //cl.learnFeature('title', 'abracadabra');
         //   cl.revertHistory(historyId)
-
+        var x = cl.ft('category').dict.checkWord('blazer');
         var r = cl.analyzeList(alldata);
       });
     });

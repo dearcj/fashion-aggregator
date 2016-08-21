@@ -4,6 +4,7 @@ import {FImage} from "./Features/FImage";
 import {FBrand} from "./Features/FBrand";
 import {FLink} from "./Features/FLink";
 import {FPrice} from "./Features/FPrice";
+import {FCategory} from "./Features/FCategory";
 import {FTitle} from "./Features/FTitle";
 import {DOMObject} from "./GC_Grouper";
 import {traverse} from "./GC_Grouper";
@@ -47,7 +48,7 @@ export class Classify {
     //this.addFeature(new FLink(this.queryFunction));
     this.addFeature(new FPrice(this.queryFunction));
     this.addFeature(new FTitle(this.queryFunction));
-
+    this.addFeature(new FCategory(this.queryFunction));
     this.addFeature(new FImage(this.queryFunction));
     this.ft('image').images = this.images;
 
