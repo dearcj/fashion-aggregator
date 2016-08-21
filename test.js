@@ -50,12 +50,14 @@ module.exports = {
      b.updateDictionary();
      });
      */
-    var c = new FCategory(pgq);
+
+
+    /*    var c = new FCategory(pgq);
     c.initDictionary(function () {
       c.dict.addArray(datainit.shoes);
       c.dict.addArray(datainit.categories);
       c.updateDictionary();
-    });
+     });*/
 
     /* var f = new FPrice(pgq);
      f.initDictionary(function () {

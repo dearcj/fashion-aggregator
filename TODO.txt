@@ -1,1 +1,22 @@
-1) Dynamic websites / Angular / Infinite Scroll Problem
+1) Dynamic websites / Angular / Infinite Scroll Problem - done
+2) title tracking - highest priority
+
+
+make colors feature tracking
+set colors initial
+
+
+way to learn brands. brands extraction from title feature isn't possible
+or maybe collect a possible brands for manual submit
+(brands I can track from lyst.com or ebay
+also need to test lyst.com
+)
+
+same with category
+
+
+
+the items tracking itself:
+
+save items with hash
+build hash based on features
