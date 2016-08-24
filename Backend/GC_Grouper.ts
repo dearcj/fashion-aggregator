@@ -85,7 +85,7 @@ export class GcGrouper extends GcConsts {
   //call function func for every tree node
   static getImagesFromObj(o:DOMObject):Array<string> {
     var a = [];
-    var imagesRegexp = new RegExp('(https?:\/\/.*\.(?:png|jpg))', 'i');
+    var imagesRegexp = new RegExp('(https?:\/\/.*\.(?:png|jpg|jpeg))', 'i');
     for (var prop in o.attribs) {
       if (imagesRegexp.test(o.attribs[prop])) {
         a.push(o.attribs[prop]);
@@ -131,7 +131,8 @@ export class GcGrouper extends GcConsts {
     var cnt = ruleArr.length;
     for (var i = startInx; i < cnt; ++i) {
       var inx:number = parseInt(ruleArr[i]);
-      if (baseElem[childArr].length <= inx) return null;
+
+      if (!baseElem[childArr] || baseElem[childArr].length <= inx) return null;
       baseElem = baseElem[childArr][ruleArr[i]];
     }
     return baseElem;
@@ -397,6 +398,8 @@ export class GcGrouper extends GcConsts {
     t = t.replace(/(\r\n|\n|\r)/gm, ""); //remove enters, breaklines
     t = t.replace(/(\n\t|\n|\t)/gm, ""); //same
     t = t.replace(/\u00a0/g, ""); //same
+
+    t = t.trim();
     return t;
   }
 

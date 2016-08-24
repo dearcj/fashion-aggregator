@@ -60,7 +60,7 @@ var GcGrouper = (function (_super) {
     //call function func for every tree node
     GcGrouper.getImagesFromObj = function (o) {
         var a = [];
-        var imagesRegexp = new RegExp('(https?:\/\/.*\.(?:png|jpg))', 'i');
+      var imagesRegexp = new RegExp('(https?:\/\/.*\.(?:png|jpg|jpeg))', 'i');
         for (var prop in o.attribs) {
             if (imagesRegexp.test(o.attribs[prop])) {
                 a.push(o.attribs[prop]);
@@ -104,7 +104,7 @@ var GcGrouper = (function (_super) {
         var cnt = ruleArr.length;
         for (var i = startInx; i < cnt; ++i) {
             var inx = parseInt(ruleArr[i]);
-            if (baseElem[childArr].length <= inx)
+          if (!baseElem[childArr] || baseElem[childArr].length <= inx)
                 return null;
             baseElem = baseElem[childArr][ruleArr[i]];
         }
@@ -358,6 +358,7 @@ var GcGrouper = (function (_super) {
         t = t.replace(/(\r\n|\n|\r)/gm, ""); //remove enters, breaklines
         t = t.replace(/(\n\t|\n|\t)/gm, ""); //same
         t = t.replace(/\u00a0/g, ""); //same
+      t = t.trim();
         return t;
     };
     GcGrouper.prototype.collectTextBelow = function (elem, depth) {

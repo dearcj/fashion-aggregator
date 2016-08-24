@@ -1,18 +1,22 @@
 import { Feature } from "./Feature";
 import {DOMObject} from "../GC_Grouper";
 import {ImgObj} from "../GC_Grouper";
+import {GcGrouper} from "../GC_Grouper";
 
 export class FImage extends Feature {
     images: Array<ImgObj>;
 
   extractValue(e:DOMObject) {
-    if (e.name == 'img') {
+    if (e && e.name == 'img') {
 
       //there should be finding link algorithm
 
-      var link = e.attribs['data-src'] ? e.attribs['data-src'] : e.attribs['src'];
-      if (this.isBigImage(link))
-        return {value: link};
+      var imgs = GcGrouper.getImagesFromObj(e);
+      for (var i = 0, il = imgs.length; i < il; ++i) {
+        if (this.isBigImage(imgs[i])) {
+          return {value: imgs[i]};
+        }
+      }
     }
 
     return null;

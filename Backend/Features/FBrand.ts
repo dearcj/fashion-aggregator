@@ -3,8 +3,10 @@ import {DOMObject} from "../GC_Grouper";
 
 export class FBrand extends Feature {
 
-  extractValue(e:DOMObject) {
+  extractValue(e:DOMObject, getAll:boolean = false) {
     if (!e) return null;
+
+    if (getAll) return e.data;
 
     var value = '';
     var s = this.textToStringArray(e.data);

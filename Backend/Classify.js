@@ -34,12 +34,10 @@ var Classify = (function () {
     };
     Classify.prototype.loadFeatures = function (allLoaded) {
         this.allFeaturesLoaded = allLoaded;
-        //this.addFeature(new FImage(this.queryFunction));
         this.addFeature(new FBrand_1.FBrand(this.queryFunction));
-        //this.addFeature(new FLink(this.queryFunction));
         this.addFeature(new FPrice_1.FPrice(this.queryFunction));
         this.addFeature(new FTitle_1.FTitle(this.queryFunction));
-      this.addFeature(new FCategory_1.FCategory(this.queryFunction));
+        this.addFeature(new FCategory_1.FCategory(this.queryFunction));
         this.addFeature(new FImage_1.FImage(this.queryFunction));
         this.ft('image').images = this.images;
         var self = this;
@@ -66,6 +64,7 @@ var Classify = (function () {
     Classify.prototype.learnFeature = function (fname, value) {
         this.ft(fname).dict.addWord(value);
         this.ft(fname).updateDictionary();
+        console.log(fname + ' learned: ' + value);
         this.history.track('learn', fname, value);
     };
     Classify.prototype.analyzeList = function (l) {
@@ -74,6 +73,7 @@ var Classify = (function () {
         _.each(this.features, function (el) {
             el.classifyResult = {
                 information: 0,
+                density: 0,
                 rule: null,
                 elements: null
             };
@@ -95,12 +95,10 @@ var Classify = (function () {
             //console.log(stack);
             _.each(this.features, function (feature) {
                 var res = feature.analyzeList(stack);
-                if (feature.dbField == 'brand') {
-                    console.log(res.information);
-                }
                 if (res.information > feature.classifyResult.information)
                     feature.classifyResult = {
                         information: res.information,
+                        density: res.density,
                         elements: stack,
                         rule: rule
                     };
@@ -108,19 +106,45 @@ var Classify = (function () {
             //ANALYZE STACK
             //get rule of el
         }.bind(this), false);
-        var len = this.features[0].classifyResult.elements.length;
-        _.each(this.features, function (feature) {
-            var r = feature.classifyResult.rule;
-            for (var i = 0; i < ll; ++i) {
-                var obj = l[i].grouper.getObjByRule(r, l[i], false);
-                var value = feature.extractValue(obj);
-                console.log(feature.dbField + ': ' + JSON.stringify(value));
+        var objs = [];
+        for (var i = 0; i < ll; ++i) {
+            var trackedObj = {};
+            _.each(this.features, function (feature) {
+                console.log(feature.dbField, ' inf = ' + feature.classifyResult.information, ' den =' + feature.classifyResult.density);
+                if (feature.classifyResult.density > 0.95) {
+                    var getAll = true;
+                }
+                else
+                    getAll = false;
+                var r = feature.classifyResult.rule;
+                if (r) {
+                    var obj = l[i].grouper.getObjByRule(r, l[i], false);
+                    var value = feature.extractValue(obj, getAll);
+                }
+                else {
+                    value = null;
+                }
+                trackedObj[feature.dbField] = value;
+                trackedObj['inf-' + feature.dbField] = feature.classifyResult.information;
+                trackedObj['den-' + feature.dbField] = feature.classifyResult.information;
+            });
+            objs.push(trackedObj);
+            console.log(JSON.stringify(trackedObj));
+        }
+        _.each(objs, function (obj) {
+            this.saveAndLearn(obj);
+            if (!obj.title || !obj.brand) {
+                console;
             }
-        });
+            if (obj.title)
+                this.learnFeature('title', obj.title);
+            if (obj.brand)
+                this.learnFeature('brand', obj.brand);
+        }.bind(this));
+        console.log(objs.length);
         return res;
     };
-    Classify.prototype.learn = function (featureName) {
-        if (featureName === void 0) { featureName = null; }
+    Classify.prototype.saveAndLearn = function (obj) {
     };
     return Classify;
 }());

@@ -91,7 +91,7 @@ module.exports = {
       cl.loadFeatures(function complete (){
         //cl.learnFeature('title', 'abracadabra');
         //   cl.revertHistory(historyId)
-        var x = cl.ft('category').dict.checkWord('blazer');
+//        var x = cl.ft('category').dict.checkWord('blazer');
         var r = cl.analyzeList(alldata);
       });
     });

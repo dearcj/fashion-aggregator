@@ -16,7 +16,7 @@ var request = require('requestretry');
 export class App {
 
   MAX_PREV_PAGES:number = 5;
-  images: Array<ImgObj>;
+  images:Array<ImgObj>;
   linkp:string;
 
   onePageParse(body, $, cb):void {
@@ -28,6 +28,7 @@ export class App {
 
     var gc_grouper = new GcGrouper($, body, this.linkp);
     gc_grouper.updateInfoTree();
+    var arr = gc_grouper.$('.product-feed');
     gc_grouper.findModel(function (res) {
       self.images = gc_grouper.images;
       cb(res);
@@ -65,36 +66,36 @@ export class App {
   loadStaticPage(url:string, endCB:Function) {
     console.log('loading static page: ' + url);
 
-   /* phantom.create().then(function (ph:any) {
-      return ph.createPage().then(function (page:any) {
-        page.open(url).then(function (status) {
-          console.log(page.content);
-          page.evaluate(function () {
-            window.scrollBy(0, 10000);
-            return window.pageYOffset;
-          }).then(function (r) {
-            var x = page.property('content').then(function (content) {
-              var $:Function = cheerio.load(content);
-              var bod = $('body');
-              endCB(bod);
-            });
-          });
-        });
-      });
-    });*/
+    /* phantom.create().then(function (ph:any) {
+     return ph.createPage().then(function (page:any) {
+     page.open(url).then(function (status) {
+     console.log(page.content);
+     page.evaluate(function () {
+     window.scrollBy(0, 10000);
+     return window.pageYOffset;
+     }).then(function (r) {
+     var x = page.property('content').then(function (content) {
+     var $:Function = cheerio.load(content);
+     var bod = $('body');
+     endCB(bod);
+     });
+     });
+     });
+     });
+     });*/
 
 
     /* u.GET(url, function (error, response) {
-      if (error) {
-        endCB(null, null);
-      } else {
+     if (error) {
+     endCB(null, null);
+     } else {
 
-        var $:Function = cheerio.load(response.body);
-        console.log(response.body);
-        var bod = $('body')[0];
-        endCB(bod, $);
-      }
-    });*/
+     var $:Function = cheerio.load(response.body);
+     console.log(response.body);
+     var bod = $('body')[0];
+     endCB(bod, $);
+     }
+     });*/
 
     request({
       uri: url,
@@ -169,80 +170,90 @@ export class App {
 
   loadDynamicPageWithInject(url:string, endCB:Function) {
     console.log('loading dynamic page with polyfill');
-
+    var pages = 4;
     var obj = [];
     var urls = [];
-    var pg= null, ph = null;
+    var pg = null, ph = null;
+
+
+    var loadNewPage = function (x) {
+      return pg.evaluate(function (offs) {
+        window.scrollBy(0, offs);
+        return window.pageYOffset;
+
+      }, x)
+    };
+    0
+
+    var retrieveContent = function () {
+      pg.property('content').then(function (content) {
+        console.log(content.length);
+        var $ = cheerio.load(content, {normalizeWhitespaces: true, xmlMode: true});
+        var body = $('body');
+
+        endCB(body[0], $);
+        pg.close();
+        ph.exit();
+      });
+    }
 
     phantom.create(['--ignore-ssl-errors=yes', '--load-images=no'])//, '--proxy=127.0.0.1:8888'])
       .then(function (instance) {
         ph = instance;
         return ph.createPage();
-
-
       })
-      .then(function(page){
+      .then(function (page) {
         pg = page;
         return pg.property('viewportSize', {width: 1024, height: 768});
+      })
+      .then(function () {
+        return pg.setting('userAgent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1b2) Gecko/20081201 Firefox/3.1b2')
+      })
+      .then(function () {
+        return pg.property('customHeaders', {
+          "Accept-Language": "en-US,en;q=0.5"
+        });
+      })
+      .then(function () {
+        return pg.on('onResourceRequested', false, function (requestData, networkRequest) {
+          urls.push(requestData.url); // this would push the url into the urls array above
+        });
+      })
+      .then(function () {
+        return pg.on('onInitialized', true, function () {
+          this.injectJs('./helpers/phantom/polyfill.js');
 
+        });
+      })
+      .then(function () {
+        return pg.open(url);
+      })
+      .then(function (status) {
+          if (status) {
+            setTimeout(function () {
+              //BASIC STUFF LOADED
+              for (var i = 0; i < pages; ++i) {
+                setTimeout(loadNewPage.bind(this, i * 2000), i * 2000);
+              }
 
-      }).then(function(){
-      return pg.setting('userAgent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1b2) Gecko/20081201 Firefox/3.1b2')
+              setTimeout(retrieveContent, i * 2000);
+            }, 500);
+          } else {
+      pg.close();
+      ph.exit();
+      endCB();
+          }
 
+  }
+      ).catch(
+      function (error) {
+        console.log(error);
 
-    }).then(function(){
-      return pg.property('customHeaders', {
-        "Accept-Language": "en-US,en;q=0.5"
-      });
-
-    }).then(function(){
-      return pg.on('onResourceRequested', false, function(requestData, networkRequest){
-        urls.push(requestData.url); // this would push the url into the urls array above
-
-      });
-
-    }).then(function(){
-      return pg.on('onInitialized', true, function(){
-        this.injectJs('./helpers/phantom/polyfill.js');
-
-      });
-
-    }).then(function(){
-      return pg.open(url);
-
-    }).then(function(status){
-      if(status){
-        setTimeout(function(){
-          pg.evaluate(function () {
-            window.scrollBy(0, 10000);
-            return window.pageYOffset;
-
-          }).then(function (r) {
-            pg.property('content').then(function (content) {
-                var $ = cheerio.load(content);
-                var body = $('body');
-
-              endCB(body[0], $);
-                pg.close();
-                ph.exit();
-            });
-          });
-
-        }, 5000);
-
-      }else{
         pg.close();
         ph.exit();
         endCB();
       }
-
-    }).catch(function(error){
-      console.log(error);
-
-      pg.close();
-      ph.exit();
-      endCB();
-    })
+    )
 
   }
 

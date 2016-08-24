@@ -78,11 +78,24 @@ var Feature = (function () {
     Feature.prototype.analyzeList = function (l) {
         var i = 0;
         var self = this;
+        var density = 0;
+        var densityCount = 0;
         _.each(l, function (x) {
-            i += self.analyzeDOMElem(x).information;
+            var inf = self.analyzeDOMElem(x).information;
+            i += inf;
+            if (self.dbField == 'brand' && inf == 1)
+                console;
+            if (inf > 0.5) {
+                density += inf;
+                densityCount++;
+            }
         }.bind(this));
         var avg = i / l.length;
-        return { information: avg };
+        if (densityCount == 0)
+            density = 0;
+        else
+            density = density / densityCount;
+        return { information: avg, density: density };
     };
     Feature.prototype.analyzeDOMElem = function (e) {
         return null;

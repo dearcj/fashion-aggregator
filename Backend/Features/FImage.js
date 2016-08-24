@@ -5,17 +5,21 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Feature_1 = require("./Feature");
+var GC_Grouper_1 = require("../GC_Grouper");
 var FImage = (function (_super) {
     __extends(FImage, _super);
     function FImage(queryFunction) {
         _super.call(this, queryFunction, 'image');
     }
     FImage.prototype.extractValue = function (e) {
-        if (e.name == 'img') {
+      if (e && e.name == 'img') {
             //there should be finding link algorithm
-            var link = e.attribs['data-src'] ? e.attribs['data-src'] : e.attribs['src'];
-            if (this.isBigImage(link))
-                return { value: link };
+        var imgs = GC_Grouper_1.GcGrouper.getImagesFromObj(e);
+        for (var i = 0, il = imgs.length; i < il; ++i) {
+          if (this.isBigImage(imgs[i])) {
+            return {value: imgs[i]};
+          }
+        }
         }
         return null;
     };
