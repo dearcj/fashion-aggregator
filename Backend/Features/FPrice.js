@@ -12,8 +12,8 @@ var FPrice = (function (_super) {
         _super.call(this, queryFunction, 'price');
     }
     FPrice.prototype.extractValue = function (e) {
-      if (!e || !e.data)
-        return null;
+        if (!e || !e.data)
+            return null;
         var sub = e.data.split(' ');
         var currency = null;
         var sl = sub.length;

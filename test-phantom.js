@@ -4,7 +4,7 @@ var fs = require('fs');
 
 
 //'http://www.endclothing.com/'
-loadDynamicPage('http://www.endclothing.com/', function(){
+loadDynamicPage('http://www.endclothing.com/us/brands/bamford-grooming-department', function(){
 
 
 	console.log("all ok");
@@ -19,7 +19,7 @@ function loadDynamicPage(url, endCB) {
 	var urls = [];
 	var pg= null, ph = null;
 
-	phantom.create([])//, '--proxy=127.0.0.1:8888'])
+	phantom.create(['--ignore-ssl-errors=yes', '--load-images=yes'])
 	.then(function (instance) {
 		ph = instance;
 		return ph.createPage();
@@ -28,11 +28,11 @@ function loadDynamicPage(url, endCB) {
 	})
 	.then(function(page){
 		pg = page;
-		return pg.property('viewportSize', {width: 1805, height: 832});
+		return pg.property('viewportSize', {width: 1024, height: 768});
 
 
 	}).then(function(){
-		return pg.setting('userAgent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36');
+		return pg.setting('userAgent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; zh-CN; rv:1.9.2.8) Gecko/20100722 Firefox/3.6.8')
 
 
 	}).then(function(){

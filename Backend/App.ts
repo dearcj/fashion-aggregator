@@ -28,7 +28,6 @@ export class App {
 
     var gc_grouper = new GcGrouper($, body, this.linkp);
     gc_grouper.updateInfoTree();
-    var arr = gc_grouper.$('.product-feed');
     gc_grouper.findModel(function (res) {
       self.images = gc_grouper.images;
       cb(res);

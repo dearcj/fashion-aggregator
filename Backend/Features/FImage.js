@@ -12,14 +12,14 @@ var FImage = (function (_super) {
         _super.call(this, queryFunction, 'image');
     }
     FImage.prototype.extractValue = function (e) {
-      if (e && e.name == 'img') {
+        if (e && e.name == 'img') {
             //there should be finding link algorithm
-        var imgs = GC_Grouper_1.GcGrouper.getImagesFromObj(e);
-        for (var i = 0, il = imgs.length; i < il; ++i) {
-          if (this.isBigImage(imgs[i])) {
-            return {value: imgs[i]};
-          }
-        }
+            var imgs = GC_Grouper_1.GcGrouper.getImagesFromObj(e);
+            for (var i = 0, il = imgs.length; i < il; ++i) {
+                if (this.isBigImage(imgs[i])) {
+                    return { value: imgs[i] };
+                }
+            }
         }
         return null;
     };

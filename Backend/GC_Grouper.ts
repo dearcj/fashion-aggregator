@@ -196,10 +196,32 @@ export class GcGrouper extends GcConsts {
     return list2[0];
   }
 
+  static isVisible(domo): boolean {
+      var s = domo.attribs['style'];
+      s = GcGrouper.updateTextField(s);
+      if (s.indexOf('visibility:hidden') >=0 || s.indexOf('display:none') >=0) return false;
+      if (domo && domo.parent) {
+        return GcGrouper.isVisible(domo.parent);
+      }
+
+    return true;
+  }
+
   findModel(resCB:Function) {
     this.findImages(function (res:Array<ImgObj>) {
       this.images = res;
-      var img = res[3].domObject;
+
+      _.each(res, function (el) {
+        console.log();
+      });
+
+      var x = _.filter(res, function (el) {
+        return GcGrouper.isVisible(el.domObject);// (el.domObject.attribs['style'].indexOf('visibility: hidden') < 0)
+      }.bind(this));
+
+
+
+      var img = x[0].domObject;
       var self = this;
       if (res.length == 0) {
         resCB(null);
@@ -393,7 +415,7 @@ export class GcGrouper extends GcConsts {
   }
 
 
-  updateTextField(t:string):string {
+  static updateTextField(t:string):string {
     t = t.replace(/\s\s+/g, ' ');//tabs and multiple spaces to space
     t = t.replace(/(\r\n|\n|\r)/gm, ""); //remove enters, breaklines
     t = t.replace(/(\n\t|\n|\t)/gm, ""); //same
@@ -437,7 +459,7 @@ export class GcGrouper extends GcConsts {
           if (elem.children && elem.type != 'text') {
             elem.data = _this.collectTextBelow(elem, 2);
           }
-          elem.data = _this.updateTextField(elem.data);
+          elem.data = GcGrouper.updateTextField(elem.data);
           body.childrenElem.push(elem);
           if (body.childrenElem.length > 1) {
             elem.prevElem = body.childrenElem[body.childrenElem.length - 2];

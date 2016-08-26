@@ -60,7 +60,7 @@ var GcGrouper = (function (_super) {
     //call function func for every tree node
     GcGrouper.getImagesFromObj = function (o) {
         var a = [];
-      var imagesRegexp = new RegExp('(https?:\/\/.*\.(?:png|jpg|jpeg))', 'i');
+        var imagesRegexp = new RegExp('(https?:\/\/.*\.(?:png|jpg|jpeg))', 'i');
         for (var prop in o.attribs) {
             if (imagesRegexp.test(o.attribs[prop])) {
                 a.push(o.attribs[prop]);
@@ -104,7 +104,7 @@ var GcGrouper = (function (_super) {
         var cnt = ruleArr.length;
         for (var i = startInx; i < cnt; ++i) {
             var inx = parseInt(ruleArr[i]);
-          if (!baseElem[childArr] || baseElem[childArr].length <= inx)
+            if (!baseElem[childArr] || baseElem[childArr].length <= inx)
                 return null;
             baseElem = baseElem[childArr][ruleArr[i]];
         }
@@ -169,10 +169,26 @@ var GcGrouper = (function (_super) {
         }
         return list2[0];
     };
+    GcGrouper.isVisible = function (domo) {
+        var s = domo.attribs['style'];
+        s = GcGrouper.updateTextField(s);
+        if (s.indexOf('visibility:hidden') >= 0 || s.indexOf('display:none') >= 0)
+            return false;
+        if (domo && domo.parent) {
+            return GcGrouper.isVisible(domo.parent);
+        }
+        return true;
+    };
     GcGrouper.prototype.findModel = function (resCB) {
         this.findImages(function (res) {
             this.images = res;
-            var img = res[3].domObject;
+            _.each(res, function (el) {
+                console.log();
+            });
+            var x = _.filter(res, function (el) {
+                return GcGrouper.isVisible(el.domObject); // (el.domObject.attribs['style'].indexOf('visibility: hidden') < 0)
+            }.bind(this));
+            var img = x[0].domObject;
             var self = this;
             if (res.length == 0) {
                 resCB(null);
@@ -353,12 +369,12 @@ var GcGrouper = (function (_super) {
             comparsionLevel = -5;
         return comparsionLevel;
     };
-    GcGrouper.prototype.updateTextField = function (t) {
+    GcGrouper.updateTextField = function (t) {
         t = t.replace(/\s\s+/g, ' '); //tabs and multiple spaces to space
         t = t.replace(/(\r\n|\n|\r)/gm, ""); //remove enters, breaklines
         t = t.replace(/(\n\t|\n|\t)/gm, ""); //same
         t = t.replace(/\u00a0/g, ""); //same
-      t = t.trim();
+        t = t.trim();
         return t;
     };
     GcGrouper.prototype.collectTextBelow = function (elem, depth) {
@@ -398,7 +414,7 @@ var GcGrouper = (function (_super) {
                     if (elem.children && elem.type != 'text') {
                         elem.data = _this.collectTextBelow(elem, 2);
                     }
-                    elem.data = _this.updateTextField(elem.data);
+                    elem.data = GcGrouper.updateTextField(elem.data);
                     body.childrenElem.push(elem);
                     if (body.childrenElem.length > 1) {
                         elem.prevElem = body.childrenElem[body.childrenElem.length - 2];
