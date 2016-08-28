@@ -11,7 +11,7 @@ module.exports.policies = {
   UserController: {
     '*': r.rolePolicy([r.ROLE_ADMIN])
   },
-  WebsitesController: {
+  WebsiteController: {
     '*': r.rolePolicy([r.ROLE_ADMIN]),
   }
 

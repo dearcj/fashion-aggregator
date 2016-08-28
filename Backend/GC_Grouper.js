@@ -43,7 +43,8 @@ function traverse(o, func, onlyElements) {
     for (var i = 0; i < count; ++i) {
         if (arr[i]) {
             func.call(this, arr[i], i);
-            traverse(arr[i], func);
+            if (arr[i])
+                traverse(arr[i], func);
         }
     }
 }
@@ -171,8 +172,9 @@ var GcGrouper = (function (_super) {
     };
     GcGrouper.isVisible = function (domo) {
         var s = domo.attribs['style'];
-        s = GcGrouper.updateTextField(s);
-        if (s.indexOf('visibility:hidden') >= 0 || s.indexOf('display:none') >= 0)
+        if (s)
+            s = s.replace(/ /g, "");
+        if (s && (s.indexOf('visibility:hidden') >= 0 || s.indexOf('display:none') >= 0))
             return false;
         if (domo && domo.parent) {
             return GcGrouper.isVisible(domo.parent);
@@ -182,9 +184,7 @@ var GcGrouper = (function (_super) {
     GcGrouper.prototype.findModel = function (resCB) {
         this.findImages(function (res) {
             this.images = res;
-            _.each(res, function (el) {
-                console.log();
-            });
+            //use only visible images
             var x = _.filter(res, function (el) {
                 return GcGrouper.isVisible(el.domObject); // (el.domObject.attribs['style'].indexOf('visibility: hidden') < 0)
             }.bind(this));

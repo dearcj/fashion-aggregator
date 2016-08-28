@@ -6,6 +6,12 @@ var FCategory_1 = require("./Features/FCategory");
 var FTitle_1 = require("./Features/FTitle");
 var GC_Grouper_1 = require("./GC_Grouper");
 var History_1 = require("./History");
+var crypto = require("crypto");
+var curr = require("./Utils/Currencies.js");
+var u = require('./MathUnit.js').MathUnit;
+var request = require('requestretry');
+var buffer = require('buffer');
+var hasha = require('hasha');
 var _ = require("underscore");
 var MathUnit = require('./MathUnit.js').MathUnit;
 var Classify = (function () {
@@ -131,20 +137,83 @@ var Classify = (function () {
             objs.push(trackedObj);
             console.log(JSON.stringify(trackedObj));
         }
-        _.each(objs, function (obj) {
-            this.saveAndLearn(obj);
-            if (!obj.title || !obj.brand) {
-                console;
-            }
-            if (obj.title)
-                this.learnFeature('title', obj.title);
-            if (obj.brand)
-                this.learnFeature('brand', obj.brand);
+        this.loadFullImages(objs, function () {
+            _.each(objs, function (obj) {
+                this.saveItem(obj);
+                if (obj.title)
+                    this.learnFeature('title', obj.title);
+                if (obj.brand)
+                    this.learnFeature('brand', obj.brand);
+            }.bind(this));
         }.bind(this));
-        console.log(objs.length);
         return res;
     };
-    Classify.prototype.saveAndLearn = function (obj) {
+    Classify.generateHash = function (o, imageBuffer) {
+        var imHash = o.image ? hasha(imageBuffer) : '';
+        var str = [o.title, o.brand, imHash].join('_');
+        return crypto.createHash('md5').update(str).digest('hex');
+    };
+    Classify.prototype.loadFullImages = function (arr, cb) {
+        u.async(function (object, cb) {
+            if (!object.image) {
+                cb(null);
+                return;
+            }
+            request({
+                uri: object.image.value,
+                maxAttempts: 5,
+                retryDelay: 5000,
+                retryStrategy: request.RetryStrategies.HTTPOrNetworkError,
+                encoding: null
+            }, function (error, response, body) {
+                object.image_data = body;
+                cb(body);
+            });
+        }, arr, function superdone(allResults) {
+            cb(allResults);
+        });
+    };
+    Classify.prototype.isUnique = function (hash, cb) {
+        this.queryFunction('select count(*) from items where hash = $1', [hash], function (err, res) {
+            if (res[0].count == 0)
+                cb(true);
+            else
+                cb(false);
+        });
+    };
+    Classify.prototype.saveItem = function (obj) {
+        obj.hash = Classify.generateHash(obj, obj.image_data);
+        if (obj.price)
+            var priceCurrCode = curr.getCurrency(obj.price.curr);
+        if (obj.image_data) {
+        }
+        this.isUnique(obj.hash, function (res) {
+            var params = [obj.hash,
+                new Date(),
+                obj.price ? obj.price.value : null,
+                obj.price ? priceCurrCode : null,
+                obj.category,
+                obj.image ? obj.image.value : null,
+                obj.image_data];
+            if (res) {
+                this.queryFunction('INSERT INTO items ' +
+                    '(hash, create_date, price, price_currency, category, image_link, image_data) VALUES ($1, $2, $3, $4, $5, $6, $7)', params, function (err, res) {
+                    console;
+                });
+            }
+            else {
+                this.queryFunction('UPDATE items set ' +
+                    'update_date = $2, ' +
+                    'price = $3, ' +
+                    'price_currency = $4, ' +
+                    'category = $5, ' +
+                    'image_link = $6, ' +
+                    'image_data = $7 ' +
+                    'where hash = $1 ', params, function (err, res) {
+                    console;
+                });
+            }
+        }.bind(this));
     };
     return Classify;
 }());

@@ -7,8 +7,7 @@ var User = {
     email     : { type: 'email' },
     password  : { type: 'string' },
     passports : { collection: 'Passport', via: 'user' },
-    websites : { collection: 'Websites', via: 'user' }
-
+    websites: {collection: 'Website', via: 'user'}
   }
 };
 

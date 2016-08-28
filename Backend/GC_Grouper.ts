@@ -49,7 +49,7 @@ export class DOMObject {
 class GcConsts {
   NULL_ELEMENT_NEGATIVE:number = -1000;
   MAX_HEAVY_COMPARSION:number = 3;
-  COMPARSION_THRESHOLD = 50;
+  COMPARSION_THRESHOLD:number = 50;
 }
 
 export function traverse(o:DOMObject, func:Function, onlyElements:boolean = true):void {
@@ -63,6 +63,7 @@ export function traverse(o:DOMObject, func:Function, onlyElements:boolean = true
     if (arr[i]) {
       func.call(this, arr[i], i);
 
+      if (arr[i])
       traverse(arr[i], func);
     }
   }
@@ -198,8 +199,12 @@ export class GcGrouper extends GcConsts {
 
   static isVisible(domo): boolean {
       var s = domo.attribs['style'];
-      s = GcGrouper.updateTextField(s);
-      if (s.indexOf('visibility:hidden') >=0 || s.indexOf('display:none') >=0) return false;
+    if (s)
+      s = s.replace(/ /g, "");
+
+    if (s && (s.indexOf('visibility:hidden') >= 0 || s.indexOf('display:none') >= 0 ))
+      return false;
+
       if (domo && domo.parent) {
         return GcGrouper.isVisible(domo.parent);
       }
@@ -211,10 +216,8 @@ export class GcGrouper extends GcConsts {
     this.findImages(function (res:Array<ImgObj>) {
       this.images = res;
 
-      _.each(res, function (el) {
-        console.log();
-      });
 
+      //use only visible images
       var x = _.filter(res, function (el) {
         return GcGrouper.isVisible(el.domObject);// (el.domObject.attribs['style'].indexOf('visibility: hidden') < 0)
       }.bind(this));

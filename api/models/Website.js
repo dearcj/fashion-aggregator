@@ -11,9 +11,8 @@ var Websites = {
   schema: true,
   table_name: 'websites',
   attributes: {
-    domain     : { type: 'string' },
-    linkp      : { type: 'string', required: true },
-    user: { model: 'User', required: true, columnName: 'user_id' },
+    domain: {type: 'string', required: true},
+    user: {model: 'User', columnName: 'user_id'},
   },
 };
 

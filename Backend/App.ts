@@ -169,7 +169,7 @@ export class App {
 
   loadDynamicPageWithInject(url:string, endCB:Function) {
     console.log('loading dynamic page with polyfill');
-    var pages = 4;
+    var pages = 3;
     var obj = [];
     var urls = [];
     var pg = null, ph = null;

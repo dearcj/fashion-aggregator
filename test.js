@@ -8,12 +8,13 @@ var FCategory = require('./Backend/Features/FCategory.js').FCategory;
 var FPrice = require('./Backend/Features/FPrice.js').FPrice;
 var FBrand = require('./Backend/Features/FBrand.js').FBrand;
 var datainit = require('./datainit.js');
+var ScanWorker = require('./Backend/ScanWorker.js').ScanWorker;
 
 var AppClass = require('./Backend/App.js');
 var gcapp = new AppClass.App();
 var Classify = require('./Backend/Classify.js').Classify;
 var d = new dict.BTDictionary();
-
+var WebsitesController = require('./api/controllers/WebsiteController.js');
 
 function pgq (q, params, cb) {
   User.query({text: q, values: params}, function(err, results) {
@@ -24,14 +25,11 @@ function pgq (q, params, cb) {
   });
 }
 
+var sw = new ScanWorker(pgq);
+
 
 module.exports = {
   runTest: function () {
-    d.addWord('adobe', true, '123');
-    d.addWord('ax', true, null);
-    d.addWord('axa', true, null);
-
-    d.addWord('bobbyy', false);
     //  d.addWordWithId('bobbyy', true, 1232);
 
     var x = d.save();
@@ -71,6 +69,8 @@ module.exports = {
 
     var x = d.save();
     d.load(x);
+
+    // WebsitesController.createFromLink('https://www.lyst.com/shop/mens-knitwear/');
 
     gcapp.parse('https://www.lyst.com/shop/mens-knitwear/', function cb(res) {
 
