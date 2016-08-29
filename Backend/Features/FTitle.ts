@@ -23,14 +23,14 @@ export class FTitle extends Feature {
       obj = fcat.fieldDictIntersection(this.extractValue(e));
       obj.containFeature = 'category';
     } else obj = {information: 0, value: null};
-    
+
 
     e[this.dbField] = obj;
     return obj;
   }
 
 
-  constructor (queryFunction: (q: string, params: Array<Object>, cv: Function) => void) {
-        super(queryFunction, 'title');
+  constructor (queryFunction: (q: string, params: Array<Object>, cv: Function) => void, lastCalculate: boolean = false) {
+        super(queryFunction, 'title', lastCalculate);
     }
 }

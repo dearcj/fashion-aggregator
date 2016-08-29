@@ -25,7 +25,7 @@ export class DOMObject {
   type:string;
   price:any;
   image:any;
-
+  title: any;
 
   next:DOMObject;
   prev:DOMObject;

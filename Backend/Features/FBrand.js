@@ -7,8 +7,9 @@ var __extends = (this && this.__extends) || function (d, b) {
 var Feature_1 = require("./Feature");
 var FBrand = (function (_super) {
     __extends(FBrand, _super);
-    function FBrand(queryFunction) {
-        _super.call(this, queryFunction, 'brand');
+    function FBrand(queryFunction, lastCalculate) {
+        if (lastCalculate === void 0) { lastCalculate = false; }
+        _super.call(this, queryFunction, 'brand', lastCalculate);
     }
     FBrand.prototype.extractValue = function (e, getAll) {
         if (getAll === void 0) { getAll = false; }

@@ -32,7 +32,7 @@ export class FCategory extends Feature {
     this.dict.addWord(category, true, parentId.toString());
   }
 
-  constructor (queryFunction: (q: string, params: Array<Object>, cv: Function) => void) {
-    super(queryFunction, 'category');
+  constructor (queryFunction: (q: string, params: Array<Object>, cv: Function) => void, lastCalculate: boolean = false) {
+    super(queryFunction, 'category', lastCalculate);
   }
 }

@@ -7,8 +7,9 @@ var __extends = (this && this.__extends) || function (d, b) {
 var Feature_1 = require("./Feature");
 var FTitle = (function (_super) {
     __extends(FTitle, _super);
-    function FTitle(queryFunction) {
-        _super.call(this, queryFunction, 'title');
+    function FTitle(queryFunction, lastCalculate) {
+        if (lastCalculate === void 0) { lastCalculate = false; }
+        _super.call(this, queryFunction, 'title', lastCalculate);
     }
     FTitle.prototype.extractValue = function (e) {
         //brand substraction

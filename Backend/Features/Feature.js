@@ -13,9 +13,11 @@ var ClassifyResults = (function () {
 }());
 exports.ClassifyResults = ClassifyResults;
 var Feature = (function () {
-    function Feature(queryFunction, dbField) {
+    function Feature(queryFunction, dbField, lastCalculate) {
+        this.lastCalculate = false;
         this.qf = queryFunction;
         this.dbField = dbField;
+        this.lastCalculate = lastCalculate;
     }
     Feature.prototype.initDictionary = function (cb) {
         var self = this;

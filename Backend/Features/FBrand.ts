@@ -30,7 +30,7 @@ export class FBrand extends Feature {
     return obj;
    }
 
-    constructor (queryFunction: (q: string, params: Array<Object>, cv: Function) => void) {
-        super(queryFunction, 'brand');
+    constructor (queryFunction: (q: string, params: Array<Object>, cv: Function) => void, lastCalculate: boolean = false) {
+        super(queryFunction, 'brand', lastCalculate);
     }
 }

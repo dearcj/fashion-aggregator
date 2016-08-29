@@ -28,7 +28,7 @@ export class FColor extends Feature {
     return obj;
   }
 
-  constructor(queryFunction:(q:string, params:Array<Object>, cv:Function) => void) {
-    super(queryFunction, 'color');
+  constructor(queryFunction:(q:string, params:Array<Object>, cv:Function) => void, lastCalculate: boolean = false) {
+    super(queryFunction, 'color', lastCalculate);
   }
 }

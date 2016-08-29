@@ -37,8 +37,8 @@ export class FImage extends Feature {
       return {information: information, value: value ? value.value : null}
     }
 
-    constructor (queryFunction: (q: string, params: Array<Object>, cv: Function) => void) {
-        super(queryFunction, 'image');
+    constructor (queryFunction: (q: string, params: Array<Object>, cv: Function) => void, lastCalculate: boolean = false) {
+        super(queryFunction, 'image', lastCalculate);
     }
 
 }

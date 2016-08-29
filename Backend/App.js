@@ -140,7 +140,7 @@ var App = (function () {
     };
     App.prototype.loadDynamicPageWithInject = function (url, endCB) {
         console.log('loading dynamic page with polyfill');
-      var pages = 3;
+        var pages = 3;
         var obj = [];
         var urls = [];
         var pg = null, ph = null;

@@ -19,6 +19,7 @@ var u = require('./MathUnit.js').MathUnit;
 var request = require('requestretry');
 var buffer = require('buffer');
 var hasha = require('hasha');
+var url = require('url');
 
 var _ = require("underscore");
 var MathUnit = require('./MathUnit.js').MathUnit;
@@ -26,12 +27,12 @@ var MathUnit = require('./MathUnit.js').MathUnit;
 export class Classify {
   featuresToLoad:number = 0;
   featuresLoaded:number = 0;
-  allFeaturesLoaded:Function = null;
-  queryFunction:(q:string, params:Array<Object>, cv:Function) => void;
+  allFeaturesLoaded: Function = null;
+  queryFunction: (q:string, params:Array<Object>, cv:Function) => void;
   images: Array<any>;
-  grouper:GcGrouper;
-  history:History;
-
+  grouper: GcGrouper;
+  history: History;
+  domain: string;
   private features:Array<Feature> = [];
 
   onLoadedFeature() {
@@ -57,6 +58,7 @@ export class Classify {
     this.addFeature(new FTitle(this.queryFunction));
     this.addFeature(new FCategory(this.queryFunction));
     this.addFeature(new FImage(this.queryFunction));
+    this.addFeature(new FLink(this.queryFunction, true));
     this.ft('image').images = this.images;
 
     var self = this;
@@ -65,7 +67,10 @@ export class Classify {
     });
   }
 
-  constructor(queryFunction:(q:string, params:Array<Object>) => void, images: Array<any>) {
+  constructor(queryFunction:(q:string, params:Array<Object>) => void, images: Array<any>, link: string) {
+    var baseLinkObj = url.parse(link);
+
+    this.domain =  baseLinkObj.protocol + '//' + baseLinkObj.host;
     this.images = images;
     this.queryFunction = queryFunction;
     this.history = new History(queryFunction);
@@ -113,7 +118,10 @@ export class Classify {
     var standart:DOMObject = MathUnit.maxParam(l, 'maxDepth');
     var ll = l.length;
 
-    traverse(standart, function analyze(el) {
+    _.each(this.features, function (feature) {
+      if (feature.lastCalculate) return;
+
+      traverse(standart, function analyze(el) {
       var rule = standart.grouper.getRule(el, standart, true, false);
       console.log(rule);
 
@@ -126,30 +134,27 @@ export class Classify {
         }
       }
       //console.log(stack);
-      _.each(this.features, function (feature) {
         var res = feature.analyzeList(stack);
-
-
-        if (res.information > feature.classifyResult.information)
+        if (res.information > feature.classifyResult.information) {
           feature.classifyResult = {
             information: res.information,
             density: res.density,
             elements: stack,
             rule: rule
-          }
-      });
+          };
+        }
 
-      //ANALYZE STACK
-
-      //get rule of el
     }.bind(this), false);
+    }.bind(this));
 
     var objs = [];
-    for (var i = 0; i < ll; ++i) {
-      var trackedObj = {};
 
+    for (var i = 0; i < ll; ++i) {
       _.each(this.features, function (feature) {
+        if (feature.lastCalculate) return;
+
         console.log(feature.dbField, ' inf = ' + feature.classifyResult.information, ' den =' + feature.classifyResult.density);
+
         if (feature.classifyResult.density > 0.95) {
           var getAll = true;
         } else getAll = false;
@@ -164,15 +169,13 @@ export class Classify {
           value = null;
         }
 
-        trackedObj[feature.dbField] = value;
-        trackedObj['inf-' + feature.dbField] = feature.classifyResult.information;
-        trackedObj['den-' + feature.dbField] = feature.classifyResult.information;
-
-
+        l[feature.dbField] = value;
+        l['inf-' + feature.dbField] = feature.classifyResult.information;
+        l['den-' + feature.dbField] = feature.classifyResult.information;
       });
 
-      objs.push(trackedObj);
-      console.log(JSON.stringify(trackedObj));
+
+      console.log(JSON.stringify(l));
     }
 
     this.loadFullImages(objs, function () {

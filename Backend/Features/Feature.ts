@@ -21,7 +21,9 @@ export abstract class Feature {
   public images:Array<ImgObj>;
   public classifyResult:ClassifyResults;
   public classify:Classify;
-
+  public dbField:string;
+  public lastCalculate: boolean = false;
+  
   initDictionary(cb):void {
     var self = this;
     this.dict = new BTD.BTDictionary();
@@ -89,12 +91,12 @@ export abstract class Feature {
 
   }
 
-  constructor(queryFunction:(q:string, params:Array<Object>, cv:Function) => void, dbField:string) {
+  constructor(queryFunction:(q:string, params:Array<Object>, cv:Function) => void, dbField:string, lastCalculate: boolean) {
     this.qf = queryFunction;
     this.dbField = dbField;
+    this.lastCalculate = lastCalculate;
   }
 
-  dbField:string;
 
   analyzeList(l:Array<DOMObject>):any {
     var i = 0;

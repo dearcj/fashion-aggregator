@@ -8,8 +8,9 @@ var Feature_1 = require("./Feature");
 var _ = require("underscore");
 var FPrice = (function (_super) {
     __extends(FPrice, _super);
-    function FPrice(queryFunction) {
-        _super.call(this, queryFunction, 'price');
+    function FPrice(queryFunction, lastCalculate) {
+        if (lastCalculate === void 0) { lastCalculate = false; }
+        _super.call(this, queryFunction, 'price', lastCalculate);
     }
     FPrice.prototype.extractValue = function (e) {
         if (!e || !e.data)

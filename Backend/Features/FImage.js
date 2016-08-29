@@ -8,8 +8,9 @@ var Feature_1 = require("./Feature");
 var GC_Grouper_1 = require("../GC_Grouper");
 var FImage = (function (_super) {
     __extends(FImage, _super);
-    function FImage(queryFunction) {
-        _super.call(this, queryFunction, 'image');
+    function FImage(queryFunction, lastCalculate) {
+        if (lastCalculate === void 0) { lastCalculate = false; }
+        _super.call(this, queryFunction, 'image', lastCalculate);
     }
     FImage.prototype.extractValue = function (e) {
         if (e && e.name == 'img') {
