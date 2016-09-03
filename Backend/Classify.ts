@@ -151,8 +151,6 @@ export class Classify {
 
     for (var i = 0; i < ll; ++i) {
       _.each(this.features, function (feature) {
-        if (feature.lastCalculate) return;
-
         console.log(feature.dbField, ' inf = ' + feature.classifyResult.information, ' den =' + feature.classifyResult.density);
 
         if (feature.classifyResult.density > 0.95) {
@@ -175,8 +173,14 @@ export class Classify {
       });
 
 
-      console.log(JSON.stringify(l));
+
     }
+
+    _.each(l, function (el) {
+      console.log(l['inf-link'], l['den-link'], l['link']);
+
+    })
+
 
     this.loadFullImages(objs, function () {
       _.each(objs, function (obj) {

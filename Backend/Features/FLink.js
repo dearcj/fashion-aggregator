@@ -16,12 +16,19 @@ var FLink = (function (_super) {
     };
     FLink.prototype.analyzeDOMElem = function (e) {
         var inf = 0;
-        if (e.data) {
-            if (e.data.indexOf(this.classify.domain) >= 1)
+        var fcat = this.classify.ft('category');
+        var fbrand = this.classify.ft('brand');
+        var ftitle = this.classify.ft('title');
+        if (e.name == 'a' && e.attribs['href']) {
+            var possibleLink = e.attribs['href'];
+            if (possibleLink.indexOf(this.classify.domain) >= 1)
                 inf = 0.5;
             var substr = e.data.split('-');
             for (var i = 0, l = substr.length; i < l; ++i) {
-                substr[i];
+                var objCat = fcat.fieldDictIntersection(substr[i]);
+                var objBrand = fbrand.fieldDictIntersection(substr[i]);
+                var objTitle = ftitle.fieldDictIntersection(substr[i]);
+                inf += Math.max(objCat.information, objBrand.information, objTitle.information);
             }
         }
         return { information: inf };

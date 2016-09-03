@@ -20,7 +20,7 @@ var FTitle = (function (_super) {
     FTitle.prototype.analyzeDOMElem = function (e) {
         var obj;
         var fcat = this.classify.ft('category');
-        var fbrand = this.classify.ft('category');
+        var fbrand = this.classify.ft('brand');
         if (e.data) {
             obj = fcat.fieldDictIntersection(this.extractValue(e));
             obj.containFeature = 'category';

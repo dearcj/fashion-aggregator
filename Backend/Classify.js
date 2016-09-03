@@ -121,8 +121,6 @@ var Classify = (function () {
         var objs = [];
         for (var i = 0; i < ll; ++i) {
             _.each(this.features, function (feature) {
-                if (feature.lastCalculate)
-                    return;
                 console.log(feature.dbField, ' inf = ' + feature.classifyResult.information, ' den =' + feature.classifyResult.density);
                 if (feature.classifyResult.density > 0.95) {
                     var getAll = true;
@@ -141,8 +139,10 @@ var Classify = (function () {
                 l['inf-' + feature.dbField] = feature.classifyResult.information;
                 l['den-' + feature.dbField] = feature.classifyResult.information;
             });
-            console.log(JSON.stringify(l));
         }
+        _.each(l, function (el) {
+            console.log(l['inf-link'], l['den-link'], l['link']);
+        });
         this.loadFullImages(objs, function () {
             _.each(objs, function (obj) {
                 this.saveItem(obj);

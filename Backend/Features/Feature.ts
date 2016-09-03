@@ -9,6 +9,11 @@ var _ = require("underscore");
 class DOMObject {
 }
 
+class InfValue {
+  information:number;
+  value:string;
+}
+
 export class ClassifyResults {
   information:number;
   rule:string;
@@ -23,7 +28,7 @@ export abstract class Feature {
   public classify:Classify;
   public dbField:string;
   public lastCalculate: boolean = false;
-  
+
   initDictionary(cb):void {
     var self = this;
     this.dict = new BTD.BTDictionary();
@@ -54,7 +59,7 @@ export abstract class Feature {
     return sub;
   }
 
-  fieldDictIntersection(field:string):any {
+  fieldDictIntersection(field:string):InfValue {
     field = field.toLowerCase();
 
     //field.split(' ');

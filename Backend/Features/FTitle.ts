@@ -16,7 +16,7 @@ export class FTitle extends Feature {
     var obj;
 
     var fcat = this.classify.ft('category');
-    var fbrand = this.classify.ft('category');
+    var fbrand = this.classify.ft('brand');
 
 
     if (e.data) {

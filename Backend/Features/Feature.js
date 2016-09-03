@@ -6,6 +6,11 @@ var DOMObject = (function () {
     }
     return DOMObject;
 }());
+var InfValue = (function () {
+    function InfValue() {
+    }
+    return InfValue;
+}());
 var ClassifyResults = (function () {
     function ClassifyResults() {
     }
