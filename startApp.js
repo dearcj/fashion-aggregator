@@ -25,51 +25,11 @@ function pgq (q, params, cb) {
   });
 }
 
-var sw = new ScanWorker(pgq);
 
 
 module.exports = {
   runTest: function () {
-    //  d.addWordWithId('bobbyy', true, 1232);
-
-    var x = d.save();
-    console.log(x);
-    d.load(x);
-    console.log(d.save());
-
-    d.removeWord('adobe');
-
-
-    /*  var b = new FBrand(pgq);
-     b.initDictionary(function () {
-     b.dict.addArray(datainit.brands);
-
-
-     b.updateDictionary();
-     });
-     */
-
-
-    /*    var c = new FCategory(pgq);
-    c.initDictionary(function () {
-      c.dict.addArray(datainit.shoes);
-      c.dict.addArray(datainit.categories);
-      c.updateDictionary();
-     });*/
-
-    /* var f = new FPrice(pgq);
-     f.initDictionary(function () {
-     f.dict.addArray(prices);
-
-
-     f.updateDictionary();
-     });*/
-
-
-
-    var x = d.save();
-    d.load(x);
-
+    var sw = new ScanWorker(pgq, gcapp);
     // WebsitesController.createFromLink('https://www.lyst.com/shop/mens-knitwear/');
 
 //      gcapp.parse('http://www.endclothing.com/us/clothing/blazers', function cb(res) {
@@ -77,7 +37,7 @@ module.exports = {
 
 
     var link = 'https://www.lyst.com/shop/mens-knitwear/';
-    gcapp.parse(link, function cb(res) {
+    /*  gcapp.parse(link, function cb(res) {
 
       var alldata = [];
       for (var i = 0; i < res.length; ++i) {
@@ -94,6 +54,6 @@ module.exports = {
 //        var x = cl.ft('category').dict.checkWord('blazer');
         var r = cl.analyzeList(alldata);
       });
-    });
+     }); */
   }
 }

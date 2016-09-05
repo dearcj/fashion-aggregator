@@ -20,8 +20,7 @@ var App = (function () {
         var gc_grouper = new GC_Grouper_1.GcGrouper($, body, this.linkp);
         gc_grouper.updateInfoTree();
         gc_grouper.findModel(function (res) {
-            self.images = gc_grouper.images;
-            cb(res);
+          cb({images: gc_grouper.images, res: res});
         });
     };
     ;

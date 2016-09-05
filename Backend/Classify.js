@@ -22,12 +22,25 @@ var Classify = (function () {
         this.featuresLoaded = 0;
         this.allFeaturesLoaded = null;
         this.features = [];
-        var baseLinkObj = url.parse(link);
-        this.domain = baseLinkObj.protocol + '//' + baseLinkObj.host;
+        this.link = link;
         this.images = images;
         this.queryFunction = queryFunction;
         this.history = new History_1.History(queryFunction);
     }
+    Object.defineProperty(Classify.prototype, "link", {
+        get: function () {
+            return this._link;
+        },
+        set: function (l) {
+            this._link = l;
+            if (l) {
+                var baseLinkObj = url.parse(l);
+                this.domain = baseLinkObj.protocol + '//' + baseLinkObj.host;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
     Classify.prototype.onLoadedFeature = function () {
         this.featuresLoaded++;
         if (this.featuresLoaded == this.featuresToLoad) {
@@ -49,7 +62,7 @@ var Classify = (function () {
         this.addFeature(new FTitle_1.FTitle(this.queryFunction));
         this.addFeature(new FCategory_1.FCategory(this.queryFunction));
         this.addFeature(new FImage_1.FImage(this.queryFunction));
-        this.addFeature(new FLink_1.FLink(this.queryFunction, true));
+        this.addFeature(new FLink_1.FLink(this.queryFunction));
         this.ft('image').images = this.images;
         var self = this;
         _.each(this.features, function (el) {
@@ -93,8 +106,6 @@ var Classify = (function () {
         var standart = MathUnit.maxParam(l, 'maxDepth');
         var ll = l.length;
         _.each(this.features, function (feature) {
-            if (feature.lastCalculate)
-                return;
             GC_Grouper_1.traverse(standart, function analyze(el) {
                 var rule = standart.grouper.getRule(el, standart, true, false);
                 console.log(rule);
@@ -135,13 +146,13 @@ var Classify = (function () {
                 else {
                     value = null;
                 }
-                l[feature.dbField] = value;
-                l['inf-' + feature.dbField] = feature.classifyResult.information;
-                l['den-' + feature.dbField] = feature.classifyResult.information;
+                l[i][feature.dbField] = value;
+                l[i]['inf-' + feature.dbField] = feature.classifyResult.information;
+                l[i]['den-' + feature.dbField] = feature.classifyResult.information;
             });
         }
         _.each(l, function (el) {
-            console.log(l['inf-link'], l['den-link'], l['link']);
+            console.log(el['inf-link'], el['den-link'], el['link']);
         });
         this.loadFullImages(objs, function () {
             _.each(objs, function (obj) {

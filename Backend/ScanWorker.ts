@@ -1,3 +1,5 @@
+import {App} from "./App";
+import {Classify} from "./Classify";
 /**
  * Created by MSI on 28.08.2016.
  */
@@ -9,8 +11,10 @@ export class ScanWorker {
   bigScanPages:number = 20;
   scanPages:number = 1;
 
+  featuresLoaded:boolean = false;
   betweenScanDelay:number = 5000;
-
+  app:App;
+  classify:Classify;
 
   bigScanInterval:number = 5 /*days*/ * 24 * 60 * 60 * 1000;
   scanInterval:number = 12 /*hrs*/ * 60 * 60 * 1000;
@@ -20,11 +24,12 @@ export class ScanWorker {
   updateLink(link) {
 
     this.qf('update link set scan_date = $1, big_scan_date = $2  where id = $3 ', [link.scan_date, link.big_scan_date, link.id], function res(e, r) {
-      console;
     }.bind(this));
   }
 
-  scanLink(link) {
+  scanLink(link:any) {
+    if (!this.featuresLoaded) return;
+
     var isBigScan = false;
 
     if (!link.big_scan_date || link.big_scan_date.getMilliseconds() > new Date().getMilliseconds() - this.bigScanInterval) {
@@ -38,6 +43,26 @@ export class ScanWorker {
     }
     link.scan_date = new Date();
 
+    this.app.parse(link.link, function parsed(results) {
+      var alldata = [];
+      for (var i = 0; i < results.length; ++i) {
+        if (results[i][0]) {
+          alldata = alldata.concat(results.res[i][0]);
+        }
+      }
+
+
+      this.classify.link = link.link;
+      this.classify.images = results.res.images;
+
+      var r = this.classify.analyzeList(alldata);
+
+
+    }.bind(this));
+    //scan will be here
+
+
+
     this.updateLink(link)
   }
 
@@ -50,8 +75,20 @@ export class ScanWorker {
     }.bind(this));
   }
 
-  constructor(queryFunction:(q:string, params:Array<Object>, cv:Function) => void) {
+  constructor(queryFunction:(q:string, params:Array<Object>, cv:Function) => void, app:App) {
     this.qf = queryFunction;
+    this.app = app;
+    this.classify = new Classify(queryFunction, null, '');
+
+    this.classify.loadFeatures(function complete() {
+      //cl.learnFeature('title', 'abracadabra');
+      //   cl.revertHistory(historyId)
+//        var x = cl.ft('category').dict.checkWord('blazer');
+      this.featuresLoaded = true;
+    }.bind(this));
+
+
+
     setInterval(this.check.bind(this), this.checkInterval);
   }
 }

@@ -9,15 +9,10 @@
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.bootstrap.html
  */
 
-var test = require('../test.js');
 
 
 module.exports.bootstrap = function(cb) {
 
-  setTimeout(function () {
-    //modelsLoaded
-    test.runTest();
-  }, 1000);
   sails.services.passport.loadStrategies();
   cb();
 };

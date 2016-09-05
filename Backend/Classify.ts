@@ -32,8 +32,25 @@ export class Classify {
   images: Array<any>;
   grouper: GcGrouper;
   history: History;
+
+  _link:string;
   domain: string;
   private features:Array<Feature> = [];
+
+  get link():string {
+    return this._link;
+  }
+
+  set link(l:string) {
+    this._link = l;
+    if (l) {
+      var baseLinkObj = url.parse(l);
+
+      this.domain = baseLinkObj.protocol + '//' + baseLinkObj.host;
+    }
+  }
+
+
 
   onLoadedFeature() {
     this.featuresLoaded++;
@@ -58,7 +75,7 @@ export class Classify {
     this.addFeature(new FTitle(this.queryFunction));
     this.addFeature(new FCategory(this.queryFunction));
     this.addFeature(new FImage(this.queryFunction));
-    this.addFeature(new FLink(this.queryFunction, true));
+    this.addFeature(new FLink(this.queryFunction));
     this.ft('image').images = this.images;
 
     var self = this;
@@ -67,10 +84,9 @@ export class Classify {
     });
   }
 
-  constructor(queryFunction:(q:string, params:Array<Object>) => void, images: Array<any>, link: string) {
-    var baseLinkObj = url.parse(link);
 
-    this.domain =  baseLinkObj.protocol + '//' + baseLinkObj.host;
+  constructor(queryFunction:(q:string, params:Array<Object>, cv:Function) => void, images:Array<any>, link:string) {
+    this.link = link;
     this.images = images;
     this.queryFunction = queryFunction;
     this.history = new History(queryFunction);
@@ -119,8 +135,6 @@ export class Classify {
     var ll = l.length;
 
     _.each(this.features, function (feature) {
-      if (feature.lastCalculate) return;
-
       traverse(standart, function analyze(el) {
       var rule = standart.grouper.getRule(el, standart, true, false);
       console.log(rule);
@@ -167,17 +181,14 @@ export class Classify {
           value = null;
         }
 
-        l[feature.dbField] = value;
-        l['inf-' + feature.dbField] = feature.classifyResult.information;
-        l['den-' + feature.dbField] = feature.classifyResult.information;
+        l[i][feature.dbField] = value;
+        l[i]['inf-' + feature.dbField] = feature.classifyResult.information;
+        l[i]['den-' + feature.dbField] = feature.classifyResult.information;
       });
-
-
-
     }
 
     _.each(l, function (el) {
-      console.log(l['inf-link'], l['den-link'], l['link']);
+      console.log(el['inf-link'], el['den-link'], el['link']);
 
     })
 

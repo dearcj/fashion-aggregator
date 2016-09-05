@@ -11,8 +11,8 @@ var FLink = (function (_super) {
         if (lastCalculate === void 0) { lastCalculate = false; }
         _super.call(this, queryFunction, 'link', lastCalculate);
     }
-    FLink.prototype.extractValue = function (s) {
-        return '';
+    FLink.prototype.extractValue = function (e) {
+        return e.attribs['href'];
     };
     FLink.prototype.analyzeDOMElem = function (e) {
         var inf = 0;
@@ -23,13 +23,14 @@ var FLink = (function (_super) {
             var possibleLink = e.attribs['href'];
             if (possibleLink.indexOf(this.classify.domain) >= 1)
                 inf = 0.5;
-            var substr = e.data.split('-');
+            var substr = e.attribs['href'].split('-');
             for (var i = 0, l = substr.length; i < l; ++i) {
                 var objCat = fcat.fieldDictIntersection(substr[i]);
                 var objBrand = fbrand.fieldDictIntersection(substr[i]);
                 var objTitle = ftitle.fieldDictIntersection(substr[i]);
                 inf += Math.max(objCat.information, objBrand.information, objTitle.information);
             }
+            inf /= substr.length;
         }
         return { information: inf };
     };
