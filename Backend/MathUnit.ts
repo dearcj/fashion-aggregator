@@ -104,6 +104,10 @@ export module MathUnit {
     var maxEl = a[0];
     var len = a.length;
     for (var i = 1; i < len; ++i) {
+
+      if (!a[i])
+        console;
+
       if (maxEl[paramName] < a[i][paramName]) {
         maxEl = a[i];
       }

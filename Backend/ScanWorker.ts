@@ -28,6 +28,7 @@ export class ScanWorker {
   }
 
   scanLink(link:any) {
+    console.log('scanning link', link);
     if (!this.featuresLoaded) return;
 
     var isBigScan = false;
@@ -43,31 +44,35 @@ export class ScanWorker {
     }
     link.scan_date = new Date();
 
-    this.app.parse(link.link, function parsed(results) {
+    link.link = 'https://www.lyst.com/shop/mens-knitwear/';
+    link.link = 'http://www.asos.com/men/new-in-clothing/cat/?cid=6993&pge=:page&pgesize=36';
+    pages = 3;
+    this.app.scanPages = pages;
+    this.app.parse(link.link, pages, function parsed(results) {
+      //results[0][0].images
       var alldata = [];
+      var images = [];
       for (var i = 0; i < results.length; ++i) {
-        if (results[i][0]) {
-          alldata = alldata.concat(results.res[i][0]);
+        if (results[i][0] && results[i][0].res) {
+          images = images.concat(results[i][0].images);
+          alldata = alldata.concat(results[i][0].res);
         }
       }
 
-
       this.classify.link = link.link;
-      this.classify.images = results.res.images;
+      this.classify.images = images;
 
+      console.log('get elements: ', alldata.length);
       var r = this.classify.analyzeList(alldata);
 
-
+      this.updateLink(link)
     }.bind(this));
     //scan will be here
-
-
-
-    this.updateLink(link)
   }
 
   check() {
-    this.qf('SELECT *  from link where scan_date is null OR scan_date > $1', [new Date().getMilliseconds() - this.scanInterval], function res(e, r) {
+    this.qf('SELECT *  from link', null, function res(e, r) {
+//    this.qf('SELECT *  from link where scan_date is null OR scan_date > $1', [new Date().getMilliseconds() - this.scanInterval], function res(e, r) {
       if (r)
         for (var i = 0, ln = r.length; i < ln; ++i) {
           setTimeout(this.scanLink.bind(this, r[i]), this.betweenScanDelay * i)
@@ -88,7 +93,6 @@ export class ScanWorker {
     }.bind(this));
 
 
-
-    setInterval(this.check.bind(this), this.checkInterval);
+    setTimeout(this.check.bind(this), this.checkInterval);
   }
 }

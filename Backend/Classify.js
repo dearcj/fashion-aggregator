@@ -63,7 +63,6 @@ var Classify = (function () {
         this.addFeature(new FCategory_1.FCategory(this.queryFunction));
         this.addFeature(new FImage_1.FImage(this.queryFunction));
         this.addFeature(new FLink_1.FLink(this.queryFunction));
-        this.ft('image').images = this.images;
         var self = this;
         _.each(this.features, function (el) {
             el.initDictionary(self.onLoadedFeature.bind(self));
@@ -94,6 +93,7 @@ var Classify = (function () {
     Classify.prototype.analyzeList = function (l) {
         console.log('classify::analyzeList');
         // Maybe better pick the Biggest guy of  them all
+      this.ft('image').images = this.images;
         _.each(this.features, function (el) {
             el.classifyResult = {
                 information: 0,

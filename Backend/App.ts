@@ -15,7 +15,7 @@ var request = require('requestretry');
 
 export class App {
 
-  MAX_PREV_PAGES:number = 5;
+  scanPages:number = 5;
   images:Array<ImgObj>;
   linkp:string;
 
@@ -34,11 +34,11 @@ export class App {
   };
 
 
-  parse(linkp:string, cb:Function) {
+  parse(linkp:string, pages:number, cb:Function) {
     var links = [];
     this.linkp = linkp;
     if (~linkp.indexOf(':page')) {
-      for (var i:number = 0; i < this.MAX_PREV_PAGES; ++i) {
+      for (var i:number = 1; i <= pages; ++i) {
         var x = linkp.replace(":page", i.toString());
         links.push(x);
       }

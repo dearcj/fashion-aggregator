@@ -65,6 +65,7 @@ export class Classify {
       if (el.dbField == name) ft = el;
     });
     return ft;
+
   }
 
   loadFeatures(allLoaded:Function) {
@@ -76,7 +77,6 @@ export class Classify {
     this.addFeature(new FCategory(this.queryFunction));
     this.addFeature(new FImage(this.queryFunction));
     this.addFeature(new FLink(this.queryFunction));
-    this.ft('image').images = this.images;
 
     var self = this;
     _.each(this.features, function (el) {
@@ -120,6 +120,7 @@ export class Classify {
   analyzeList(l:Array<DOMObject>) {
     console.log('classify::analyzeList');
     // Maybe better pick the Biggest guy of  them all
+    this.ft('image').images = this.images;
 
     _.each(this.features, function (el) {
       el.classifyResult = {

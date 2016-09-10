@@ -9,7 +9,7 @@ var fs = require('fs');
 var request = require('requestretry');
 var App = (function () {
     function App() {
-        this.MAX_PREV_PAGES = 5;
+        this.scanPages = 5;
     }
     App.prototype.onePageParse = function (body, $, cb) {
         var self = this;
@@ -20,15 +20,15 @@ var App = (function () {
         var gc_grouper = new GC_Grouper_1.GcGrouper($, body, this.linkp);
         gc_grouper.updateInfoTree();
         gc_grouper.findModel(function (res) {
-          cb({images: gc_grouper.images, res: res});
+            cb({ images: gc_grouper.images, res: res });
         });
     };
     ;
-    App.prototype.parse = function (linkp, cb) {
+    App.prototype.parse = function (linkp, pages, cb) {
         var links = [];
         this.linkp = linkp;
         if (~linkp.indexOf(':page')) {
-            for (var i = 0; i < this.MAX_PREV_PAGES; ++i) {
+            for (var i = 1; i <= pages; ++i) {
                 var x = linkp.replace(":page", i.toString());
                 links.push(x);
             }

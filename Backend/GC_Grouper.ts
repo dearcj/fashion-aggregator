@@ -215,21 +215,23 @@ export class GcGrouper extends GcConsts {
   findModel(resCB:Function) {
     this.findImages(function (res:Array<ImgObj>) {
       this.images = res;
-
+      if (res.length == 0) {
+        resCB(null);
+        return;
+      }
 
       //use only visible images
       var x = _.filter(res, function (el) {
         return GcGrouper.isVisible(el.domObject);// (el.domObject.attribs['style'].indexOf('visibility: hidden') < 0)
       }.bind(this));
-
-
-
-      var img = x[0].domObject;
+      
       var self = this;
       if (res.length == 0) {
         resCB(null);
         return;
       }
+
+      var img = x[0].domObject;
 
       var par = img.parent;
       while (par && par != this.body) {
