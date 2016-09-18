@@ -5,6 +5,10 @@ module.exports.policies = {
 
   '*': ['passport'],
 
+  LinksContoller: {
+    '*': r.rolePolicy([r.ROLE_EVERYBODY, r.ROLE_ADMIN, r.ROLE_PROVIDER]),
+  },
+
   ParserController: {
     '*': r.rolePolicy([r.ROLE_EVERYBODY, r.ROLE_ADMIN, r.ROLE_PROVIDER]),
   },

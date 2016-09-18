@@ -44,8 +44,6 @@ export class ScanWorker {
     }
     link.scan_date = new Date();
 
-    link.link = 'https://www.lyst.com/shop/mens-knitwear/';
-    link.link = 'http://www.asos.com/men/new-in-clothing/cat/?cid=6993&pge=:page&pgesize=36';
     pages = 3;
     this.app.scanPages = pages;
     this.app.parse(link.link, pages, function parsed(results) {

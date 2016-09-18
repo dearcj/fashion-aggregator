@@ -12,7 +12,12 @@ var FLink = (function (_super) {
         _super.call(this, queryFunction, 'link', lastCalculate);
     }
     FLink.prototype.extractValue = function (e) {
-        return e.attribs['href'];
+      var link;
+      link = e.attribs['href'];
+      if (link.indexOf('://') < 0) {
+        link = this.classify.domain + link;
+      }
+      return link;
     };
     FLink.prototype.analyzeDOMElem = function (e) {
         var inf = 0;

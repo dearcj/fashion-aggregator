@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
+
     <!--
         Stylesheets and Preprocessors
         ==============================
@@ -60,8 +61,21 @@
     -->
 
     <!--TEMPLATES-->
-    
+
     <!--TEMPLATES END-->
+
+    <script type="text/javascript">
+      <% if (req && req.session.user){ %>
+      window.config = {
+        websites:<% JSON.stringify(req.session.user.websites) %>
+      }
+      <% } %>
+    </script>
+    <script src="../node_modules/core-js/client/shim.min.js"></script>
+    <script src="../node_modules/zone.js/dist/zone.js"></script>
+    <script src="../node_modules/reflect-metadata/Reflect.js"></script>
+    <script src="../node_modules/systemjs/dist/system.src.js"></script>
+    <!-- 2. Configure SystemJS -->
 
 
     <!--
@@ -89,6 +103,14 @@
 
     <!--SCRIPTS-->
     <script src="/js/dependencies/sails.io.js"></script>
+    <script src="/js/systemjs.config.js"></script>
     <!--SCRIPTS END-->
+
+    <script>
+      System.import('Frontend/app.main.js').catch(function (err) {
+        console.error(err);
+      });
+    </script>
+
   </body>
 </html>

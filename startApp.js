@@ -25,18 +25,18 @@ function pgq (q, params, cb) {
   });
 }
 
-
-
 module.exports = {
   runTest: function () {
-    var sw = new ScanWorker(pgq, gcapp);
+    //  var sw = new ScanWorker(pgq, gcapp);
+
+
     // WebsitesController.createFromLink('https://www.lyst.com/shop/mens-knitwear/');
 
 //      gcapp.parse('http://www.endclothing.com/us/clothing/blazers', function cb(res) {
 //    gcapp.parse('https://marketplace.asos.com/men/shirts', function cb(res) {
 
 
-    var link = 'https://www.lyst.com/shop/mens-knitwear/';
+//    var link = 'https://www.lyst.com/shop/mens-knitwear/';
     /*  gcapp.parse(link, function cb(res) {
 
       var alldata = [];

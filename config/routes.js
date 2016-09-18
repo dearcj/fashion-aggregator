@@ -40,12 +40,15 @@ module.exports.routes = {
 */
 
   'get /': {view: 'homepage'},
-  'get /admin': {view: 'admin/main'},//p.render('admin/main', r.rolePolicy([r.ROLE_USER, r.ROLE_PROVIDER, r.ROLE_ADMIN])),
+  'get /admin': p.render('admin/main', r.rolePolicy([r.ROLE_EVERYBODY, r.ROLE_USER, r.ROLE_PROVIDER, r.ROLE_ADMIN])),
 
   'get /login': 'AuthController.login',
   'get /logout': 'AuthController.logout',
   'get /register': 'AuthController.register',
   'get /parse': 'ParserController.parse',
+
+  'get /admin/links': 'LinksController.all',
+
 
   'post /auth/local': 'AuthController.callback',
   'post /auth/local/:action': 'AuthController.callback',

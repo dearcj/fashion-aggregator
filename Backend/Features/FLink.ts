@@ -4,7 +4,12 @@ import { DOMObject } from "../GC_Grouper";
 export class FLink extends Feature {
 
   extractValue(e:DOMObject) {
-    return e.attribs['href'];
+    var link:string;
+    link = e.attribs['href'];
+    if (link.indexOf('://') < 0) {
+      link = this.classify.domain + link;
+    }
+    return link;
   }
 
 
