@@ -64,37 +64,6 @@ export class App {
   loadStaticPage(url:string, endCB:Function) {
     console.log('loading static page: ' + url);
 
-    /* phantom.create().then(function (ph:any) {
-     return ph.createPage().then(function (page:any) {
-     page.open(url).then(function (status) {
-     console.log(page.content);
-     page.evaluate(function () {
-     window.scrollBy(0, 10000);
-     return window.pageYOffset;
-     }).then(function (r) {
-     var x = page.property('content').then(function (content) {
-     var $:Function = cheerio.load(content);
-     var bod = $('body');
-     endCB(bod);
-     });
-     });
-     });
-     });
-     });*/
-
-
-    /* u.GET(url, function (error, response) {
-     if (error) {
-     endCB(null, null);
-     } else {
-
-     var $:Function = cheerio.load(response.body);
-     console.log(response.body);
-     var bod = $('body')[0];
-     endCB(bod, $);
-     }
-     });*/
-
     request({
       uri: url,
       maxAttempts: 5,   // (default) try 5 times
@@ -173,7 +142,6 @@ export class App {
     var urls = [];
     var pg = null, ph = null;
 
-
     var loadNewPage = function (x) {
       return pg.evaluate(function (offs) {
         window.scrollBy(0, offs);
@@ -181,7 +149,6 @@ export class App {
 
       }, x)
     };
-    0
 
     var retrieveContent = function () {
       pg.property('content').then(function (content) {
